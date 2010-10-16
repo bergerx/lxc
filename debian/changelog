@@ -1,0 +1,89 @@
+lxc (0.7.2-1) unstable; urgency=low
+
+  * New upstream version
+  * Convert libcap dependency to versioned (closes: #571527)
+  * Bump up standards version to 3.9.0
+  * Fix too-deep /usr/lib/lxc/lxc path (closes: #587847)
+  * Add init script (closes: #573830)
+    Thanks to Przemysław Knycz <pknycz@kolnet.eu> for the base example
+  * Bump up standards version (3.9.1)
+
+ -- Guido Trotter <ultrotter@debian.org>  Wed, 04 Aug 2010 13:23:42 -0400
+
+lxc (0.7.1-1) unstable; urgency=low
+
+  * New upstream version
+  * Convert to quilt format
+  * Use pristine-tar option in git-buildpackage
+  * lxc-$distro scripts (debian, fedora, sshd, ubuntu, busybox) are now
+    shipped under /usr/lib/lxc/lxc/templates/
+  * Bump up standards version
+
+ -- Guido Trotter <ultrotter@debian.org>  Mon, 28 Jun 2010 10:15:48 +0100
+
+lxc (0.6.5-1) unstable; urgency=low
+
+  * New upstream version (closes: #566771)
+
+ -- Guido Trotter <ultrotter@debian.org>  Mon, 25 Jan 2010 15:39:38 +0000
+
+lxc (0.6.4-2) unstable; urgency=low
+
+  * Ship the /var/lib/lxc directory (closes: #565519)
+
+ -- Guido Trotter <ultrotter@debian.org>  Sat, 16 Jan 2010 16:57:00 +0000
+
+lxc (0.6.4-1) unstable; urgency=low
+
+  [ Stéphane Graber ]
+  * Upgrade standards-version to 3.8.3
+  * Drop the copy of etc/* from rules as "etc" is no longer in the tarball
+
+  [ Guido Trotter ]
+  * New Upstream Version
+  * Update libcap2-dev dependency to libcap-dev
+  * Install upstream-built man pages via debian/lxc.manpages
+  * Drop unneeded docbook-utils build dependency
+
+ -- Guido Trotter <ultrotter@debian.org>  Sun, 10 Jan 2010 10:40:21 +0100
+
+lxc (0.6.3-2) unstable; urgency=low
+
+  * Fix spelling error in README.Debian
+  * Move .gbp.conf to debian/gbp.conf
+
+ -- Guido Trotter <ultrotter@debian.org>  Sun, 26 Jul 2009 12:06:18 +0200
+
+lxc (0.6.3-1) unstable; urgency=low
+
+  * New Upstream Version
+  * Remove duplicate build-dependency on autotools-dev
+  * Build depend on linux-libc-dev
+  * Disable checking of netlink headers from configure
+    (currently fails under sid)
+  * Upgrade standards-version to 3.8.2
+
+ -- Guido Trotter <ultrotter@debian.org>  Sat, 25 Jul 2009 12:24:30 +0200
+
+lxc (0.6.2-2) unstable; urgency=low
+
+  * Add the vcs entry in debian/control
+  * Update README.Debian mentioning lxc-checkconfig
+  * Update README.Debian mentioning the cgroups file system (closes: #532886)
+    (Thanks to Daniel Pittman for that issue and a suggested fix)
+
+ -- Guido Trotter <ultrotter@debian.org>  Fri, 12 Jun 2009 15:27:43 +0100
+
+lxc (0.6.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Guido Trotter <ultrotter@debian.org>  Wed, 29 Apr 2009 17:49:13 +0100
+
+lxc (0.6.1-1) unstable; urgency=low
+
+  * Initial release (Closes: #519408)
+  * Move a few scripts to "examples"
+
+ -- Guido Trotter <ultrotter@debian.org>  Fri, 27 Mar 2009 19:45:45 +0000
+

@@ -1,0 +1,24 @@
+Source: lxc
+Section: admin
+Priority: optional
+Maintainer: Guido Trotter <ultrotter@debian.org>
+Build-Depends: cdbs, debhelper (>= 7), autotools-dev, libcap-dev (>= 1:2.17-2), linux-libc-dev
+Standards-Version: 3.9.1
+Homepage: http://lxc.sourceforge.net/
+Vcs-Git: git://git.debian.org/git/collab-maint/lxc.git
+
+Package: lxc
+Section: admin
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: libcap2-bin
+Description: Linux containers userspace tools
+ Containers are insulated areas inside a system, which have their own namespace
+ for filesystem, network, pids, ipc, cpu and memory allocation and which can be
+ created using the Control Group and Namespace features included in recent Linux
+ Kernels.
+ .
+ This package contains the lxc-* tools which can be used to start a single
+ daemon in a container, or to boot an entire "containerized" system, and to
+ successively manage and debug your containers.
+

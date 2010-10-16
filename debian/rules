@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+# We don't have patches, for now...
+#include /usr/share/cdbs/1/rules/dpatch.mk
+
+# Install liblxc in out private area, for now, until it's stable.
+LIBDIR="\$${prefix}/lib/lxc"
+DEB_CONFIGURE_EXTRA_FLAGS=--libdir=$(LIBDIR) \
+			  --with-rootfs-path=$(LIBDIR)
+
+binary-install/lxc::
+	cp debian/lxc.overrides debian/lxc/usr/share/lintian/overrides/lxc

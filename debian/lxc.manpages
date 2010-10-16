@@ -1,0 +1,15 @@
+doc/lxc-cgroup.1
+doc/lxc-console.1
+doc/lxc-create.1
+doc/lxc-destroy.1
+doc/lxc-execute.1
+doc/lxc-freeze.1
+doc/lxc-ls.1
+doc/lxc-monitor.1
+doc/lxc-ps.1
+doc/lxc-start.1
+doc/lxc-stop.1
+doc/lxc-unfreeze.1
+doc/lxc-wait.1
+doc/lxc.conf.5
+doc/lxc.7

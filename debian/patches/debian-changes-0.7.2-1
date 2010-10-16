@@ -1,0 +1,95 @@
+Description: Upstream changes introduced in version 0.7.2-1
+ This patch has been created by dpkg-source during the package build.
+ Here's the last changelog entry, hopefully it gives details on why
+ those changes were made:
+ .
+ lxc (0.7.2-1) unstable; urgency=low
+ .
+   * New upstream version
+   * Convert libcap dependency to versioned (closes: #571527)
+   * Bump up standards version to 3.9.0
+   * Fix too-deep /usr/lib/lxc/lxc path (closes: #587847)
+   * Add init script (closes: #573830)
+     Thanks to Przemysław Knycz <pknycz@kolnet.eu> for the base example
+   * Bump up standards version (3.9.1)
+ .
+ The person named in the Author field signed this changelog entry.
+Author: Guido Trotter <ultrotter@debian.org>
+Bug-Debian: http://bugs.debian.org/571527
+Bug-Debian: http://bugs.debian.org/573830
+Bug-Debian: http://bugs.debian.org/587847
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- lxc-0.7.2.orig/configure.ac
++++ lxc-0.7.2/configure.ac
+@@ -56,8 +56,8 @@ AS_AC_EXPAND(LXC_GENERATE_DATE, "$(date)
+ 
+ AS_AC_EXPAND(LXCPATH, "${with_config_path}")
+ AS_AC_EXPAND(LXCROOTFSMOUNT, "${with_rootfs_path}")
+-AS_AC_EXPAND(LXCINITDIR, $libdir/lxc)
+-AS_AC_EXPAND(LXCTEMPLATEDIR, $libdir/lxc/templates)
++AS_AC_EXPAND(LXCINITDIR, $libdir)
++AS_AC_EXPAND(LXCTEMPLATEDIR, $libdir/templates)
+ AH_TEMPLATE([LXCPATH], [lxc configuration repository])
+ AH_TEMPLATE([LXCINITDIR], [lxc-init directory location])
+ AH_TEMPLATE([LXCROOTFSMOUNT], [lxc default rootfs mount point])
+--- lxc-0.7.2.orig/configure
++++ lxc-0.7.2/configure
+@@ -4702,7 +4702,7 @@ fi
+ 
+ 
+     EXP_VAR=LXCINITDIR
+-    FROM_VAR=$libdir/lxc
++    FROM_VAR=$libdir
+ 
+         prefix_save=$prefix
+     exec_prefix_save=$exec_prefix
+@@ -4730,7 +4730,7 @@ fi
+ 
+ 
+     EXP_VAR=LXCTEMPLATEDIR
+-    FROM_VAR=$libdir/lxc/templates
++    FROM_VAR=$libdir/templates
+ 
+         prefix_save=$prefix
+     exec_prefix_save=$exec_prefix
+--- lxc-0.7.2.orig/src/lxc/Makefile.am
++++ lxc-0.7.2/src/lxc/Makefile.am
+@@ -14,6 +14,7 @@ pkginclude_HEADERS = \
+ 		state.h
+ 
+ sodir=$(libdir)
++pkglibdir = $(libdir)
+ # use PROGRAMS to avoid complains from automake
+ so_PROGRAMS = liblxc.so
+ 
+--- lxc-0.7.2.orig/src/lxc/Makefile.in
++++ lxc-0.7.2/src/lxc/Makefile.in
+@@ -20,7 +20,6 @@
+ VPATH = @srcdir@
+ pkgdatadir = $(datadir)/@PACKAGE@
+ pkgincludedir = $(includedir)/@PACKAGE@
+-pkglibdir = $(libdir)/@PACKAGE@
+ pkglibexecdir = $(libexecdir)/@PACKAGE@
+ am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
+ install_sh_DATA = $(install_sh) -c -m 644
+@@ -197,6 +196,7 @@ HEADERS = $(pkginclude_HEADERS)
+ ETAGS = etags
+ CTAGS = ctags
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
++pkglibdir = $(libdir)
+ ACLOCAL = @ACLOCAL@
+ AMTAR = @AMTAR@
+ AUTOCONF = @AUTOCONF@
