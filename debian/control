@@ -7,7 +7,9 @@ XSBC-Original-Maintainer: Guido Trotter <ultrotter@debian.org>
 Build-Depends: cdbs, debhelper (>= 7), autotools-dev, libcap-dev (>= 1:2.17-2), linux-libc-dev
 Standards-Version: 3.9.1
 Homepage: http://lxc.sourceforge.net/
-Vcs-Git: git://git.debian.org/git/collab-maint/lxc.git
+Vcs-Browser: http://vcs.progress-linux.org/?p=packages/lxc.git
+Vcs-Git: git://vcs.progress-linux.org/packages/lxc.git
+XSBC-Original-Vcs-Git: git://git.debian.org/git/collab-maint/lxc.git
 
 Package: lxc
 Section: admin
