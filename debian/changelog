@@ -1,3 +1,22 @@
+lxc (0.7.2-1baureo1) baureo; urgency=low
+
+  * Uploading to baureo.
+  * Updating maintainer and uploader fields.
+  * Updating vcs fields.
+  * Adding patch from upstream to support container architecture
+    (Closes: #597875).
+  * Adding patch from upstream to support suite in debian template
+    (Closes: #600459).
+  * Updating patch from upstream for suite support to default to squeeze
+    (Closes: #600456).
+  * Updating patch from upstream for suite support to default to
+    cdn.debian.net (Closes: #600464).
+  * Adding patch to create missing tty device nodes in debian template
+    (Closes: #600466).
+  * Disabling unneeded checkroot initscript (Closes: #601001).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 08 Nov 2010 19:24:58 +0100
+
 lxc (0.7.2-1) unstable; urgency=low
 
   * New upstream version
