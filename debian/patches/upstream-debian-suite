@@ -52,7 +52,7 @@ index a33f5f8..a0cde81 100644
      debootstrap --verbose --variant=minbase --arch=$arch \
  	--include $packages \
 -	lenny $cache/partial-$arch http://ftp.debian.org/debian
-+	"$SUITE" "$cache/partial-$SUITE-$arch" http://ftp.debian.org/debian
++	"$SUITE" "$cache/partial-$SUITE-$arch" http://cdn.debian.net/debian
      if [ $? -ne 0 ]; then
  	echo "Failed to download the rootfs, aborting."
  	return 1
