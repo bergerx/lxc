@@ -2,3 +2,4 @@ debian-changes-0.7.2-1
 default-suite
 default-mirror
 squeeze-tty
+disable-checkroot
