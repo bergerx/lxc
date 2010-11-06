@@ -80,7 +80,8 @@ am_liblxc_so_OBJECTS = liblxc_so-arguments.$(OBJEXT) \
 	liblxc_so-caps.$(OBJEXT) liblxc_so-mainloop.$(OBJEXT) \
 	liblxc_so-af_unix.$(OBJEXT) liblxc_so-utmp.$(OBJEXT)
 liblxc_so_OBJECTS = $(am_liblxc_so_OBJECTS)
-liblxc_so_DEPENDENCIES =
+am__DEPENDENCIES_1 =
+liblxc_so_DEPENDENCIES = $(am__DEPENDENCIES_1)
 liblxc_so_LINK = $(CCLD) $(liblxc_so_CFLAGS) $(CFLAGS) \
 	$(liblxc_so_LDFLAGS) $(LDFLAGS) -o $@
 am_lxc_attach_OBJECTS = lxc_attach.$(OBJEXT)
@@ -363,7 +364,7 @@ liblxc_so_LDFLAGS = \
 	-shared \
 	-Wl,-soname,liblxc.so.$(firstword $(subst ., ,$(VERSION)))
 
-liblxc_so_LDADD = -lutil
+liblxc_so_LDADD = -lutil $(CAP_LIBS)
 bin_SCRIPTS = \
 	lxc-ps \
 	lxc-netstat \

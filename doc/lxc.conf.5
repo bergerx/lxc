@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "LXC.CONF" "5" "26 July 2010" "" ""
+.TH "LXC.CONF" "5" "26 October 2010" "" ""
 
 .SH NAME
 lxc.conf \- linux container configuration file
@@ -29,6 +29,22 @@ groups are supported.
 Each option in the configuration file has the form \fBkey
 = value\fR fitting in one line. The '#' character means
 the line is a comment.
+.SS "ARCHITECTURE"
+.PP
+Allows to set the architecture for the container. For example,
+set a 32bits architecture for a container running 32bits
+binaries on a 64bits host. That fix the container scripts
+which rely on the architecture to do some work like
+downloading the packages.
+.TP
+\fB     lxc.arch \fR
+Specify the architecture for the container.
+
+Valid options are
+\fBx86\fR,
+\fBi686\fR,
+\fBx86_64\fR,
+\fBamd64\fR
 .SS "HOSTNAME"
 .PP
 The utsname section defines the hostname to be set for the
@@ -149,6 +165,18 @@ specify the ipv6 address to assign to the virtualized
 interface. Several lines specify several ipv6 addresses.
 The address is in format x::y/m,
 eg. 2003:db8:1:0:214:1234:fe0b:3596/64
+.TP
+\fB     lxc.network.script.up \fR
+add a configuration option to specify a script to be
+executed after creating and configuring the network used
+from the host side. The following arguments are passed
+to the script: container name and config section name
+(net) Additional arguments depend on the config section
+employing a script hook; the following are used by the
+network system: execution context (up), network type
+(empty/veth/macvlan/phys), Depending on the network
+type, other arguments may be passed:
+veth/macvlan/phys. And finally (host-sided) device name.
 .SS "NEW PSEUDO TTY INSTANCE (DEVPTS)"
 .PP
 For stricter isolation the container can have its own private
@@ -193,7 +221,13 @@ examples.
 \fB     lxc.mount \fR
 specify a file location in
 the \fIfstab\fR format, containing the
-mount informations.
+mount informations. If the rootfs is an image file or a
+device block and the fstab is used to mount a point
+somewhere in this rootfs, the path of the rootfs mount
+point should be prefixed with the
+\fI/usr/lib64/lxc/rootfs\fR default path or
+the value of \fBlxc.rootfs.mount\fR if
+specified.
 .TP
 \fB     lxc.mount.entry \fR
 specify a mount point corresponding to a line in the
@@ -204,9 +238,10 @@ The root file system of the container can be different than that
 of the host system.
 .TP
 \fB     lxc.rootfs \fR
-specify a directory to become the root of the container.
-If not specified, the container shares its root file
-system with the host.
+specify the root file system for the container. It can
+be an image file, a directory or a block device. If not
+specified, the container shares its root file system
+with the host.
 .TP
 \fB     lxc.rootfs.mount \fR
 where to recursively bind \fBlxc.rootfs\fR
