@@ -1,0 +1,15 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Default to cdn.debian.net (Closes: #600464).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2010-11-08 22:53:40.567446767 +0100
++++ lxc/templates/lxc-debian.in	2010-11-08 22:55:30.272488180 +0100
+@@ -112,7 +112,7 @@ openssh-server
+     echo "Downloading debian minimal ..."
+     debootstrap --verbose --variant=minbase --arch=$arch \
+ 	--include $packages \
+-	"$SUITE" "$cache/partial-$SUITE-$arch" http://ftp.debian.org/debian
++	"$SUITE" "$cache/partial-$SUITE-$arch" http://cdn.debian.net/debian
+     if [ $? -ne 0 ]; then
+ 	echo "Failed to download the rootfs, aborting."
+ 	return 1

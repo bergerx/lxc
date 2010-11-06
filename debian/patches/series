@@ -1,5 +1,5 @@
 debian-changes-0.7.2-1
-upstream-container-architecture
-upstream-debian-suite
+default-suite
+default-mirror
 squeeze-tty
 disable-checkroot
