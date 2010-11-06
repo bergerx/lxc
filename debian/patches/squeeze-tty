@@ -1,0 +1,20 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Creating missing tty device nodes for squeeze (Closes: #600466).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2010-10-18 11:10:21.685468843 +0200
++++ lxc/templates/lxc-debian.in	2010-10-18 21:20:17.245467582 +0200
+@@ -25,6 +25,13 @@ configure_debian()
+     rootfs=$1
+     hostname=$2
+ 
++    # Squeeze only has /dev/tty and /dev/tty0 by default,
++    # therefore creating missing device nodes for tty1-4.
++    test -e $rootfs/dev/tty1 || mknod $rootfs/dev/tty1 c 4 1
++    test -e $rootfs/dev/tty2 || mknod $rootfs/dev/tty2 c 4 2
++    test -e $rootfs/dev/tty3 || mknod $rootfs/dev/tty3 c 4 3
++    test -e $rootfs/dev/tty4 || mknod $rootfs/dev/tty4 c 4 4
++
+     # configure the inittab
+     cat <<EOF > $rootfs/etc/inittab
+ id:3:initdefault:
