@@ -1,3 +1,18 @@
+lxc (0.7.3-0artax1) artax; urgency=low
+
+  * Uploading to artax (Closes: #602631).
+  * Updating maintainer and uploader fields.
+  * Updating vcs fields.
+  * Adding patch to set default suite to squeeze in debian template
+    (Closes: #600456).
+  * Adding patch to set default mirror to cdn.debia.net in debian
+    template (Closes: #600464).
+  * Adding patch to create missing tty device nodes in debian template
+    (Closes: #600466).
+  * Disabling unneeded checkroot initscript (Closes: #601001).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 06 Nov 2010 23:30:04 +0100
+
 lxc (0.7.2-1) unstable; urgency=low
 
   * New upstream version
