@@ -1,3 +1,9 @@
+lxc (0.7.3-0baureo1) baureo; urgency=low
+
+  * Uploading to baureo (Closes: #602631).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 08 Nov 2010 22:43:09 +0100
+
 lxc (0.7.2-1baureo1) baureo; urgency=low
 
   * Uploading to baureo.
