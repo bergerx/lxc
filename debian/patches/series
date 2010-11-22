@@ -3,3 +3,4 @@ default-suite
 default-mirror
 squeeze-tty
 disable-checkroot
+fix-bindmounts
