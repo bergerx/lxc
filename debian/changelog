@@ -1,3 +1,9 @@
+lxc (0.7.3-1~artax1) artax; urgency=low
+
+  * Uploading to artax.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 06 Dec 2010 20:26:43 +0100
+
 lxc (0.7.3-1) unstable; urgency=low
 
   * New upstream version (closes: #602631)
