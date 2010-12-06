@@ -58,8 +58,8 @@ case "$1" in
     ;;
   restart|force-reload)
     log_daemon_msg "Restarting $DESC"
-    action_all start_one
     action_all "lxc-stop -n"
+    action_all start_one
     ;;
   destroy)
     log_daemon_msg "Destroying $DESC"

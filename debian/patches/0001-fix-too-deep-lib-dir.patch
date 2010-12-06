@@ -1,0 +1,81 @@
+From: Guido Trotter <ultrotter@debian.org>
+Date: Mon, 6 Dec 2010 15:41:43 +0100
+Subject: [PATCH] fix-too-deep-lib-dir
+
+---
+ configure           |    4 ++--
+ configure.ac        |    4 ++--
+ src/lxc/Makefile.am |    1 +
+ src/lxc/Makefile.in |    2 +-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/configure b/configure
+index 92858d7..8c78a80 100755
+--- a/configure
++++ b/configure
+@@ -4702,7 +4702,7 @@ fi
+ 
+ 
+     EXP_VAR=LXCINITDIR
+-    FROM_VAR=$libdir/lxc
++    FROM_VAR=$libdir
+ 
+         prefix_save=$prefix
+     exec_prefix_save=$exec_prefix
+@@ -4730,7 +4730,7 @@ fi
+ 
+ 
+     EXP_VAR=LXCTEMPLATEDIR
+-    FROM_VAR=$libdir/lxc/templates
++    FROM_VAR=$libdir/templates
+ 
+         prefix_save=$prefix
+     exec_prefix_save=$exec_prefix
+diff --git a/configure.ac b/configure.ac
+index ec3ec13..d508573 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -56,8 +56,8 @@ AS_AC_EXPAND(LXC_GENERATE_DATE, "$(date)")
+ 
+ AS_AC_EXPAND(LXCPATH, "${with_config_path}")
+ AS_AC_EXPAND(LXCROOTFSMOUNT, "${with_rootfs_path}")
+-AS_AC_EXPAND(LXCINITDIR, $libdir/lxc)
+-AS_AC_EXPAND(LXCTEMPLATEDIR, $libdir/lxc/templates)
++AS_AC_EXPAND(LXCINITDIR, $libdir)
++AS_AC_EXPAND(LXCTEMPLATEDIR, $libdir/templates)
+ AH_TEMPLATE([LXCPATH], [lxc configuration repository])
+ AH_TEMPLATE([LXCINITDIR], [lxc-init directory location])
+ AH_TEMPLATE([LXCROOTFSMOUNT], [lxc default rootfs mount point])
+diff --git a/src/lxc/Makefile.am b/src/lxc/Makefile.am
+index d2ee4d9..f3f03db 100644
+--- a/src/lxc/Makefile.am
++++ b/src/lxc/Makefile.am
+@@ -14,6 +14,7 @@ pkginclude_HEADERS = \
+ 		state.h
+ 
+ sodir=$(libdir)
++pkglibdir = $(libdir)
+ # use PROGRAMS to avoid complains from automake
+ so_PROGRAMS = liblxc.so
+ 
+diff --git a/src/lxc/Makefile.in b/src/lxc/Makefile.in
+index 16c38b0..942ce4c 100644
+--- a/src/lxc/Makefile.in
++++ b/src/lxc/Makefile.in
+@@ -20,7 +20,6 @@
+ VPATH = @srcdir@
+ pkgdatadir = $(datadir)/@PACKAGE@
+ pkgincludedir = $(includedir)/@PACKAGE@
+-pkglibdir = $(libdir)/@PACKAGE@
+ pkglibexecdir = $(libexecdir)/@PACKAGE@
+ am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
+ install_sh_DATA = $(install_sh) -c -m 644
+@@ -198,6 +197,7 @@ HEADERS = $(pkginclude_HEADERS)
+ ETAGS = etags
+ CTAGS = ctags
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
++pkglibdir = $(libdir)
+ ACLOCAL = @ACLOCAL@
+ AMTAR = @AMTAR@
+ AUTOCONF = @AUTOCONF@
+-- 
