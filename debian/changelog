@@ -1,3 +1,9 @@
+lxc (0.7.3-1baureo1) baureo; urgency=low
+
+  * Uploading to baureo.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 06 Dec 2010 18:58:09 +0100
+
 lxc (0.7.3-1) unstable; urgency=low
 
   * New upstream version (closes: #602631)
