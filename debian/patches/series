@@ -4,3 +4,4 @@ upstream-debian-suite
 squeeze-tty
 disable-checkroot
 debootstrap-arguments
+locale-gen
