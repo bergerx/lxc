@@ -1,0 +1,15 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Correcting include argument when calling debootstrap in debian template (Closes: #607275).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2010-12-19 17:12:35.006779861 +0100
++++ lxc/templates/lxc-debian.in	2010-12-19 17:12:57.299842657 +0100
+@@ -119,7 +119,7 @@ openssh-server
+     # download a mini debian into a cache
+     echo "Downloading debian minimal ..."
+     debootstrap --verbose --variant=minbase --arch=$arch \
+-	--include $packages \
++	--include=$packages \
+ 	"$SUITE" "$cache/partial-$SUITE-$arch" http://cdn.debian.net/debian
+     if [ $? -ne 0 ]; then
+ 	echo "Failed to download the rootfs, aborting."
