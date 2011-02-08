@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 Name: lxc
-Version: 0.7.2
+Version: 0.7.3
 Release: 1
 URL: http://lxc.sourceforge.net
 Source: http://dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
