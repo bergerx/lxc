@@ -1,0 +1,21 @@
+From: Daniel Baumann <daniel@debian.org>
+Date: Mon, 6 Dec 2010 15:56:48 +0100
+Subject: [PATCH] disable-debian-checkroot-script
+
+---
+ templates/lxc-debian.in |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/templates/lxc-debian.in b/templates/lxc-debian.in
+index a0cde81..2b1b7b3 100644
+--- a/templates/lxc-debian.in
++++ b/templates/lxc-debian.in
+@@ -75,6 +75,7 @@ EOF
+     fi
+ 
+     # remove pointless services in a container
++    chroot $rootfs /usr/sbin/update-rc.d -f checkroot remove
+     chroot $rootfs /usr/sbin/update-rc.d -f umountfs remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclock.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclockfirst.sh remove
+-- 

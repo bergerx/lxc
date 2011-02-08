@@ -1,3 +1,18 @@
+lxc (0.7.3-1) unstable; urgency=low
+
+  * New upstream version (closes: #602631)
+    - Support for specifying debian suite (closes: #600459)
+    - Support for declaring a different architecture (closes: #597875)
+  * Fix restart init.d action sequence (closes: #597998)
+  * Move too-deep /usr/lib/lxc/lxc path to a proper patch
+  * Disable checkroot script in debian template (closes: #601001)
+  * Create missing tty devices under squeeze (closes: #600466)
+  * Restore bindmount functionality in newer kernels (closes: #604475)
+  * Make debian mirror configurable (closes: #601422)
+  * Default to cdn.debian.net as a debian mirror (closes: #600464)
+
+ -- Guido Trotter <ultrotter@debian.org>  Mon, 06 Dec 2010 16:24:31 +0100
+
 lxc (0.7.2-1) unstable; urgency=low
 
   * New upstream version
