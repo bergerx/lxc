@@ -78,9 +78,9 @@ EOF
     # mount everything
     cat <<EOF >> $rootfs/etc/init.d/rcS
 #!/bin/sh
-syslogd
-mount -a
-udhcpc
+/bin/syslogd
+/bin/mount -a
+/bin/udhcpc
 EOF
 
     # executable
@@ -100,8 +100,8 @@ EOF
     # not needed
     cat <<EOF >> $rootfs/etc/inittab
 ::sysinit:/etc/init.d/rcS
-::respawn:/bin/getty -L tty1 115200 vt100
-::askfirst:/bin/sh
+tty1::respawn:/bin/getty -L tty1 115200 vt100
+console::askfirst:/bin/sh
 EOF
     # writable and readable for other
     chmod 644 $rootfs/etc/inittab || return 1
@@ -242,7 +242,7 @@ lxc.mount.entry=/usr/lib $rootfs/usr/lib none ro,bind 0 0
 EOF
 fi
 
-if [ -d "$rootfs/lib64" ]; then
+if [ -d "/lib64" ] && [ -d "$rootfs/lib64" ]; then
 cat <<EOF >> $path/config
 lxc.mount.entry=/lib64 $rootfs/lib64 none ro,bind 0 0
 lxc.mount.entry=/usr/lib64 $rootfs/usr/lib64 none ro,bind 0 0
