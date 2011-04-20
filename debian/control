@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Progress Developers <progress-devel@lists.progress-linux.org>
 Uploaders: Daniel Baumann <daniel.baumann@progress-linux.org>
 XSBC-Original-Maintainer: Guido Trotter <ultrotter@debian.org>
+Bugs: mailto:progress-issues@lists.progress-linux.org
 Build-Depends: cdbs, debhelper (>= 7), autotools-dev, libcap-dev (>= 1:2.17-2), linux-libc-dev
 Standards-Version: 3.9.1
 Homepage: http://lxc.sourceforge.net/
