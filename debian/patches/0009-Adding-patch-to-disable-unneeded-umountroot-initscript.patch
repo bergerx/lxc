@@ -1,0 +1,24 @@
+From d68044370c66b8b94da9a864de69711e88319363 Mon Sep 17 00:00:00 2001
+From: Daniel Baumann <daniel.baumann@progress-linux.org>
+Date: Wed, 20 Apr 2011 14:31:11 +0200
+Subject: [PATCH] Adding patch to disable unneeded umountroot initscript (Closes: #611972).
+
+---
+ templates/lxc-debian.in |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/templates/lxc-debian.in b/templates/lxc-debian.in
+index faa4d19..6d3fed2 100644
+--- a/templates/lxc-debian.in
++++ b/templates/lxc-debian.in
+@@ -85,6 +85,7 @@ EOF
+     # remove pointless services in a container
+     chroot $rootfs /usr/sbin/update-rc.d -f checkroot.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f umountfs remove
++    chroot $rootfs /usr/sbin/update-rc.d -f umountroot remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclock.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclockfirst.sh remove
+ 
+-- 
+1.7.4.1
+
