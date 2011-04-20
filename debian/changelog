@@ -1,3 +1,18 @@
+lxc (0.7.3-1~artax3) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Disabling unneeded checkroot initscript (Closes: #601001).
+    - Adding patch to correct include argument when calling debootstrap in
+      debian template (Closes: #607275).
+    - Adding patch to correct charset argument when calling locale-gen in
+      debian template (Closes: #607273).
+  * Updating my email address.
+  * Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Wed, 20 Apr 2011 14:44:51 +0200
+
 lxc (0.7.3-1~artax2) artax; urgency=low
 
   * Uploading to artax.
