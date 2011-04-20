@@ -1,0 +1,14 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Disabling unneeded umountroot initscript (Closes: #611972).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2011-04-20 14:01:23.650208982 +0200
++++ lxc/templates/lxc-debian.in	2011-04-20 14:03:14.094707374 +0200
+@@ -84,6 +84,7 @@ EOF
+     # remove pointless services in a container
+     chroot $rootfs /usr/sbin/update-rc.d -f checkroot.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f umountfs remove
++    chroot $rootfs /usr/sbin/update-rc.d -f umountroot remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclock.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclockfirst.sh remove
+ 
