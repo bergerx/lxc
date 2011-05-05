@@ -151,7 +151,7 @@ static int log_open(const char *name)
 extern int lxc_log_init(const char *file, const char *priority,
 			const char *prefix, int quiet)
 {
-	int lxc_priority = LXC_LOG_PRIORITY_ERROR;
+	int lxc_priority = LXC_LOG_PRIORITY_WARN;
 
 	if (priority) {
 		lxc_priority = lxc_log_priority_to_int(priority);
