@@ -43,7 +43,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	ChangeLog INSTALL NEWS TODO
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/config/linux.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -161,6 +161,8 @@ LDFLAGS = @LDFLAGS@
 LIBDIR = @LIBDIR@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LINUX_DIR = @LINUX_DIR@
+LINUX_SRCARCH = @LINUX_SRCARCH@
 LOCALSTATEDIR = @LOCALSTATEDIR@
 LTLIBOBJS = @LTLIBOBJS@
 LXCINITDIR = @LXCINITDIR@
@@ -741,7 +743,7 @@ ChangeLog::
 	@touch ChangeLog
 
 rpm: dist
-	rpmbuild --clean -ta ${distdir}.tar.gz
+	rpmbuild --clean -ta --define "ksrc ${LINUX_DIR}" ${distdir}.tar.gz
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
