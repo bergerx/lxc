@@ -45,9 +45,14 @@
 
 lxc_log_define(lxc_cgroup, lxc);
 
-#define MTAB "/etc/mtab"
+#define MTAB "/proc/mounts"
 
 static char nsgroup_path[MAXPATHLEN];
+
+enum {
+	CGROUP_NS_CGROUP = 1,
+	CGROUP_CLONE_CHILDREN,
+};
 
 static int get_cgroup_mount(const char *mtab, char *mnt)
 {
@@ -58,7 +63,7 @@ static int get_cgroup_mount(const char *mtab, char *mnt)
         file = setmntent(mtab, "r");
         if (!file) {
                 SYSERROR("failed to open %s", mtab);
-                goto out;
+		return -1;
         }
 
         while ((mntent = getmntent(file))) {
@@ -81,65 +86,207 @@ static int get_cgroup_mount(const char *mtab, char *mnt)
 	DEBUG("using cgroup mounted at '%s'", mnt);
 
         fclose(file);
-out:
+
         return err;
 }
 
-int lxc_rename_nsgroup(const char *name, struct lxc_handler *handler)
+static int get_cgroup_flags(const char *mtab, int *flags)
+{
+        struct mntent *mntent;
+        FILE *file = NULL;
+        int err = -1;
+
+        file = setmntent(mtab, "r");
+        if (!file) {
+                SYSERROR("failed to open %s", mtab);
+		return -1;
+        }
+
+	*flags = 0;
+
+        while ((mntent = getmntent(file))) {
+
+		/* there is a cgroup mounted named "lxc" */
+		if (!strcmp(mntent->mnt_fsname, "lxc") &&
+		    !strcmp(mntent->mnt_type, "cgroup")) {
+
+			if (hasmntopt(mntent, "ns"))
+				*flags |= CGROUP_NS_CGROUP;
+
+			if (hasmntopt(mntent, "clone_children"))
+				*flags |= CGROUP_CLONE_CHILDREN;
+
+			err = 0;
+			break;
+		}
+
+		/* fallback to the first non-lxc cgroup found */
+                if (!strcmp(mntent->mnt_type, "cgroup") && err) {
+
+			if (hasmntopt(mntent, "ns"))
+				*flags |= CGROUP_NS_CGROUP;
+
+			if (hasmntopt(mntent, "clone_children"))
+				*flags |= CGROUP_CLONE_CHILDREN;
+
+			err = 0;
+		}
+        };
+
+	DEBUG("cgroup flags is 0x%x", *flags);
+
+        fclose(file);
+
+        return err;
+}
+
+static int cgroup_rename_nsgroup(const char *mnt, const char *name, pid_t pid)
 {
 	char oldname[MAXPATHLEN];
-	char *newname = handler->nsgroup;
-	char cgroup[MAXPATHLEN];
-	int ret;
 
-	if (get_cgroup_mount(MTAB, cgroup)) {
-		ERROR("cgroup is not mounted");
+	snprintf(oldname, MAXPATHLEN, "%s/%d", mnt, pid);
+
+	if (rename(oldname, name)) {
+		SYSERROR("failed to rename cgroup %s->%s", oldname, name);
 		return -1;
 	}
 
-	snprintf(oldname, MAXPATHLEN, "%s/%d", cgroup, handler->pid);
-	snprintf(newname, MAXPATHLEN, "%s/%s", cgroup, name);
+	DEBUG("'%s' renamed to '%s'", oldname, name);
 
-	/* there is a previous cgroup, assume it is empty, otherwise
-	 * that fails */
-	if (!access(newname, F_OK)) {
-		ret = rmdir(newname);
-		if (ret) {
-			SYSERROR("failed to remove previous cgroup '%s'",
-				 newname);
-			return ret;
-		}
+	return 0;
+}
+
+static int cgroup_enable_clone_children(const char *path)
+{
+	FILE *f;
+	int ret = 0;
+
+	f = fopen(path, "w");
+	if (!f) {
+		SYSERROR("failed to open '%s'", path);
+		return -1;
 	}
 
-	ret = rename(oldname, newname);
-	if (ret)
-		SYSERROR("failed to rename cgroup %s->%s", oldname, newname);
-	else
-		DEBUG("'%s' renamed to '%s'", oldname, newname);
+	if (fprintf(f, "1") < 1) {
+		ERROR("failed to write flag to '%s'", path);
+		ret = -1;
+	}
 
+	fclose(f);
 
 	return ret;
 }
 
-int lxc_unlink_nsgroup(const char *name)
+static int cgroup_attach(const char *path, pid_t pid)
 {
-	char nsgroup[MAXPATHLEN];
-	char cgroup[MAXPATHLEN];
-	int ret;
+	FILE *f;
+	char tasks[MAXPATHLEN];
+	int ret = 0;
 
-	if (get_cgroup_mount(MTAB, cgroup)) {
+	snprintf(tasks, MAXPATHLEN, "%s/tasks", path);
+
+	f = fopen(tasks, "w");
+	if (!f) {
+		SYSERROR("failed to open '%s'", tasks);
+		return -1;
+	}
+
+	if (fprintf(f, "%d", pid) <= 0) {
+		SYSERROR("failed to write pid '%d' to '%s'", pid, tasks);
+		ret = -1;
+	}
+
+	fclose(f);
+
+	return ret;
+}
+
+int lxc_cgroup_create(const char *name, pid_t pid)
+{
+	char cgmnt[MAXPATHLEN];
+	char cgname[MAXPATHLEN];
+	char clonechild[MAXPATHLEN];
+	int flags;
+
+	if (get_cgroup_mount(MTAB, cgmnt)) {
 		ERROR("cgroup is not mounted");
 		return -1;
 	}
 
-	snprintf(nsgroup, MAXPATHLEN, "%s/%s", cgroup, name);
-	ret = rmdir(nsgroup);
-	if (ret)
-		SYSERROR("failed to remove cgroup '%s'", nsgroup);
-	else
-		DEBUG("'%s' unlinked", nsgroup);
+	snprintf(cgname, MAXPATHLEN, "%s/%s", cgmnt, name);
 
-	return ret;
+	/*
+	 * There is a previous cgroup, assume it is empty,
+	 * otherwise that fails
+	 */
+	if (!access(cgname, F_OK) && rmdir(cgname)) {
+		SYSERROR("failed to remove previous cgroup '%s'", cgname);
+		return -1;
+	}
+
+	if (get_cgroup_flags(MTAB, &flags)) {
+		SYSERROR("failed to get cgroup flags");
+		return -1;
+	}
+
+	/* We have the deprecated ns_cgroup subsystem */
+	if (flags & CGROUP_NS_CGROUP) {
+		WARN("using deprecated ns_cgroup");
+		return cgroup_rename_nsgroup(cgmnt, cgname, pid);
+	}
+
+	snprintf(clonechild, MAXPATHLEN, "%s/cgroup.clone_children", cgmnt);
+
+	/* we check if the kernel has clone_children, at this point if there
+	 * no clone_children neither ns_cgroup, that means the cgroup is mounted
+	 * without the ns_cgroup and it has not the compatibility flag
+	 */
+	if (access(clonechild, F_OK)) {
+		ERROR("no ns_cgroup option specified");
+		return -1;
+	}
+
+	/* we enable the clone_children flag of the cgroup */
+	if (cgroup_enable_clone_children(clonechild)) {
+		SYSERROR("failed to enable 'clone_children flag");
+		return -1;
+	}
+
+	/* Let's create the cgroup */
+	if (mkdir(cgname, 0700)) {
+		SYSERROR("failed to create '%s' directory", cgname);
+		return -1;
+	}
+
+	/* Let's add the pid to the 'tasks' file */
+	if (cgroup_attach(cgname, pid)) {
+		SYSERROR("failed to attach pid '%d' to '%s'", pid, cgname);
+		rmdir(cgname);
+		return -1;
+	}
+
+	return 0;
+}
+
+int lxc_cgroup_destroy(const char *name)
+{
+	char cgmnt[MAXPATHLEN];
+	char cgname[MAXPATHLEN];
+
+	if (get_cgroup_mount(MTAB, cgmnt)) {
+		ERROR("cgroup is not mounted");
+		return -1;
+	}
+
+	snprintf(cgname, MAXPATHLEN, "%s/%s", cgmnt, name);
+	if (rmdir(cgname)) {
+		SYSERROR("failed to remove cgroup '%s'", cgname);
+		return -1;
+	}
+
+	DEBUG("'%s' unlinked", cgname);
+
+	return 0;
 }
 
 int lxc_cgroup_path_get(char **path, const char *name)
