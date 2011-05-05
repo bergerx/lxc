@@ -31,51 +31,36 @@ extern int lxc_convert_mac(char *macaddr, struct sockaddr *sockaddr);
 /*
  * Move a device between namespaces
  */
-extern int lxc_device_move(int ifindex, pid_t pid);
+extern int lxc_netdev_move_by_index(int ifindex, pid_t pid);
 
 /*
  * Delete a network device
  */
-extern int lxc_device_delete(const char *name);
-
-/*
- * Delete a network device by the index
- */
-extern int lxc_device_delete_index(int ifindex);
-
-/*
- * Set the device network up
- */
-extern int lxc_device_up(const char *name);
-
-/*
- * Set the device network down
- */
-extern int lxc_device_down(const char *name);
+extern int lxc_netdev_delete_by_name(const char *name);
+extern int lxc_netdev_delete_by_index(int ifindex);
 
 /*
  * Change the device name
  */
-extern int lxc_device_rename(const char *oldname, const char *newname);
+extern int lxc_netdev_rename_by_name(const char *oldname, const char *newname);
+extern int lxc_netdev_rename_by_index(int ifindex, const char *newname);
+
+/*
+ * Set the device network up or down
+ */
+extern int lxc_netdev_up(const char *name);
+extern int lxc_netdev_down(const char *name);
 
 /*
  * Change the mtu size for the specified device
  */
-extern int lxc_device_set_mtu(const char *name, int mtu);
+extern int lxc_netdev_set_mtu(const char *name, int mtu);
 
 /*
- * Create a veth network device
+ * Create a virtual network devices
  */
 extern int lxc_veth_create(const char *name1, const char *name2);
-
-/* 
- * Create a macvlan network device
- */
 extern int lxc_macvlan_create(const char *master, const char *name, int mode);
-
-/*
- * Create a vlan network device
- */
 extern int lxc_vlan_create(const char *master, const char *name, ushort vid);
 
 /*
