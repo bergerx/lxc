@@ -1,4 +1,3 @@
 0001-fix-too-deep-lib-dir.patch
-0007-Correcting-include-argument-when-calling-debootstrap-in-debian-template.patch
 0008-Correcting-charset-argument-when-calling-locale-gen-in-debian-template.patch
 0009-Adding-patch-to-disable-unneeded-umountroot-initscript.patch
