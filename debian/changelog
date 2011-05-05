@@ -1,3 +1,14 @@
+lxc (0.7.4.1-0~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+    - Adding patch to disable unneeded umountroot initscript (Closes:
+      #611972).
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Thu, 05 May 2011 21:09:49 +0200
+
 lxc (0.7.4-0~artax1) artax; urgency=low
 
   * Uploading to artax, remaining changes:
