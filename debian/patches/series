@@ -1,5 +1,4 @@
 0001-fix-too-deep-lib-dir.patch
-0004-restore-lxc.mount-lxc.mount.entry-functionality.patch
 0005-Make-debian-mirror-configurable-and-default-to-cdn.patch
 0006-Setting-default-suite-to-squeeze-in-debian-template.patch
 0007-Correcting-include-argument-when-calling-debootstrap-in-debian-template.patch
