@@ -9,6 +9,7 @@ include /usr/share/cdbs/1/class/autotools.mk
 LIBDIR="\$${prefix}/lib/lxc"
 DEB_CONFIGURE_EXTRA_FLAGS=--libdir=$(LIBDIR) \
 			  --with-rootfs-path=$(LIBDIR)
+DEB_DH_INSTALLINIT_ARGS=--no-restart-on-upgrade
 
 binary-install/lxc::
 	cp debian/lxc.overrides debian/lxc/usr/share/lintian/overrides/lxc
