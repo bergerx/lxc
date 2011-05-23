@@ -323,8 +323,7 @@ pkginclude_HEADERS = \
 		conf.h \
 		list.h \
 		log.h \
-		state.h \
-		setns.h
+		state.h
 
 sodir = $(libdir)
 liblxc_so_SOURCES = \

@@ -111,7 +111,7 @@ static struct lxc_log_category log_root = {
 struct lxc_log_category lxc_log_category_lxc = {
 	.name		= "lxc",
 	.priority	= LXC_LOG_PRIORITY_ERROR,
-	.appender	= &log_appender_logfile,
+	.appender	= &log_appender_stderr,
 	.parent		= &log_root
 };
 
@@ -151,7 +151,7 @@ static int log_open(const char *name)
 extern int lxc_log_init(const char *file, const char *priority,
 			const char *prefix, int quiet)
 {
-	int lxc_priority = LXC_LOG_PRIORITY_WARN;
+	int lxc_priority = LXC_LOG_PRIORITY_ERROR;
 
 	if (priority) {
 		lxc_priority = lxc_log_priority_to_int(priority);
@@ -163,6 +163,7 @@ extern int lxc_log_init(const char *file, const char *priority,
 	}
 
 	lxc_log_category_lxc.priority = lxc_priority;
+	lxc_log_category_lxc.appender = &log_appender_logfile;
 
 	if (!quiet)
 		lxc_log_category_lxc.appender->next = &log_appender_stderr;
