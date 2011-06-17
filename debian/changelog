@@ -1,3 +1,20 @@
+lxc (0.7.4.2-0~artax2) artax; urgency=low
+
+  [ Daniel Baumann ]
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+    - Adding patch to disable unneeded umountroot initscript (Closes:
+      #611972).
+    - Don't stop containers on upgrade (Closes: #626163).
+    - Rediffing fix-too-deep-lib-dir.patch.
+
+  [ Jonas Genannt ]
+  * Add an /etc/lxc/auto directory (Closes: #611920).
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Fri, 17 Jun 2011 09:12:08 +0200
+
 lxc (0.7.4.2-0~artax1) artax; urgency=low
 
   * Uploading to artax, remaining changes:
