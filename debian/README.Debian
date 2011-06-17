@@ -25,4 +25,13 @@ control groups filesystem there:
 
 	cgroup  /var/local/cgroup  cgroup  defaults  0  0
 
+
+Autostart containers on boot
+----------------------------
+
+If you want to start lxc containers on boot you have to create an symlink from
+the /etc/lxc/auto directory to your lxc configuration.
+
+	ln -s /etc/lxc/bar.conf /etc/lxc/auto/bar.conf
+
  -- Guido Trotter <ultrotter@debian.org>  Fri, 12 Jun 2009 15:13:55 +0100
