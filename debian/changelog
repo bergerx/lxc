@@ -141,7 +141,7 @@ lxc (0.7.3-1) unstable; urgency=low
 
 lxc (0.7.3-0baureo2) baureo; urgency=low
 
-  * Uploading to artax.
+  * Uploading to baureo.
   * Adding patch from Rainer Weikusat <rweikusat@mssgmbh.com> to fix
     bindmounts with newer kernels (Closes: #604475).
 
