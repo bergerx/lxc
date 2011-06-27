@@ -1,3 +1,36 @@
+lxc (0.7.2-1artax7) artax; urgency=low
+
+  [ Daniel Baumann ]
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+    - Adding patch from upstream to support container architecture
+      (Closes: #597875).
+    - Adding patch from upstream to support suite in debian template
+      (Closes: #600459).
+    - Updating patch from upstream for suite support to default to squeeze
+      (Closes: #600456).
+    - Updating patch from upstream for suite support to default to
+      cdn.debian.net (Closes: #600464).
+    - Adding patch to create missing tty device nodes in debian template
+      (Closes: #600466).
+    - Disabling unneeded checkroot initscript (Closes: #601001).
+    - Adding patch to correct include argument when calling debootstrap in
+      debian template (Closes: #607275).
+    - Adding patch to correct charset argument when calling locale-gen in
+      debian template (Closes: #607273).
+    - Adding patch to disable unneeded umountroot initscript (Closes:
+      #611972).
+    - Don't stop containers on upgrade (Closes: #626163).
+  [ Jonas Genannt ]
+  * Add an /etc/lxc/auto directory (Closes: #611920).
+
+  [ Daniel Baumann ]
+  * Simplify usage of basename in initscript.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Mon, 27 Jun 2011 15:42:14 +0200
+
 lxc (0.7.2-1artax6) artax; urgency=low
 
   [ Daniel Baumann ]
