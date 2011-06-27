@@ -56,7 +56,7 @@ action_all() {
   action=$1
   nolog=$2
   for i in $LXCDOMAINS_AUTO/*; do
-    NAME=$(basename $i |  sed 's@\.conf@@')
+    NAME=$(basename $i .conf)
     [ -n "$nolog" ] || log_progress_msg "$NAME"
     if [ "$action" = "start_one" ]; then
        if is_running $NAME; then
