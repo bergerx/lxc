@@ -55,19 +55,21 @@ start_one() {
 action_all() {
   action=$1
   nolog=$2
-  for i in $LXCDOMAINS_AUTO/*; do
-    NAME=$(basename $i .conf)
-    [ -n "$nolog" ] || log_progress_msg "$NAME"
-    if [ "$action" = "start_one" ]; then
-       if is_running $NAME; then
-         [ -n "$nolog" ] || log_progress_msg "(skip)"
-       else
-         $action $NAME
-       fi
-    else
-      $action $NAME
-    fi
-  done
+  if ls $LXCDOMAINS_AUTO/* > /dev/null 2>&1; then
+    for i in $LXCDOMAINS_AUTO/*; do
+      NAME=$(basename $i .conf)
+      [ -n "$nolog" ] || log_progress_msg "$NAME"
+      if [ "$action" = "start_one" ]; then
+         if is_running $NAME; then
+           [ -n "$nolog" ] || log_progress_msg "(skip)"
+         else
+           $action $NAME
+         fi
+      else
+        $action $NAME
+      fi
+    done
+  fi
   [ -n "$nolog" ] || log_end_msg 0
 }
 
