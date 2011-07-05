@@ -1,3 +1,12 @@
+lxc (0.7.4.2-0.2~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Tue, 05 Jul 2011 11:36:32 +0200
+
 lxc (0.7.4.2-0.2) unstable; urgency=low
 
   * Non-maintainer upload (delayed/3).
