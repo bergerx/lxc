@@ -23,10 +23,8 @@ lxc (0.7.2-1artax7) artax; urgency=low
     - Adding patch to disable unneeded umountroot initscript (Closes:
       #611972).
     - Don't stop containers on upgrade (Closes: #626163).
-  [ Jonas Genannt ]
-  * Add an /etc/lxc/auto directory (Closes: #611920).
-
-  [ Daniel Baumann ]
+    - Applying patch from Jonas Genannt <jonas@brachium-system.net> to
+      add an /etc/lxc/auto directory (Closes: #611920).
   * Simplify usage of basename in initscript.
 
  -- Daniel Baumann <daniel.baumann@progress-linux.org>  Mon, 27 Jun 2011 15:42:14 +0200
