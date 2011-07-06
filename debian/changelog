@@ -1,6 +1,5 @@
 lxc (0.7.2-1artax8) artax; urgency=low
 
-  [ Daniel Baumann ]
   * Uploading to artax, remaining changes:
     - Updating maintainer and uploader fields.
     - Updating vcs fields.
@@ -33,7 +32,6 @@ lxc (0.7.2-1artax8) artax; urgency=low
 
 lxc (0.7.2-1artax7) artax; urgency=low
 
-  [ Daniel Baumann ]
   * Uploading to artax, remaining changes:
     - Updating maintainer and uploader fields.
     - Updating vcs fields.
