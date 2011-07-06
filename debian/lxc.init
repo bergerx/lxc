@@ -45,10 +45,10 @@ is_running() {
 
 start_one() {
   name=$1
-  if [ -f "$CONF_DIR/$name.conf" ]; then
-    lxc-start -n $name -f $CONF_DIR/$name.conf -d
+  if [ -e "$LXCDOMAINS_AUTO/$name.conf" ]; then
+    lxc-start -n $name -f $LXCDOMAINS_AUTO/$name.conf -d
   else
-    log_failure_msg "Can't find config file $CONF_DIR/$name.conf"
+    log_failure_msg "Can't find config file $LXCDOMAINS_AUTO/$name.conf"
   fi
 }
 
