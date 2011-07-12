@@ -22,4 +22,3 @@ Description: Linux containers userspace tools
  This package contains the lxc-* tools which can be used to start a single
  daemon in a container, or to boot an entire "containerized" system, and to
  successively manage and debug your containers.
-

@@ -160,4 +160,3 @@ lxc (0.6.1-1) unstable; urgency=low
   * Move a few scripts to "examples"
 
  -- Guido Trotter <ultrotter@debian.org>  Fri, 27 Mar 2009 19:45:45 +0000
-
