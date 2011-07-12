@@ -1,0 +1,39 @@
+#!/bin/sh
+
+set -e
+
+_COMMAND="${1}"
+
+if [ -n "${_COMMAND}" ]
+then
+	shift
+else
+	echo "Usage: ${0} COMMAND CONTAINER"
+	exit 1
+fi
+
+if [ ! -x "$(which lxc-${_COMMAND} 2>/dev/null)" ]
+then
+	echo "E: lxc-${_COMMAND} - no such command"
+	exit 1
+fi
+
+_CONTAINER="${1}"
+
+if [ -n "${_CONTAINER}" ]
+then
+	shift
+
+	if ! lxc-ls | grep -qs ^${_CONTAINER}$
+	then
+		echo "E: ${_CONTAINER} - no such container"
+		exit 1
+	fi
+
+	_OPTIONS="--name ${_CONTAINER}"
+else
+	echo "Usage: ${0} COMMAND CONTAINER"
+	exit 1
+fi
+
+lxc-${_COMMAND} ${_OPTIONS} ${@}
