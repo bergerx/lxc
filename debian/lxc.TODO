@@ -1,0 +1,8 @@
+* extend README.Debian to include all information from http://wiki.progress-linux.org/software/lxc/
+* expose lxc-setcap run with debconf
+* expose lxc/auto with debconf
+* update package description
+* rework initscript
+* add lx-container package (that diverts udev)
+* add lxc-debug package
+* add bash completion for lxc/lxc-* commands
