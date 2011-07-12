@@ -4,5 +4,4 @@
 * update package description
 * rework initscript
 * add lx-container package (that diverts udev)
-* add lxc-debug package
 * add bash completion for lxc/lxc-* commands
