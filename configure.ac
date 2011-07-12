@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([lxc], [0.7.3])
+AC_INIT([lxc], [0.7.4.2])
 
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_AUX_DIR([config])
@@ -91,6 +91,8 @@ AC_CHECK_HEADERS([sys/signalfd.h])
 
 AC_PROG_GCC_TRADITIONAL
 
+AC_LINUX
+
 if test "x$GCC" = "xyes"; then
   CFLAGS="$CFLAGS -Wall"
 fi
@@ -135,8 +137,11 @@ AC_CONFIG_FILES([
 	doc/examples/lxc-complex.conf
 
 	templates/Makefile
+	templates/lxc-lenny
 	templates/lxc-debian
-	templates/lxc-ubuntu
+	templates/lxc-lucid
+	templates/lxc-maverick
+	templates/lxc-natty
 	templates/lxc-busybox
 	templates/lxc-fedora
 	templates/lxc-sshd

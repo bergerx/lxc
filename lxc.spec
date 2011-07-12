@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 Name: lxc
-Version: 0.7.3
+Version: 0.7.4.2
 Release: 1
 URL: http://lxc.sourceforge.net
 Source: http://dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
@@ -56,7 +56,8 @@ development of the linux containers.
 %prep
 %setup
 %build
-PATH=$PATH:/usr/sbin:/sbin %configure
+test "%{ksrc}" != "none" && args="--with-linuxdir=%{ksrc}"
+PATH=$PATH:/usr/sbin:/sbin %configure $args
 make %{?_smp_mflags}
 
 %install

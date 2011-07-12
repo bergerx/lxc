@@ -3,7 +3,7 @@
 .\" <http://shell.ipoline.com/~elmert/comp/docbook2X/> 
 .\" Please send any bug reports, improvements, comments, patches, 
 .\" etc. to Steve Cheng <steve@ggi-project.org>.
-.TH "LXC-START" "1" "26 October 2010" "" ""
+.TH "LXC-START" "1" "20 May 2011" "" ""
 
 .SH NAME
 lxc-start \- run an application inside a container.
@@ -11,7 +11,9 @@ lxc-start \- run an application inside a container.
 
 \fBlxc-start \fI-n
 name\fB [-f
-config_file] [-s KEY=VAL]
+config_file] [-c
+console_file] [-d] [-s
+KEY=VAL]
 [command]\fR
 
 .SH "DESCRIPTION"
@@ -48,6 +50,11 @@ and isolation functionalities for the container.
 This configuration file if present will be used even if there is
 already a configuration file present in the previously created
 container (via lxc-create).
+.TP
+\fB   -c, --console \fIconsole_file\fB \fR
+Specify a file to output the container console. If the
+option is not specified the output will go the terminal
+except if the \fB-d\fR is specified.
 .TP
 \fB   -s, --define \fIKEY=VAL\fB \fR
 Assign value \fIVAL\fR to configuration

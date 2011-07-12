@@ -53,7 +53,7 @@ DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/lxc-setuid.in $(srcdir)/lxc-version.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/config/linux.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -232,6 +232,8 @@ LDFLAGS = @LDFLAGS@
 LIBDIR = @LIBDIR@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
+LINUX_DIR = @LINUX_DIR@
+LINUX_SRCARCH = @LINUX_SRCARCH@
 LOCALSTATEDIR = @LOCALSTATEDIR@
 LTLIBOBJS = @LTLIBOBJS@
 LXCINITDIR = @LXCINITDIR@
@@ -1221,8 +1223,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-pkglibPROGRAMS \
-	clean-soPROGRAMS mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-local \
+	clean-pkglibPROGRAMS clean-soPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1295,22 +1297,22 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-pkglibPROGRAMS clean-soPROGRAMS ctags \
-	distclean distclean-compile distclean-generic distclean-tags \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-binPROGRAMS install-binSCRIPTS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-exec-local install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-pkgincludeHEADERS \
-	install-pkglibPROGRAMS install-ps install-ps-am \
-	install-soPROGRAMS install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-binSCRIPTS uninstall-local \
-	uninstall-pkgincludeHEADERS uninstall-pkglibPROGRAMS \
-	uninstall-soPROGRAMS
+	clean-generic clean-local clean-pkglibPROGRAMS \
+	clean-soPROGRAMS ctags distclean distclean-compile \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-exec-local \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am \
+	install-pkgincludeHEADERS install-pkglibPROGRAMS install-ps \
+	install-ps-am install-soPROGRAMS install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-binSCRIPTS \
+	uninstall-local uninstall-pkgincludeHEADERS \
+	uninstall-pkglibPROGRAMS uninstall-soPROGRAMS
 
 
 install-exec-local: install-soPROGRAMS
@@ -1321,6 +1323,17 @@ install-exec-local: install-soPROGRAMS
 
 uninstall-local:
 	$(RM) $(DESTDIR)$(libdir)/liblxc.so*
+
+namespace.c: setns.h
+
+setns.h:
+	-$(CC) $(CPPFLAGS) -M -MT$@ $(LINUX_DIR)/arch/$(LINUX_SRCARCH)/include/asm/unistd.h >setns.P
+	-$(CPP) $(CPPFLAGS) -dM $(LINUX_DIR)/arch/$(LINUX_SRCARCH)/include/asm/unistd.h |grep setns > $@
+
+clean-local:
+	$(RM) setns.h setns.P
+
+-include setns.P
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

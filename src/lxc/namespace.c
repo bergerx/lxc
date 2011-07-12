@@ -34,19 +34,7 @@
 #include "namespace.h"
 #include "log.h"
 
-#ifndef __NR_setns
-#  if __i386__
-#    define __NR_setns 338
-#  elif __x86_64__
-#    define __NR_setns 300
-#  elif __powerpc__
-#    define __NR_setns 323
-#  elif __s390__
-#    define __NR_setns 332
-#  else
-#    warning "architecture not supported for setns"
-#  endif
-#endif
+#include "setns.h"
 
 lxc_log_define(lxc_namespace, lxc);
 
@@ -101,6 +89,12 @@ int lxc_attach(pid_t pid)
 	const int size = sizeof(ns) / sizeof(char *);
 	int fd[size];
 	int i;
+
+	sprintf(path, "/proc/%d/ns", pid);
+	if (access(path, X_OK)) {
+		ERROR("Does this kernel version support 'attach' ?");
+		return -1;
+	}
 
 	for (i = 0; i < size; i++) {
 		sprintf(path, "/proc/%d/ns/%s", pid, ns[i]);

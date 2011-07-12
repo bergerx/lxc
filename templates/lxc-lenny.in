@@ -20,21 +20,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
-SUITE=${SUITE:-squeeze}
-MIRROR=${MIRROR:-http://cdn.debian.net/debian}
+SUITE=${SUITE:-lenny}
 
 configure_debian()
 {
     rootfs=$1
     hostname=$2
-
-    # squeeze only has /dev/tty and /dev/tty0 by default,
-    # therefore creating missing device nodes for tty1-4.
-    for tty in $(seq 1 4); do
-	if [ ! -e $rootfs/dev/tty$tty ]; then
-	    mknod $rootfs/dev/tty$tty c 4 $tty
-	fi
-    done
 
     # configure the inittab
     cat <<EOF > $rootfs/etc/inittab
@@ -76,15 +67,14 @@ EOF
 
     # reconfigure some services
     if [ -z "$LANG" ]; then
-	chroot $rootfs locale-gen en_US.UTF-8 UTF-8
+	chroot $rootfs locale-gen en_US.UTF-8
 	chroot $rootfs update-locale LANG=en_US.UTF-8
     else
-	chroot $rootfs locale-gen $LANG $(echo $LANG | cut -d. -f2)
+	chroot $rootfs locale-gen $LANG
 	chroot $rootfs update-locale LANG=$LANG
     fi
 
     # remove pointless services in a container
-    chroot $rootfs /usr/sbin/update-rc.d -f checkroot.sh remove
     chroot $rootfs /usr/sbin/update-rc.d -f umountfs remove
     chroot $rootfs /usr/sbin/update-rc.d -f hwclock.sh remove
     chroot $rootfs /usr/sbin/update-rc.d -f hwclockfirst.sh remove
@@ -121,8 +111,8 @@ openssh-server
     # download a mini debian into a cache
     echo "Downloading debian minimal ..."
     debootstrap --verbose --variant=minbase --arch=$arch \
-	--include=$packages \
-	"$SUITE" "$cache/partial-$SUITE-$arch" $MIRROR
+	--include $packages \
+	"$SUITE" "$cache/partial-$SUITE-$arch" http://ftp.debian.org/debian
     if [ $? -ne 0 ]; then
 	echo "Failed to download the rootfs, aborting."
 	return 1
@@ -148,7 +138,7 @@ copy_debian()
 
 install_debian()
 {
-    cache="@LOCALSTATEDIR@/cache/lxc/debian"
+    cache="@LOCALSTATEDIR@/cache/lxc/$SUITE"
     rootfs=$1
     mkdir -p @LOCALSTATEDIR@/lock/subsys/
     (
@@ -231,7 +221,7 @@ EOF
 
 clean()
 {
-    cache="@LOCALSTATEDIR@/cache/lxc/debian"
+    cache="@LOCALSTATEDIR@/cache/lxc/$SUITE"
 
     if [ ! -e $cache ]; then
 	exit 0

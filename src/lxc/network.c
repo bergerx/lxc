@@ -89,7 +89,7 @@ struct ip_req {
 	struct ifaddrmsg ifa;
 };
 
-int lxc_device_move(int ifindex, pid_t pid)
+int lxc_netdev_move_by_index(int ifindex, pid_t pid)
 {
 	struct nl_handler nlh;
 	struct nlmsg *nlmsg = NULL;
@@ -122,55 +122,7 @@ out:
 	return err;
 }
 
-int lxc_device_delete(const char *name)
-{
-	struct nl_handler nlh;
-	struct nlmsg *nlmsg = NULL, *answer = NULL;
-	struct link_req *link_req;
-	int index, len, err;
-
-	err = netlink_open(&nlh, NETLINK_ROUTE);
-	if (err)
-		return err;
-
-	err = -EINVAL;
-	len = strlen(name);
-	if (len == 1 || len > IFNAMSIZ)
-		goto out;
-
-	err = -ENOMEM;
-	nlmsg = nlmsg_alloc(NLMSG_GOOD_SIZE);
-	if (!nlmsg)
-		goto out;
-
-	answer = nlmsg_alloc(NLMSG_GOOD_SIZE);
-	if (!answer)
-		goto out;
-
-	err = -EINVAL;
-	index = if_nametoindex(name);
-	if (!index)
-		goto out;
-
-	link_req = (struct link_req *)nlmsg;
-	link_req->ifinfomsg.ifi_family = AF_UNSPEC;
-	link_req->ifinfomsg.ifi_index = index;
-	nlmsg->nlmsghdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
-	nlmsg->nlmsghdr.nlmsg_flags = NLM_F_ACK|NLM_F_REQUEST;
-	nlmsg->nlmsghdr.nlmsg_type = RTM_DELLINK;
-
-	if (nla_put_string(nlmsg, IFLA_IFNAME, name))
-		goto out;
-
-	err = netlink_transaction(&nlh, nlmsg, answer);
-out:
-	netlink_close(&nlh);
-	nlmsg_free(answer);
-	nlmsg_free(nlmsg);
-	return err;
-}
-
-int lxc_device_delete_index(int ifindex)
+int lxc_netdev_delete_by_index(int ifindex)
 {
 	struct nl_handler nlh;
 	struct nlmsg *nlmsg = NULL, *answer = NULL;
@@ -205,7 +157,75 @@ out:
 	return err;
 }
 
-static int device_set_flag(const char *name, int flag)
+int lxc_netdev_delete_by_name(const char *name)
+{
+	int index;
+
+	index = if_nametoindex(name);
+	if (!index)
+		return -EINVAL;
+
+	return lxc_netdev_delete_by_index(index);
+}
+
+int lxc_netdev_rename_by_index(int ifindex, const char *newname)
+{
+	struct nl_handler nlh;
+	struct nlmsg *nlmsg = NULL, *answer = NULL;
+	struct link_req *link_req;
+	int len, err;
+
+	err = netlink_open(&nlh, NETLINK_ROUTE);
+	if (err)
+		return err;
+
+	len = strlen(newname);
+	if (len == 1 || len > IFNAMSIZ)
+		goto out;
+
+	err = -ENOMEM;
+	nlmsg = nlmsg_alloc(NLMSG_GOOD_SIZE);
+	if (!nlmsg)
+		goto out;
+
+	answer = nlmsg_alloc(NLMSG_GOOD_SIZE);
+	if (!answer)
+		goto out;
+
+	link_req = (struct link_req *)nlmsg;
+	link_req->ifinfomsg.ifi_family = AF_UNSPEC;
+	link_req->ifinfomsg.ifi_index = ifindex;
+	nlmsg->nlmsghdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
+	nlmsg->nlmsghdr.nlmsg_flags = NLM_F_ACK|NLM_F_REQUEST;
+	nlmsg->nlmsghdr.nlmsg_type = RTM_NEWLINK;
+
+	if (nla_put_string(nlmsg, IFLA_IFNAME, newname))
+		goto out;
+
+	err = netlink_transaction(&nlh, nlmsg, answer);
+out:
+	netlink_close(&nlh);
+	nlmsg_free(answer);
+	nlmsg_free(nlmsg);
+	return err;
+}
+
+int lxc_netdev_rename_by_name(const char *oldname, const char *newname)
+{
+	int len, index;
+
+	len = strlen(oldname);
+	if (len == 1 || len > IFNAMSIZ)
+		return -EINVAL;
+
+	index = if_nametoindex(oldname);
+	if (!index)
+		return -EINVAL;
+
+	return lxc_netdev_rename_by_index(index, newname);
+}
+
+static int netdev_set_flag(const char *name, int flag)
 {
 	struct nl_handler nlh;
 	struct nlmsg *nlmsg = NULL, *answer = NULL;
@@ -252,7 +272,7 @@ out:
 	return err;
 }
 
-int lxc_device_set_mtu(const char *name, int mtu)
+int lxc_netdev_set_mtu(const char *name, int mtu)
 {
 	struct nl_handler nlh;
 	struct nlmsg *nlmsg = NULL, *answer = NULL;
@@ -300,66 +320,14 @@ out:
 	return err;
 }
 
-int lxc_device_up(const char *name)
+int lxc_netdev_up(const char *name)
 {
-	return device_set_flag(name, IFF_UP);
+	return netdev_set_flag(name, IFF_UP);
 }
 
-int lxc_device_down(const char *name)
+int lxc_netdev_down(const char *name)
 {
-	return device_set_flag(name, 0);
-}
-
-int lxc_device_rename(const char *oldname, const char *newname)
-{
-	struct nl_handler nlh;
-	struct nlmsg *nlmsg = NULL, *answer = NULL;
-	struct link_req *link_req;
-	int index, len, err;
-
-	err = netlink_open(&nlh, NETLINK_ROUTE);
-	if (err)
-		return err;
-
-	err = -EINVAL;
-	len = strlen(oldname);
-	if (len == 1 || len > IFNAMSIZ)
-		goto out;
-
-	len = strlen(newname);
-	if (len == 1 || len > IFNAMSIZ)
-		goto out;
-
-	err = -ENOMEM;
-	nlmsg = nlmsg_alloc(NLMSG_GOOD_SIZE);
-	if (!nlmsg)
-		goto out;
-
-	answer = nlmsg_alloc(NLMSG_GOOD_SIZE);
-	if (!answer)
-		goto out;
-
-	err = -EINVAL;
-	index = if_nametoindex(oldname);
-	if (!index)
-		goto out;
-
-	link_req = (struct link_req *)nlmsg;
-	link_req->ifinfomsg.ifi_family = AF_UNSPEC;
-	link_req->ifinfomsg.ifi_index = index;
-	nlmsg->nlmsghdr.nlmsg_len = NLMSG_LENGTH(sizeof(struct ifinfomsg));
-	nlmsg->nlmsghdr.nlmsg_flags = NLM_F_ACK|NLM_F_REQUEST;
-	nlmsg->nlmsghdr.nlmsg_type = RTM_NEWLINK;
-
-	if (nla_put_string(nlmsg, IFLA_IFNAME, newname))
-		goto out;
-
-	err = netlink_transaction(&nlh, nlmsg, answer);
-out:
-	netlink_close(&nlh);
-	nlmsg_free(answer);
-	nlmsg_free(nlmsg);
-	return err;
+	return netdev_set_flag(name, 0);
 }
 
 int lxc_veth_create(const char *name1, const char *name2)
@@ -742,7 +710,7 @@ static int ip_addr_add(int family, int ifindex,
 	if (nla_put_buffer(nlmsg, IFA_ADDRESS, addr, addrlen))
 		goto out;
 
-	if (bcast && nla_put_buffer(nlmsg, IFA_BROADCAST, bcast, addrlen))
+	if (nla_put_buffer(nlmsg, IFA_BROADCAST, bcast, addrlen))
 		goto out;
 
 	/* TODO : multicast, anycast with ipv6 */
@@ -775,7 +743,7 @@ int lxc_ipv4_addr_add(int ifindex, struct in_addr *addr,
 
 /*
  * There is a lxc_bridge_attach, but no need of a bridge detach
- * as automatically done by kernel when device deleted.
+ * as automatically done by kernel when a netdev is deleted.
  */
 int lxc_bridge_attach(const char *bridge, const char *ifname)
 {
