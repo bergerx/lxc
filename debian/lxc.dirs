@@ -2,5 +2,4 @@ etc/lxc
 etc/lxc/auto
 usr/bin
 usr/sbin
-usr/share/doc/lxc/examples
 var/lib/lxc
