@@ -1,0 +1,14 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Also disable module-init-tools initscript in containers.
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2011-07-12 21:16:56.120636058 +0200
++++ lxc/templates/lxc-debian.in	2011-07-12 21:28:23.596636003 +0200
+@@ -88,6 +88,7 @@ EOF
+     chroot $rootfs /usr/sbin/update-rc.d -f umountfs remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclock.sh remove
+     chroot $rootfs /usr/sbin/update-rc.d -f hwclockfirst.sh remove
++    chroot $rootfs /usr/sbin/update-rc.d -f module-init-tools remove
+ 
+     echo "root:root" | chroot $rootfs chpasswd
+     echo "Root password is 'root', please change !"
