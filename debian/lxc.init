@@ -13,6 +13,7 @@
 
 NAME=lxc
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
+LXCDOMAINS_AUTO="/etc/lxc/auto"
 DESC="LXC containers"
 
 SCRIPTNAME="/etc/init.d/lxc"
@@ -28,6 +29,20 @@ if [ "x$RUN" != "xyes" ] ; then
   exit 0
 fi
 
+if [ ! -d "$LXCDOMAINS_AUTO" ]; then
+  log_success_msg "$NAME missing LXC autostart directory $LXCDOMAINS_AUTO"
+  exit 0
+fi
+
+is_running() {
+  name=$1
+  RC=1
+  if [ $(lxc-info -n $name | grep "RUNNING" -c) -eq 1 ]; then
+    RC=0
+  fi
+  return $RC
+}
+
 start_one() {
   name=$1
   if [ -f "$CONF_DIR/$name.conf" ]; then
@@ -40,9 +55,18 @@ start_one() {
 action_all() {
   action=$1
   nolog=$2
-  for i in $CONTAINERS; do
-    [ -n "$nolog" ] || log_progress_msg "$i"
-    $action $i
+  for i in $LXCDOMAINS_AUTO/*; do
+    NAME=$(basename $i .conf)
+    [ -n "$nolog" ] || log_progress_msg "$NAME"
+    if [ "$action" = "start_one" ]; then
+       if is_running $NAME; then
+         [ -n "$nolog" ] || log_progress_msg "(skip)"
+       else
+         $action $NAME
+       fi
+    else
+      $action $NAME
+    fi
   done
   [ -n "$nolog" ] || log_end_msg 0
 }

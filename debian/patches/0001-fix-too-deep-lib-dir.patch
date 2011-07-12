@@ -13,7 +13,7 @@ diff --git a/configure b/configure
 index 92858d7..8c78a80 100755
 --- a/configure
 +++ b/configure
-@@ -4702,7 +4702,7 @@ fi
+@@ -4719,7 +4719,7 @@ fi
  
  
      EXP_VAR=LXCINITDIR
@@ -22,7 +22,7 @@ index 92858d7..8c78a80 100755
  
          prefix_save=$prefix
      exec_prefix_save=$exec_prefix
-@@ -4730,7 +4730,7 @@ fi
+@@ -4747,7 +4747,7 @@ fi
  
  
      EXP_VAR=LXCTEMPLATEDIR

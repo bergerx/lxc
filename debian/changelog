@@ -1,3 +1,43 @@
+lxc (0.7.4.2-0.1) unstable; urgency=low
+
+  [ Daniel Baumann ]
+  * Non-maintainer upload (delayed/3).
+  * Correcting patch to disable debian checkroot script (Closes:
+    #600456).
+  * Adding patch to set default suite to squeeze in debian template
+    (Closes: #600456).
+  * Adding patch to correct include argument when calling debootstrap in
+    debian template (Closes: #607275).
+  * Adding patch to correct charset argument when calling locale-gen in
+    debian template (Closes: #607273).
+  * Adding patch to disable unneeded umountroot initscript (Closes:
+    #611972).
+  * Merging upstream version 0.7.4.2 (Closes: #617934, #627636).
+  * Rediffing fix-too-deep-lib-dir.patch.
+  * Removing disable-debian-checkroot-script.patch, included upstream.
+  * Removing squeeze-missing-tty.patch, included upstream.
+  * Removing restore-lxc.mount-lxc.mount.entry-functionality.patch,
+    included upstream.
+  * Removing Make-debian-mirror-configurable-and-default-to-cdn.patch,
+    included upstream.
+  * Removing Setting-default-suite-to-squeeze-in-debian-template.patch,
+    included upstream.
+  * Removing Correcting-include-argument-when-calling-debootstrap-in-
+    debian-template.patch, included upstream.
+  * Removing Correcting-charset-argument-when-calling-locale-gen-in-
+    debian-template.patch, included upstream.
+  * Removing Adding-patch-to-disable-unneeded-umountroot-
+    initscript.patch, included upstream.
+  * Don't stop containers on upgrade (Closes: #626163).
+
+  [ Jonas Genannt ]
+  * Add an /etc/lxc/auto directory (Closes: #611920).
+
+  [ Daniel Baumann ]
+  * Simplify usage of basename in initscript.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 27 Jun 2011 15:04:11 +0200
+
 lxc (0.7.3-1) unstable; urgency=low
 
   * New upstream version (closes: #602631)

@@ -1,5 +1,1 @@
 0001-fix-too-deep-lib-dir.patch
-0002-disable-debian-checkroot-script.patch
-0003-squeeze-missing-tty.patch
-0004-restore-lxc.mount-lxc.mount.entry-functionality.patch
-0005-Make-debian-mirror-configurable-and-default-to-cdn.patch
