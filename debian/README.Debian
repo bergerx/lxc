@@ -29,7 +29,7 @@ control groups filesystem there:
 Autostart containers on boot
 ----------------------------
 
-If you want to start lxc containers on boot you have to create an symlink from
+If you want to start lxc containers on boot you have to create a symlink from
 the /etc/lxc/auto directory to your lxc configuration.
 
 	ln -s /etc/lxc/bar.conf /etc/lxc/auto/bar.conf

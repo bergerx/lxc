@@ -1,6 +1,18 @@
+lxc (0.7.4.2-0.3) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Correct previous changelog entry (the upload was to unstable directly,
+    not to delayed/3).
+  * Handle symlinks in /etc/lxc/auto.
+  * Correct wrong variable in lxc.init that made it look in the wrong location
+    for auto started containers (Closes: #632849).
+  * Correct spelling typo in README.Debian.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 06 Jul 2011 15:11:37 +0200
+
 lxc (0.7.4.2-0.2) unstable; urgency=low
 
-  * Non-maintainer upload (delayed/3).
+  * Non-maintainer upload.
   * Handle empty /etc/lxc/auto (Closes: #632648).
 
  -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 05 Jul 2011 05:58:59 +0200
