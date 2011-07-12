@@ -11,7 +11,7 @@ Package: lxc
 Section: admin
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: libcap2-bin
+Recommends: debootstrap, libcap2-bin
 Description: Linux containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
  for filesystem, network, pids, ipc, cpu and memory allocation and which can be
