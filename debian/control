@@ -8,7 +8,7 @@ Standards-Version: 3.9.2
 Homepage: http://lxc.sourceforge.net/
 
 Package: lxc
-Architecture: any
+Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: debootstrap, libcap2-bin
 Description: Linux containers userspace tools
@@ -24,7 +24,7 @@ Description: Linux containers userspace tools
 Package: lxc-dbg
 Section: debug
 Priority: extra
-Architecture: any
+Architecture: linux-any
 Depends:
  ${misc:Depends}, lxc (= ${binary:Version}), lxc-dev (= ${binary:Version})
 Description: Linux containers userspace tools (debug)
@@ -37,7 +37,7 @@ Description: Linux containers userspace tools (debug)
 
 Package: lxc-dev
 Section: devel
-Architecture: any
+Architecture: linux-any
 Depends: ${misc:Depends}, lxc (= ${binary:Version})
 Description: Linux containers userspace tools (development)
  Containers are insulated areas inside a system, which have their own namespace
