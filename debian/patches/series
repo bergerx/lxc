@@ -3,3 +3,4 @@
 03-module-init-tools.patch
 04-configuration-path.patch
 05-fedora.patch
+06-debian.patch
