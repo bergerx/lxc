@@ -2,3 +2,4 @@
 02-distclean.patch
 03-module-init-tools.patch
 04-configuration-path.patch
+05-fedora.patch
