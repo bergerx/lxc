@@ -1,3 +1,11 @@
+lxc (0.7.4.2-2) unstable; urgency=low
+
+  * Splitting out development files to lxc-dev.
+  * Adding debug package.
+  * Switching architecture fields to linux-any.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 15 Jul 2011 14:20:57 +0200
+
 lxc (0.7.4.2-1) unstable; urgency=low
 
   * Taking over lxc together with Jonas, Guido is MIA.
