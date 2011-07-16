@@ -36,7 +36,7 @@ Description: Linux containers userspace tools (debug)
  This package contains the debugging symbols.
 
 Package: lxc-dev
-Section: devel
+Section: libdevel
 Architecture: linux-any
 Depends: ${misc:Depends}, lxc (= ${binary:Version})
 Description: Linux containers userspace tools (development)
