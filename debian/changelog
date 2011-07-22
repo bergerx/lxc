@@ -1,3 +1,19 @@
+lxc (0.7.4.2-3) unstable; urgency=low
+
+  * Adding patch to remove double check for configuration path in lxc-
+    create (Closes: #633996).
+  * Adding patch to remove dubious fstab entries in fedora template,
+    thanks to Michael Biebl <biebl@debian.org> (see #633053).
+  * Adding adapted patch from upstream to correct architecture setting
+    in debian template (Closes: #622626).
+  * Adding note in README.Debian about kernel crashes for >> 2.6.36 when
+    using two bridges.
+  * Updating section for lxc-dev.
+  * Adding patch to extend architecture static fallback list for powerpc
+    in debian template.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 22 Jul 2011 17:40:22 +0200
+
 lxc (0.7.4.2-2) unstable; urgency=low
 
   * Splitting out development files to lxc-dev.
