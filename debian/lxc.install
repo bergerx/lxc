@@ -1,1 +1,8 @@
+usr/bin
+usr/lib/lxc/*.so.*
+usr/lib/lxc/lxc-*
+usr/lib/lxc/README
+usr/lib/lxc/templates
+usr/share/doc
+
 debian/local/*	/usr/bin
