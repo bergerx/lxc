@@ -1,0 +1,34 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description: Adapted patch from upstream for lxc 0.7.4.2 to correct architecture setting in debian template (Closes: #622626).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2011-07-15 21:11:10.269046879 +0200
++++ lxc/templates/lxc-debian.in	2011-07-15 21:14:33.081048756 +0200
+@@ -159,14 +159,19 @@ install_debian()
+ 	    return 1
+ 	fi
+ 
+-	arch=$(arch)
+-	if [ "$arch" == "x86_64" ]; then
+-	    arch=amd64
+-	fi
+-
+-	if [ "$arch" == "i686" ]; then
+-	    arch=i386
+-	fi
++        # Code taken from debootstrap
++        if [ -x /usr/bin/dpkg ] && /usr/bin/dpkg --print-architecture >/dev/null 2>&1; then
++            arch=`/usr/bin/dpkg --print-architecture`
++        elif type udpkg >/dev/null 2>&1 && udpkg --print-architecture >/dev/null 2>&1; then
++            arch=`/usr/bin/udpkg --print-architecture`
++        else
++            arch=$(arch)
++            if [ "$arch" = "i686" ]; then
++                arch="i386"
++            elif [ "$arch" = "x86_64" ]; then
++                arch="amd64"
++            fi
++         fi
+ 
+ 	echo "Checking cache download in $cache/rootfs-$SUITE-$arch ... "
+ 	if [ ! -e "$cache/rootfs-$SUITE-$arch" ]; then
