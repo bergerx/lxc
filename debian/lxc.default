@@ -3,4 +3,3 @@
 
 # Directory containing the container configurations
 CONF_DIR=/etc/lxc
-

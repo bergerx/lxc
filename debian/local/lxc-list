@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -x "$(which lxc-info 2>/dev/null)" ]
+then
+	echo "E: lxc-info - no such file"
+	exit 1
+fi
+
+for _STATUS in RUNNING STOPPED
+do
+	echo ${_STATUS}
+
+	for _CONTAINER in $(lxc-ls | sort -u)
+	do
+		lxc-info -n ${_CONTAINER} | awk '/'${_STATUS}'/ { print " ", $1 }'
+	done
+
+	echo
+done

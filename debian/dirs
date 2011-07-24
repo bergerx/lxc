@@ -1,7 +1,0 @@
-usr/bin
-usr/sbin
-usr/share/lintian/overrides
-usr/share/doc/lxc/examples
-var/lib/lxc
-etc/lxc
-etc/lxc/auto

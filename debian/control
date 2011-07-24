@@ -1,22 +1,16 @@
 Source: lxc
 Section: admin
 Priority: optional
-Maintainer: Progress Developers <progress-devel@lists.progress-linux.org>
-Uploaders: Daniel Baumann <daniel.baumann@progress-linux.org>
-XSBC-Original-Maintainer: Guido Trotter <ultrotter@debian.org>
-Bugs: mailto:progress-issues@lists.progress-linux.org
-Build-Depends: cdbs, debhelper (>= 7), autotools-dev, libcap-dev (>= 1:2.17-2), linux-libc-dev
-Standards-Version: 3.9.1
+Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Uploaders: Jonas Genannt <jonas.genannt@capi2name.de>
+Build-Depends: debhelper (>= 8), autotools-dev, libcap-dev, linux-libc-dev
+Standards-Version: 3.9.2
 Homepage: http://lxc.sourceforge.net/
-Vcs-Browser: http://vcs.progress-linux.org/?p=packages/lxc.git
-Vcs-Git: git://vcs.progress-linux.org/packages/lxc.git
-XSBC-Original-Vcs-Git: git://git.debian.org/git/collab-maint/lxc.git
 
 Package: lxc
-Section: admin
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: libcap2-bin
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: debootstrap, libcap2-bin
 Description: Linux containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
  for filesystem, network, pids, ipc, cpu and memory allocation and which can be
@@ -26,4 +20,3 @@ Description: Linux containers userspace tools
  This package contains the lxc-* tools which can be used to start a single
  daemon in a container, or to boot an entire "containerized" system, and to
  successively manage and debug your containers.
-

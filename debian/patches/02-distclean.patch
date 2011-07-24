@@ -1,0 +1,25 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Temporarily renaming distclean target until fixed upstream,
+ it removes too many files and causes FTBFS when build twice
+ in a row (Closes: #615485).
+
+diff -Naurp lxc.orig/config/Makefile.am lxc/config/Makefile.am
+--- lxc.orig/config/Makefile.am	2011-07-12 17:57:02.445883846 +0200
++++ lxc/config/Makefile.am	2011-07-12 17:56:17.257659771 +0200
+@@ -1,2 +1,2 @@
+-distclean:
++maintainerclean:
+ 	@$(RM) -f compile config.guess config.sub depcomp install-sh ltmain.sh missing Makefile.in Makefile
+diff -Naurp lxc.orig/config/Makefile.in lxc/config/Makefile.in
+--- lxc.orig/config/Makefile.in	2011-07-12 17:57:02.445883846 +0200
++++ lxc/config/Makefile.in	2011-07-12 17:56:48.241813412 +0200
+@@ -335,7 +335,7 @@ uninstall-am:
+ 	maintainer-clean maintainer-clean-generic mostlyclean \
+ 	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am
+ 
+-distclean:
++maintainerclean:
+ 	@$(RM) -f compile config.guess config.sub depcomp install-sh ltmain.sh missing Makefile.in Makefile
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.

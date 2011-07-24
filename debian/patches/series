@@ -1,1 +1,3 @@
-0001-fix-too-deep-lib-dir.patch
+01-libdir.patch
+02-distclean.patch
+03-module-init-tools.patch

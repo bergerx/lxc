@@ -1,15 +1,10 @@
 #!/usr/bin/make -f
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
-# We don't have patches, for now...
-#include /usr/share/cdbs/1/rules/dpatch.mk
+%:
+	dh ${@} --with autotools_dev
 
-# Install liblxc in out private area, for now, until it's stable.
-LIBDIR="\$${prefix}/lib/lxc"
-DEB_CONFIGURE_EXTRA_FLAGS=--libdir=$(LIBDIR) \
-			  --with-rootfs-path=$(LIBDIR)
-DEB_DH_INSTALLINIT_ARGS=--no-restart-on-upgrade
+override_dh_auto_configure:
+	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc
 
-binary-install/lxc::
-	cp debian/lxc.overrides debian/lxc/usr/share/lintian/overrides/lxc
+override_dh_installinit:
+	dh_installinit --no-restart-on-upgrade

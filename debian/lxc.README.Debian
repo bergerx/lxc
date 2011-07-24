@@ -1,0 +1,51 @@
+LXC for Debian
+--------------
+
+
+1. Kernel
+
+LXC needs various cgroup related features enabled in the Linux kernel.
+
+If you use a non-Debian kernel, you can check your kernel configuration with the
+lxc-checkconfig tool.
+
+If you use a Debian squeeze kernel, all of the features are enable except the
+resource controller, means, you can use LXC just fine but cannot limit the use
+of RAM per container. Every container can use as much RAM as the host system
+offers. See http://bugs.debian.org/534964 for more information.
+
+If you use a Debian wheezy kernel or newer, all of the features are enabled
+including the resource controller.
+
+
+2. Cgroup
+
+LXC requires that the cgroup pseudo-filesystem is mounted. This can manually be
+done with the following command, executed as root on the host system:
+
+  # mount cgroup -t cgroup /sys/fs/cgroup
+
+The corresponding entry for /etc/fstab looks like this:
+
+  cgroup /sys/fs/cgroup cgroup defaults 0 0
+
+This will eventually be done automatically as part of the mountkernfs initscript
+in sysvinit. See http://bugs.debian.org/601757 for more information.
+
+
+3. Root
+
+LXC container can be made usable for non-root users by running lxc-setcap. It
+will set some capabilities so that normal users will be able to use the
+container utilities. This is not done by default and you have to explicitly
+allow it.
+
+
+4. Autostart
+
+LXC container can be automatically started on boot. In order to enable this, the
+LXC init script has to be enabled in /etc/default/lxc and and container that
+should be automatically start needs its configuration file symlinked (or copied)
+into the /etc/lxc/auto directory.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 12 Jul 2011 20:32:16 +0200

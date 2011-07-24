@@ -1,3 +1,36 @@
+lxc (0.7.4.2-1) unstable; urgency=low
+
+  * Taking over lxc together with Jonas, Guido is MIA.
+  * Removing useless whitespaces at EOL and EOF.
+  * Removing vcs field.
+  * Removing git-buildpackage conffile.
+  * Removing watch file.
+  * Updating to standards version 3.9.2.
+  * Moving from cdbs to debhelper version 8.
+  * Removing pre-squeeze version from libcap-dev build-depends.
+  * Sorting depends field.
+  * Adding debootstrap to recommends.
+  * Rewrite copyright file in machine-interpretable format.
+  * Prefixing debhelper files with package name.
+  * Removing lxc.docs, currently the references files do not contain
+    useful information.
+  * Adding options file for dpkg source format.
+  * Rediffing libdir patch.
+  * Adding lxc wrapper script.
+  * Adding lxc-list script.
+  * Simplyfing manpages debhelper file.
+  * Adding patch to avoid FTBFS when building twice in a row (Closes:
+    #615485).
+  * Rewriting README.Debian (Closes: #618928).
+  * Sorting debhelper dirs file.
+  * Including examples from upstream documentation.
+  * Adding patch for debian template to also disable module-init-tools
+    initscript.
+  * Removing superfluous section field.
+  * Adding todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 13 Jul 2011 01:36:32 +0200
+
 lxc (0.7.4.2-0.3~artax1) artax; urgency=low
 
   * Uploading to artax, remaining changes:
