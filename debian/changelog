@@ -1,3 +1,12 @@
+lxc (0.7.4.2-3~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Sun, 24 Jul 2011 11:23:19 +0200
+
 lxc (0.7.4.2-3) unstable; urgency=low
 
   * Adding patch to remove double check for configuration path in lxc-
