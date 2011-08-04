@@ -1,5 +1,7 @@
 * extend README.Debian to include all information from http://wiki.progress-linux.org/software/lxc/
 * expose lxc-setcap run with debconf
+* update lxc-debian generated config to include dropping some capabilities
+* include lxc-debian-with-debconf from progress
 * expose lxc/auto with debconf
 * update package description
 * rework initscript
