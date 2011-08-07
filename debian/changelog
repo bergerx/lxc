@@ -1,3 +1,18 @@
+lxc (0.7.4.2-4) unstable; urgency=low
+
+  * Updating todo file.
+  * Readding accidentally dropped patch to disable unneeded umountroot
+    initscript (Closes: #611972).
+  * Adding slightly modified patch from Sylvain Ferriol
+    <ferriol@gate.cnrs.fr> to correct locales generation in debian
+    template (Closes: #607273).
+  * Adding patch to set default runlevel in debian template to 2 instead
+    of 3.
+  * Adding patch to disable services in debian template upgrade proof
+    (Closes: #636851).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 07 Aug 2011 11:12:30 +0200
+
 lxc (0.7.4.2-3) unstable; urgency=low
 
   * Adding patch to remove double check for configuration path in lxc-
