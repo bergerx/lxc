@@ -1,37 +1,51 @@
-lxc for Debian
+LXC for Debian
 --------------
 
-You need to be running at least Linux 2.6.29 or above to fully avail of this
-package. Previous versions of Linux have some but not all the needed features,
-and even when applying patches won't allow using sysfs and network namespaces
-at the same time, thus providing a very limited experience. You can use the
-provided lxc-checkconfig to check for missing kernel features in a kernel
-config file.
 
-If you want to experiment with containers either wait for Debian to provide the
-correct kernel version or build your own kernel.
+1. Kernel
 
-If you want to make container usable by non-root users, run lxc-setcap as root,
-and some capabilities will be set so that normal users will be able to use the
-container utils. This is not done by default, though, and you have to
-explicitly allow it.
+LXC needs various cgroup related features enabled in the Linux kernel.
 
-lxc uses the control groups file system to control the various container
-features. In order for this to work the cgroup filesystem must be mounted
-somewhere. The exact location doesn't matter, as lxc will scan the mounted
-filesystems list to find it automatically. For example you can create the
-/var/local/cgroup directory and then add this entry to fstab to mount the
-control groups filesystem there:
+If you use a non-Debian kernel, you can check your kernel configuration with the
+lxc-checkconfig tool.
 
-	cgroup  /var/local/cgroup  cgroup  defaults  0  0
+If you use a Debian squeeze kernel, all of the features are enable except the
+resource controller, means, you can use LXC just fine but cannot limit the use
+of RAM per container. Every container can use as much RAM as the host system
+offers. See http://bugs.debian.org/534964 for more information.
+
+If you use a Debian wheezy kernel or newer, all of the features are enabled
+including the resource controller.
 
 
-Autostart containers on boot
-----------------------------
+2. Cgroup
 
-If you want to start lxc containers on boot you have to create an symlink from
-the /etc/lxc/auto directory to your lxc configuration.
+LXC requires that the cgroup pseudo-filesystem is mounted. This can manually be
+done with the following command, executed as root on the host system:
 
-	ln -s /etc/lxc/bar.conf /etc/lxc/auto/bar.conf
+  # mount cgroup -t cgroup /sys/fs/cgroup
 
- -- Guido Trotter <ultrotter@debian.org>  Fri, 12 Jun 2009 15:13:55 +0100
+The corresponding entry for /etc/fstab looks like this:
+
+  cgroup /sys/fs/cgroup cgroup defaults 0 0
+
+This will eventually be done automatically as part of the mountkernfs initscript
+in sysvinit. See http://bugs.debian.org/601757 for more information.
+
+
+3. Root
+
+LXC container can be made usable for non-root users by running lxc-setcap. It
+will set some capabilities so that normal users will be able to use the
+container utilities. This is not done by default and you have to explicitly
+allow it.
+
+
+4. Autostart
+
+LXC container can be automatically started on boot. In order to enable this, the
+LXC init script has to be enabled in /etc/default/lxc and and container that
+should be automatically start needs its configuration file symlinked (or copied)
+into the /etc/lxc/auto directory.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 12 Jul 2011 20:32:16 +0200
