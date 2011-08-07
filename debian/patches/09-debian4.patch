@@ -1,0 +1,28 @@
+Author: Sylvain Ferriol <ferriol@gate.cnrs.fr>
+Description: Correct locales generation in debian template (Closes: #607273).
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2011-08-07 10:43:26.172927376 +0200
++++ lxc/templates/lxc-debian.in	2011-08-07 10:44:55.385369748 +0200
+@@ -75,13 +75,14 @@ $hostname
+ EOF
+ 
+     # reconfigure some services
+-    if [ -z "$LANG" ]; then
+-	chroot $rootfs locale-gen en_US.UTF-8 UTF-8
+-	chroot $rootfs update-locale LANG=en_US.UTF-8
+-    else
+-	chroot $rootfs locale-gen $LANG $(echo $LANG | cut -d. -f2)
+-	chroot $rootfs update-locale LANG=$LANG
+-    fi
++    LANG="${LANG:-en_US.UTF-8}"
++
++    locale="$LANG $(echo $LANG | cut -d. -f2)"
++    chroot $rootfs echo "locales locales/default_environment_locale select $LANG" | chroot $rootfs sh -c "LANG=C debconf-set-selections"
++    chroot $rootfs echo "locales locales/default_environment_locale seen true" | chroot $rootfs sh -c "LANG=C debconf-set-selections"
++    chroot $rootfs echo "locales locales/locales_to_be_generated seen true" | chroot $rootfs sh -c "LANG=C debconf-set-selections"
++    chroot $rootfs sed -i -e "0,/^[# ]*$locale *$/ s/^[# ]*$locale *$/$locale/" /etc/locale.gen
++    chroot $rootfs sh -c "LANG=C dpkg-reconfigure locales -f noninteractive"
+ 
+     # remove pointless services in a container
+     chroot $rootfs /usr/sbin/update-rc.d -f checkroot.sh remove
