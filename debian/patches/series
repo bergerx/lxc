@@ -11,3 +11,4 @@ module-init-tools
 configuration-path
 debian-arch
 debian-arch-powerpc
+runlevel
