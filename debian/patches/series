@@ -6,3 +6,4 @@ disable-checkroot
 debootstrap-arguments
 locale-gen
 disable-umountroot
+distclean
