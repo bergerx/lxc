@@ -17,6 +17,10 @@ offers. See http://bugs.debian.org/534964 for more information.
 If you use a Debian wheezy kernel or newer, all of the features are enabled
 including the resource controller.
 
+Note: Kernel version before 2.6.36 do crash when using two bridge network
+interfaces with LXC. If you need more than one bridge on the host system,
+make sure you upgrade your kernel first.
+
 
 2. Cgroup
 
