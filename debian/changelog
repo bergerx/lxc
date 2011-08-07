@@ -1,3 +1,63 @@
+lxc (0.7.2-1artax12) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+    - Adding patch from upstream to support container architecture
+      (Closes: #597875).
+    - Adding patch from upstream to support suite in debian template
+      (Closes: #600459).
+    - Updating patch from upstream for suite support to default to squeeze
+      (Closes: #600456).
+    - Updating patch from upstream for suite support to default to
+      cdn.debian.net (Closes: #600464).
+    - Adding patch to create missing tty device nodes in debian template
+      (Closes: #600466).
+    - Disabling unneeded checkroot initscript (Closes: #601001).
+    - Adding patch to correct include argument when calling debootstrap in
+      debian template (Closes: #607275).
+    - Adding patch to correct charset argument when calling locale-gen in
+      debian template (Closes: #607273).
+    - Adding patch to disable unneeded umountroot initscript (Closes:
+      #611972).
+    - Don't stop containers on upgrade (Closes: #626163).
+    - Applying patch from Jonas Genannt <jonas@brachium-system.net> to
+      add an /etc/lxc/auto directory (Closes: #611920).
+    - Simplify usage of basename in initscript.
+    - Handle empty /etc/lxc/auto (Closes: #632648).
+    - Correcting list grouping in 0.7.2-1artax7 changelog entry.
+    - Handle symlinks in /etc/lxc/auto.
+    - Correct wrong variable in lxc.init that made it look in the wrong
+      location for auto started containers (Closes: #632849).
+    - Removing superfluous name grouping in 0.7.2-1artax7 and 0.7.2-
+      1artax8 changelog entries.
+    - Adding debootstrap to recommends.
+    - Adding lxc wrapper script.
+    - Adding lxc-list script.
+    - Adding patch to avoid FTBFS when building twice in a row (Closes:
+      #615485).
+    - Rewriting README.Debian (Closes: #618928).
+    - Adding patch for debian template to also disable module-init-tools
+      initscript.
+    - Adding patch to remove double check for configuration path in lxc-
+      create (Closes: #633996).
+    - Adding adapted patch from upstream to correct architecture setting
+      in debian template (Closes: #622626).
+    - Adding note in README.Debian about kernel crashes for >> 2.6.36 when
+      using two bridges.
+    - Adding patch to extend architecture static fallback list for powerpc
+      in debian template.
+  * Replacing my own patch to fix locales generation in debian template
+    with a correct patch from Sylvain Ferriol <ferriol@gate.cnrs.fr>
+    (Closes: #607273).
+  * Adding patch to set default runlevel in debian template to 2 instead
+    of 3.
+  * Adding patch to disable services in debian template upgrade proof
+    (Closes: #636851).
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Sun, 07 Aug 2011 18:41:07 +0200
+
 lxc (0.7.2-1artax11) artax; urgency=low
 
   * Uploading to artax, remaining changes:
