@@ -12,3 +12,4 @@ configuration-path
 debian-arch
 debian-arch-powerpc
 runlevel
+update-rc.d
