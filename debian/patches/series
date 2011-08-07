@@ -8,3 +8,4 @@ locale-gen
 disable-umountroot
 distclean
 module-init-tools
+configuration-path
