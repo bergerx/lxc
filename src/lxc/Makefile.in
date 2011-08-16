@@ -47,10 +47,11 @@ pkglib_PROGRAMS = lxc-init$(EXEEXT)
 subdir = src/lxc
 DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/lxc-checkconfig.in \
-	$(srcdir)/lxc-create.in $(srcdir)/lxc-destroy.in \
-	$(srcdir)/lxc-ls.in $(srcdir)/lxc-netstat.in \
-	$(srcdir)/lxc-ps.in $(srcdir)/lxc-setcap.in \
-	$(srcdir)/lxc-setuid.in $(srcdir)/lxc-version.in
+	$(srcdir)/lxc-clone.in $(srcdir)/lxc-create.in \
+	$(srcdir)/lxc-destroy.in $(srcdir)/lxc-ls.in \
+	$(srcdir)/lxc-netstat.in $(srcdir)/lxc-ps.in \
+	$(srcdir)/lxc-setcap.in $(srcdir)/lxc-setuid.in \
+	$(srcdir)/lxc-version.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/acinclude.m4 \
 	$(top_srcdir)/config/linux.m4 $(top_srcdir)/configure.ac
@@ -59,7 +60,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
 CONFIG_CLEAN_FILES = lxc-ps lxc-ls lxc-netstat lxc-checkconfig \
-	lxc-setcap lxc-setuid lxc-version lxc-create lxc-destroy
+	lxc-setcap lxc-setuid lxc-version lxc-create lxc-clone \
+	lxc-destroy
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibdir)" \
 	"$(DESTDIR)$(sodir)" "$(DESTDIR)$(bindir)" \
@@ -376,6 +378,7 @@ bin_SCRIPTS = \
 	lxc-setuid \
 	lxc-version \
 	lxc-create \
+	lxc-clone \
 	lxc-destroy
 
 AM_LDFLAGS = -Wl,-E -Wl,-rpath -Wl,$(libdir)
@@ -445,6 +448,8 @@ lxc-setuid: $(top_builddir)/config.status $(srcdir)/lxc-setuid.in
 lxc-version: $(top_builddir)/config.status $(srcdir)/lxc-version.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 lxc-create: $(top_builddir)/config.status $(srcdir)/lxc-create.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+lxc-clone: $(top_builddir)/config.status $(srcdir)/lxc-clone.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 lxc-destroy: $(top_builddir)/config.status $(srcdir)/lxc-destroy.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

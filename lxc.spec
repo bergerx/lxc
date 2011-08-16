@@ -21,7 +21,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 Name: lxc
-Version: 0.7.4.2
+Version: 0.7.5
 Release: 1
 URL: http://lxc.sourceforge.net
 Source: http://dl.sourceforge.net/sourceforge/%{name}/%{name}-%{version}.tar.gz
@@ -78,6 +78,7 @@ rm -rf %{buildroot}
 %{_bindir}/*
 %attr(4111,root,root) %{_bindir}/lxc-attach
 %attr(4111,root,root) %{_bindir}/lxc-create
+%attr(4111,root,root) %{_bindir}/lxc-clone
 %attr(4111,root,root) %{_bindir}/lxc-start
 %attr(4111,root,root) %{_bindir}/lxc-netstat
 %attr(4111,root,root) %{_bindir}/lxc-unshare
