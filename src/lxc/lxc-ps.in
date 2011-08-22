@@ -37,7 +37,7 @@ our %LXC_NAMES;       # Specified container names (if any)
 
 sub get_container_names {
 	my $ref_names = shift;
-	my $lxcpath='@LXCPATH@';
+	my $lxcpath = '@LXCPATH@';
 
 	open(active, "netstat -xa | grep $lxcpath |") or return;
 	while(<active>) {
@@ -112,13 +112,15 @@ sub get_container {
     my $pid = shift;
     my $filename = "/proc/$pid/cgroup";
     open(LXC, "$filename");
-    my $container = <LXC>;
+    # read all lines at once
+    my @cgroup = <LXC>;
     close LXC;
-    chomp($container);
-    if ($container =~ m/[:,]ns[:,]/o) {
-    	$container =~ s/.*:\///o;
-    } else {
-	$container ='';
+    my $container = '';
+    foreach ( @cgroup ) {
+        chomp;
+        # find the container name after :/
+	s/.*:\///o;
+	$container = $_;
     }
     return $container;
 }
@@ -129,7 +131,7 @@ sub display_headers {
 
 sub display_usage {
     print <<EOF;
-Usage: lxc-ps [--help] [--usage] [--name NAME...] [--lxc] [ps options]
+Usage: lxc-ps [--help] [--usage] [-n|--name NAME...] [--lxc] [-- ps options]
 EOF
 }
 
@@ -152,7 +154,7 @@ or try a 'ps --help' for further details.
 EOF
 }
 
-use Getopt::Long qw(:config no_auto_abbrev pass_through);
+use Getopt::Long qw(:config pass_through);
 
 my $arg_help  = '';
 my $arg_usage = '';
@@ -169,6 +171,10 @@ GetOptions('help'   => \$arg_help,
 # Some help
 if ($arg_help)  {display_help; exit 0;}
 if ($arg_usage) {display_usage; exit 0;}
+
+if ($ARGV[0] == '--') {
+	shift @ARGV;
+}
 
 # Should we filter processes related to containers
 if ($arg_lxc) {

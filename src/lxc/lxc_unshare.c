@@ -46,10 +46,10 @@ void usage(char *cmd)
 {
 	fprintf(stderr, "%s <options> [command]\n", basename(cmd));
 	fprintf(stderr, "Options are:\n");
-	fprintf(stderr, "\t -s flags: Ored list of flags to unshare:\n" \
+	fprintf(stderr, "\t -s flags: ORed list of flags to unshare:\n" \
 			"\t           MOUNT, PID, UTSNAME, IPC, USER, NETWORK\n");
 	fprintf(stderr, "\t -u <id> : new id to be set if -s USER is specified\n");
-	fprintf(stderr, "\t if -f or -s PID is specified, <command> is mandatory)\n");
+	fprintf(stderr, "\t if -s PID is specified, <command> is mandatory)\n");
 	_exit(1);
 }
 
@@ -210,12 +210,14 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	if (asprintf(&pid_name, "%d", pid) == -1) {
-		ERROR("pid_name: failed to allocate memory");
-		return -1;
+	if (lxc_ns_is_mounted()) {
+		if (asprintf(&pid_name, "%d", pid) == -1) {
+			ERROR("pid_name: failed to allocate memory");
+			return -1;
+		}
+		lxc_cgroup_destroy(pid_name);
+		free(pid_name);
 	}
-	lxc_cgroup_destroy(pid_name);
-	free(pid_name);
 
 	return  lxc_error_set_and_log(pid, status);
 }

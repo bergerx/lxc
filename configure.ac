@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([lxc], [0.7.4.2])
+AC_INIT([lxc], [0.7.5])
 
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_AUX_DIR([config])
@@ -139,9 +139,8 @@ AC_CONFIG_FILES([
 	templates/Makefile
 	templates/lxc-lenny
 	templates/lxc-debian
-	templates/lxc-lucid
-	templates/lxc-maverick
-	templates/lxc-natty
+	templates/lxc-ubuntu
+	templates/lxc-opensuse
 	templates/lxc-busybox
 	templates/lxc-fedora
 	templates/lxc-sshd
@@ -156,6 +155,7 @@ AC_CONFIG_FILES([
 	src/lxc/lxc-setuid
 	src/lxc/lxc-version
 	src/lxc/lxc-create
+	src/lxc/lxc-clone
 	src/lxc/lxc-destroy
 
 ])

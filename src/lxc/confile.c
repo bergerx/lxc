@@ -195,7 +195,7 @@ static struct lxc_netdev *network_netdev(const char *key, const char *value,
 
 static int network_ifname(char **valuep, char *value)
 {
-	if (strlen(value) > IFNAMSIZ) {
+	if (strlen(value) >= IFNAMSIZ) {
 		ERROR("invalid interface name: %s", value);
 		return -1;
 	}
@@ -553,8 +553,8 @@ static int config_cgroup(const char *key, char *value, struct lxc_conf *lxc_conf
 {
 	char *token = "lxc.cgroup.";
 	char *subkey;
-	struct lxc_list *cglist;
-	struct lxc_cgroup *cgelem;
+	struct lxc_list *cglist = NULL;
+	struct lxc_cgroup *cgelem = NULL;
 
 	subkey = strstr(key, token);
 
@@ -571,21 +571,40 @@ static int config_cgroup(const char *key, char *value, struct lxc_conf *lxc_conf
 
 	cglist = malloc(sizeof(*cglist));
 	if (!cglist)
-		return -1;
+		goto out;
 
 	cgelem = malloc(sizeof(*cgelem));
-	if (!cgelem) {
-		free(cglist);
-		return -1;
-	}
+	if (!cgelem)
+		goto out;
+	memset(cgelem, 0, sizeof(*cgelem));
 
 	cgelem->subsystem = strdup(subkey);
 	cgelem->value = strdup(value);
+
+	if (!cgelem->subsystem || !cgelem->value)
+		goto out;
+
 	cglist->elem = cgelem;
 
 	lxc_list_add_tail(&lxc_conf->cgroup, cglist);
 
 	return 0;
+
+out:
+	if (cglist)
+		free(cglist);
+
+	if (cgelem) {
+		if (cgelem->subsystem)
+			free(cgelem->subsystem);
+
+		if (cgelem->value)
+			free(cgelem->value);
+
+		free(cgelem);
+	}
+
+	return -1;
 }
 
 static int config_fstab(const char *key, char *value, struct lxc_conf *lxc_conf)
@@ -631,6 +650,8 @@ static int config_mount(const char *key, char *value, struct lxc_conf *lxc_conf)
 		return -1;
 
 	mntelem = strdup(value);
+	if (!mntelem)
+		return -1;
 	mntlist->elem = mntelem;
 
 	lxc_list_add_tail(&lxc_conf->mount_list, mntlist);
@@ -778,7 +799,7 @@ static int parse_line(char *buffer, void *data)
 	char *dot;
 	char *key;
 	char *value;
-	int ret = -1;
+	int ret = 0;
 
 	if (lxc_is_line_empty(buffer))
 		return 0;
@@ -794,10 +815,14 @@ static int parse_line(char *buffer, void *data)
 	}
 
 	line += lxc_char_left_gc(line, strlen(line));
-	if (line[0] == '#') {
-		ret = 0;
+
+	/* martian option - ignoring it, the commented lines beginning by '#'
+	 * fall in this case
+	 */
+	if (strncmp(line, "lxc.", 4))
 		goto out;
-	}
+
+	ret = -1;
 
 	dot = strstr(line, "=");
 	if (!dot) {
