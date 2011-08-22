@@ -1,0 +1,29 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Don't use dpkg --print-architecture unconditionally to allow bootstrapping
+ Debian containers on non-Debian systems.
+
+diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
+--- lxc.orig/templates/lxc-debian.in	2011-08-22 11:12:36.261413046 +0200
++++ lxc/templates/lxc-debian.in	2011-08-22 11:12:20.085332842 +0200
+@@ -158,7 +158,19 @@ install_debian()
+ 	    return 1
+ 	fi
+ 
+-	arch=$(dpkg --print-architecture)
++	# Code taken from debootstrap
++	if [ -x /usr/bin/dpkg ] && /usr/bin/dpkg --print-architecture >/dev/null 2>&1; then
++	    arch=`/usr/bin/dpkg --print-architecture`
++	elif type udpkg >/dev/null 2>&1 && udpkg --print-architecture >/dev/null 2>&1; then
++	    arch=`/usr/bin/udpkg --print-architecture`
++	else
++	    arch=$(arch)
++	    if [ "$arch" = "i686" ]; then
++		arch="i386"
++	    elif [ "$arch" = "x86_64" ]; then
++		arch="amd64"
++	    fi
++	fi
+ 
+ 	echo "Checking cache download in $cache/rootfs-$SUITE-$arch ... "
+ 	if [ ! -e "$cache/rootfs-$SUITE-$arch" ]; then
