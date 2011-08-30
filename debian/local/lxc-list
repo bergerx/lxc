@@ -14,7 +14,10 @@ do
 
 	for _CONTAINER in $(lxc-ls | sort -u)
 	do
-		lxc-info -n ${_CONTAINER} | awk '/'${_STATUS}'/ { print " ", $1 }'
+		if lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "${_STATUS}"
+		then
+			echo "  ${_CONTAINER}"
+		fi
 	done
 
 	echo
