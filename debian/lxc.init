@@ -24,7 +24,7 @@ if [ -f /etc/default/$NAME ] ; then
   . /etc/default/$NAME
 fi
 
-if [ "x$RUN" != "xyes" ] ; then
+if [ "${LXC_AUTO}" != "true" ] ; then
   log_success_msg "$NAME init script disabled; edit /etc/default/$NAME"
   exit 0
 fi

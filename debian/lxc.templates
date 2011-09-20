@@ -1,0 +1,13 @@
+Template: lxc/title
+Type: title
+_Description: Linux Container (LXC)
+
+Template: lxc/auto
+Type: boolean
+Default: true
+_Description: Linux Container: Automatic start and stop
+ Linux Containers that have their configuration files copied or symlinked
+ to the /etc/lxc/auto directory can be automatically started during system
+ boot and shutdown on reboot/halt.
+ .
+ If unsure, choose yes (default).

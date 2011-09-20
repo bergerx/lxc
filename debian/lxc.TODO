@@ -2,7 +2,6 @@
 * expose lxc-setcap run with debconf
 * update lxc-debian generated config to include dropping some capabilities
 * include lxc-debian-with-debconf from progress
-* expose lxc/auto with debconf
 * update package description
 * rework initscript
 * add lx-container package (that diverts udev)

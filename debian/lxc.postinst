@@ -1,0 +1,53 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+_CONFFILE="/etc/default/lxc"
+
+case "${1}" in
+	configure)
+		db_get lxc/auto
+		LXC_AUTO="${RET}" # boolean
+
+		db_stop
+
+		if [ ! -e "${_CONFFILE}" ]
+		then
+
+cat > "${_CONFFILE}" << EOF
+# /etc/default/lxc
+
+LXC_AUTO="${LXC_AUTO}"
+EOF
+		fi
+
+		cp -a -f "${_CONFFILE}" "${_CONFFILE}.tmp"
+
+		# If the admin deleted or commented some variables but then set
+		# them via debconf, (re-)add them to the config file.
+
+		test -z "${LXC_AUTO}" || \
+		grep -Eq '^ *LXC_AUTO=' "${_CONFFILE}" || \
+		echo "LXC_AUTO=" >> "${_CONFFILE}"
+
+		sed -e "s|^ *LXC_AUTO=.*|LXC_AUTO=\"${LXC_AUTO}\"|" \
+		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
+
+		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
+		;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+
+		;;
+
+	*)
+		echo "postinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0
