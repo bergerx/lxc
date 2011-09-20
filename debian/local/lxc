@@ -33,7 +33,7 @@ then
 	_OPTIONS="--name ${_CONTAINER}"
 else
 	case "${_COMMAND}" in
-		list)
+		backup|list|restore)
 			;;
 
 		*)
