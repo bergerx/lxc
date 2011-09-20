@@ -87,10 +87,6 @@ case "$1" in
     action_all "lxc-stop -n"
     action_all start_one
     ;;
-  destroy)
-    log_daemon_msg "Destroying $DESC"
-    action_all "lxc-destroy -n"
-    ;;
   freeze)
     log_daemon_msg "Freezing $DESC"
     action_all "lxc-freeze -n"
@@ -105,7 +101,7 @@ case "$1" in
     action_all "lxc-info -n" "nolog"
     ;;
   *)
-    log_success_msg "Usage: $SCRIPTNAME {start|stop|force-reload|restart|destroy|freeze|unfreeze|info}"
+    log_success_msg "Usage: $SCRIPTNAME {start|stop|force-reload|restart|freeze|unfreeze|info}"
     exit 1
     ;;
 esac
