@@ -1,0 +1,46 @@
+# German translation of lxc debconf templates.
+# Copyright (C) 2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+# This file is distributed under the same license as the lxc package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lxc 0.7.5-2\n"
+"Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
+"POT-Creation-Date: 2011-09-21 10:22+0200\n"
+"PO-Revision-Date: 2010-07-20 05:54+0200\n"
+"Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: title
+#. Description
+#: ../lxc.templates:1001
+msgid "Linux Container (LXC)"
+msgstr "Linux Container (LXC)"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "Linux Container: Automatic start and stop"
+msgstr "Linux Container: Automatischer Start und Stop"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid ""
+"Linux Containers that have their configuration files copied or symlinked to "
+"the /etc/lxc/auto directory can be automatically started during system boot "
+"and shutdown on reboot/halt."
+msgstr ""
+"Linux Container welche ihre Konfigurationsdateien in das /etc/lxc/auto "
+"Verzeichnis kopiert oder gelinkt haben, können automatisch beim "
+"Hochfahrendes Systems gestarted und beim Herunterfahren gestoppt werden."
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "If unsure, choose yes (default)."
+msgstr "Wenn Sie unsicher sind, wählen sie ja (Standard)."
