@@ -8,3 +8,4 @@
 08-debian-locales.patch
 09-debian-runlevel.patch
 10-debian-update-rcd.patch
+11-doc-ip-address.patch
