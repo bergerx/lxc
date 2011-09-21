@@ -32,8 +32,15 @@ then
 
 	_OPTIONS="--name ${_CONTAINER}"
 else
-	echo "Usage: ${0} COMMAND CONTAINER"
-	exit 1
+	case "${_COMMAND}" in
+		backup|list|restore)
+			;;
+
+		*)
+			echo "Usage: ${0} COMMAND CONTAINER"
+			exit 1
+			;;
+	esac
 fi
 
 lxc-${_COMMAND} ${_OPTIONS} ${@}

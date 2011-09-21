@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -e
+
+case "${1}" in
+	upgrade)
+		## Upgrading from squeeze to wheezy
+
+		# If an old configuration files is found, it is safe to remove it:
+		# - if the user had RUN=yes, he willl end up with the same anyway.
+		# - if the user had RUN=no, he will end up with an enabled script
+		#   which does not do anything unless user has /etc/lxc/auto
+		#   configured we he has not as lenny had no /etc/lxc/auto.
+
+		if grep -qs 'RUN=' /etc/default/lxc
+		then
+			rm -f /etc/default/lxc
+		fi
+		;;
+
+	install|abort-upgrade)
+
+			;;
+
+	*)
+		echo "preinst called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0

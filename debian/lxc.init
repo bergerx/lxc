@@ -1,113 +1,120 @@
 #!/bin/sh
-# lxc containers starter script
-# based on skeleton from Debian GNU/Linux
+
 ### BEGIN INIT INFO
-# Provides:          lxc
-# Required-Start:    $syslog $remote_fs
-# Required-Stop:     $syslog $remote_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Linux Containers
-# Description:       Linux Containers
+# Provides:		lxc
+# Required-Start:	$syslog $remote_fs
+# Required-Stop:	$syslog $remote_fs
+# Should-Start:
+# Should-Stop:
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	Linux Containers
+# Description:		Linux Containers
+# X-Start-Before:
+# X-Stop-After:
+# X-Interactive:	true
 ### END INIT INFO
 
-NAME=lxc
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
-LXCDOMAINS_AUTO="/etc/lxc/auto"
-DESC="LXC containers"
-
-SCRIPTNAME="/etc/init.d/lxc"
 
 . /lib/lsb/init-functions
 
-if [ -f /etc/default/$NAME ] ; then
-  . /etc/default/$NAME
+if [ -f /etc/default/lxc ] ; then
+  . /etc/default/lxc
 fi
 
-if [ "x$RUN" != "xyes" ] ; then
-  log_success_msg "$NAME init script disabled; edit /etc/default/$NAME"
-  exit 0
-fi
+LXC_AUTO="${LXC_AUTO:-true}"
 
-if [ ! -d "$LXCDOMAINS_AUTO" ]; then
-  log_success_msg "$NAME missing LXC autostart directory $LXCDOMAINS_AUTO"
-  exit 0
-fi
+Lxc ()
+{
+	_COMMAND="${@}"
 
-is_running() {
-  name=$1
-  RC=1
-  if [ $(lxc-info -n $name | grep "RUNNING" -c) -eq 1 ]; then
-    RC=0
-  fi
-  return $RC
+	# no containers available
+	if ! ls /etc/lxc/auto/* > /dev/null 2>&1
+	then
+		log_progress_msg "(none)"
+		log_end_msg 0
+
+		exit 0
+	fi
+
+	for _CONFIG in /etc/lxc/auto/*
+	do
+		_CONTAINER="$(basename ${_CONFIG} .conf)"
+
+		case "${_COMMAND}" in
+			start)
+				# initscript is disabled
+				case "${LXC_AUTO}" in
+					false)
+						log_progress_msg "(disabled)"
+						log_end_msg 0
+
+						exit 0
+						;;
+				esac
+
+				if ! lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "RUNNING"
+				then
+					log_progress_msg "${_CONTAINER}"
+
+					${_COMMAND} -n ${_CONTAINER} -f ${_CONFIG} -d
+				else
+					log_progress_msg "${_CONTAINER} (skip)"
+				fi
+				;;
+
+			*)
+				log_progress_msg "${_CONTAINER}"
+
+				${_COMMAND} -n ${_CONTAINER}
+				;;
+		esac
+	done
+
+	log_end_msg 0
 }
 
-start_one() {
-  name=$1
-  if [ -e "$LXCDOMAINS_AUTO/$name.conf" ]; then
-    lxc-start -n $name -f $LXCDOMAINS_AUTO/$name.conf -d
-  else
-    log_failure_msg "Can't find config file $LXCDOMAINS_AUTO/$name.conf"
-  fi
-}
+case "${1}" in
+	start)
+		log_daemon_msg "Starting Linux Containers"
 
-action_all() {
-  action=$1
-  nolog=$2
-  if ls $LXCDOMAINS_AUTO/* > /dev/null 2>&1; then
-    for i in $LXCDOMAINS_AUTO/*; do
-      NAME=$(basename $i .conf)
-      [ -n "$nolog" ] || log_progress_msg "$NAME"
-      if [ "$action" = "start_one" ]; then
-         if is_running $NAME; then
-           [ -n "$nolog" ] || log_progress_msg "(skip)"
-         else
-           $action $NAME
-         fi
-      else
-        $action $NAME
-      fi
-    done
-  fi
-  [ -n "$nolog" ] || log_end_msg 0
-}
+		Lxc start
+		;;
 
-case "$1" in
-  start)
-    log_daemon_msg "Starting $DESC"
-    action_all start_one
-    ;;
-  stop)
-    log_daemon_msg "Stopping $DESC"
-    action_all "lxc-stop -n"
-    ;;
-  restart|force-reload)
-    log_daemon_msg "Restarting $DESC"
-    action_all "lxc-stop -n"
-    action_all start_one
-    ;;
-  destroy)
-    log_daemon_msg "Destroying $DESC"
-    action_all "lxc-destroy -n"
-    ;;
-  freeze)
-    log_daemon_msg "Freezing $DESC"
-    action_all "lxc-freeze -n"
-    ;;
-  unfreeze)
-    log_daemon_msg "Unfreezing $DESC"
-    action_all "lxc-unfreeze -n"
-    ;;
-  info)
-    log_daemon_msg "Info on $DESC" "$NAME"
-    log_end_msg 0
-    action_all "lxc-info -n" "nolog"
-    ;;
-  *)
-    log_success_msg "Usage: $SCRIPTNAME {start|stop|force-reload|restart|destroy|freeze|unfreeze|info}"
-    exit 1
-    ;;
+	stop)
+		log_daemon_msg "Stopping Linux Containers"
+
+		Lxc stop
+		;;
+
+	restart|force-reload)
+		log_daemon_msg "Restarting Linux Containers"
+
+		Lxc stop
+		Lxc start
+		;;
+
+	freeze)
+		log_daemon_msg "Freezing Linux Containers"
+
+		Lxc freeze
+		;;
+
+	unfreeze)
+		log_daemon_msg "Unfreezing Linux Containers"
+
+		Lxc unfreeze
+		;;
+
+	status)
+		lxc-list
+		;;
+
+	*)
+		log_success_msg "Usage: ${0} {start|stop|restart|force-reload|freeze|unfreeze|status}"
+		exit 1
+		;;
 esac
 
 exit 0

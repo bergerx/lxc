@@ -14,7 +14,18 @@ do
 
 	for _CONTAINER in $(lxc-ls | sort -u)
 	do
-		lxc-info -n ${_CONTAINER} | awk '/'${_STATUS}'/ { print " ", $1 }'
+		if lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "${_STATUS}"
+		then
+			echo -n "  ${_CONTAINER}"
+
+			if [ -e /etc/lxc/auto/${_CONTAINER} ] ||
+			   [ -e /etc/lxc/auto/${_CONTAINER}.conf ]
+			then
+				echo " (auto)"
+			else
+				echo
+			fi
+		fi
 	done
 
 	echo

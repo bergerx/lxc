@@ -1,0 +1,173 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Use non-routed, private IPv4 address in documentation examples (Closes: #571525).
+
+diff -Naurp lxc.orig/doc/examples/lxc-complex.conf lxc/doc/examples/lxc-complex.conf
+--- lxc.orig/doc/examples/lxc-complex.conf	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-complex.conf	2011-09-20 23:56:27.777134985 +0200
+@@ -5,19 +5,19 @@ lxc.network.type = veth
+ lxc.network.flags = up
+ lxc.network.link = br0
+ lxc.network.hwaddr = 4a:49:43:49:79:bf
+-lxc.network.ipv4 = 1.2.3.5/24
++lxc.network.ipv4 = 10.2.3.5/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+ 
+ lxc.network.type = macvlan
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+ 
+ lxc.network.type = phys
+ lxc.network.flags = up
+ lxc.network.link = dummy0
+ lxc.network.hwaddr = 4a:49:43:49:79:ff
+-lxc.network.ipv4 = 1.2.3.6/24
++lxc.network.ipv4 = 10.2.3.6/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3297
+diff -Naurp lxc.orig/doc/examples/lxc-complex.conf.in lxc/doc/examples/lxc-complex.conf.in
+--- lxc.orig/doc/examples/lxc-complex.conf.in	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-complex.conf.in	2011-09-20 23:56:41.425201779 +0200
+@@ -5,19 +5,19 @@ lxc.network.type = veth
+ lxc.network.flags = up
+ lxc.network.link = br0
+ lxc.network.hwaddr = 4a:49:43:49:79:bf
+-lxc.network.ipv4 = 1.2.3.5/24
++lxc.network.ipv4 = 10.2.3.5/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+ 
+ lxc.network.type = macvlan
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+ 
+ lxc.network.type = phys
+ lxc.network.flags = up
+ lxc.network.link = dummy0
+ lxc.network.hwaddr = 4a:49:43:49:79:ff
+-lxc.network.ipv4 = 1.2.3.6/24
++lxc.network.ipv4 = 10.2.3.6/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3297
+diff -Naurp lxc.orig/doc/examples/lxc-macvlan.conf lxc/doc/examples/lxc-macvlan.conf
+--- lxc.orig/doc/examples/lxc-macvlan.conf	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-macvlan.conf	2011-09-20 23:57:25.901425757 +0200
+@@ -4,5 +4,5 @@ lxc.network.type = macvlan
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+diff -Naurp lxc.orig/doc/examples/lxc-macvlan.conf.in lxc/doc/examples/lxc-macvlan.conf.in
+--- lxc.orig/doc/examples/lxc-macvlan.conf.in	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-macvlan.conf.in	2011-09-20 23:57:23.845415375 +0200
+@@ -4,5 +4,5 @@ lxc.network.type = macvlan
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+diff -Naurp lxc.orig/doc/examples/lxc-phys.conf lxc/doc/examples/lxc-phys.conf
+--- lxc.orig/doc/examples/lxc-phys.conf	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-phys.conf	2011-09-20 23:57:28.117436890 +0200
+@@ -5,5 +5,5 @@ lxc.network.type = phys
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:ff
+-lxc.network.ipv4 = 1.2.3.6/24
++lxc.network.ipv4 = 10.2.3.6/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3297
+diff -Naurp lxc.orig/doc/examples/lxc-phys.conf.in lxc/doc/examples/lxc-phys.conf.in
+--- lxc.orig/doc/examples/lxc-phys.conf.in	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-phys.conf.in	2011-09-20 23:57:19.497394305 +0200
+@@ -5,5 +5,5 @@ lxc.network.type = phys
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:ff
+-lxc.network.ipv4 = 1.2.3.6/24
++lxc.network.ipv4 = 10.2.3.6/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3297
+diff -Naurp lxc.orig/doc/examples/lxc-veth.conf lxc/doc/examples/lxc-veth.conf
+--- lxc.orig/doc/examples/lxc-veth.conf	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-veth.conf	2011-09-20 23:56:46.513226093 +0200
+@@ -5,5 +5,5 @@ lxc.network.type = veth
+ lxc.network.flags = up
+ lxc.network.link = br0
+ lxc.network.hwaddr = 4a:49:43:49:79:bf
+-lxc.network.ipv4 = 1.2.3.5/24
++lxc.network.ipv4 = 10.2.3.5/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+diff -Naurp lxc.orig/doc/examples/lxc-veth.conf.in lxc/doc/examples/lxc-veth.conf.in
+--- lxc.orig/doc/examples/lxc-veth.conf.in	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-veth.conf.in	2011-09-20 23:56:17.505087055 +0200
+@@ -5,5 +5,5 @@ lxc.network.type = veth
+ lxc.network.flags = up
+ lxc.network.link = br0
+ lxc.network.hwaddr = 4a:49:43:49:79:bf
+-lxc.network.ipv4 = 1.2.3.5/24
++lxc.network.ipv4 = 10.2.3.5/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+diff -Naurp lxc.orig/doc/examples/lxc-vlan.conf lxc/doc/examples/lxc-vlan.conf
+--- lxc.orig/doc/examples/lxc-vlan.conf	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-vlan.conf	2011-09-20 23:57:31.533454612 +0200
+@@ -5,5 +5,5 @@ lxc.network.vlan.id = 1234
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+diff -Naurp lxc.orig/doc/examples/lxc-vlan.conf.in lxc/doc/examples/lxc-vlan.conf.in
+--- lxc.orig/doc/examples/lxc-vlan.conf.in	2011-09-09 16:32:11.821390993 +0200
++++ lxc/doc/examples/lxc-vlan.conf.in	2011-09-20 23:57:21.629404927 +0200
+@@ -5,5 +5,5 @@ lxc.network.vlan.id = 1234
+ lxc.network.flags = up
+ lxc.network.link = eth0
+ lxc.network.hwaddr = 4a:49:43:49:79:bd
+-lxc.network.ipv4 = 1.2.3.4/24
++lxc.network.ipv4 = 10.2.3.4/24
+ lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+diff -Naurp lxc.orig/doc/lxc.conf.sgml.in lxc/doc/lxc.conf.sgml.in
+--- lxc.orig/doc/lxc.conf.sgml.in	2011-09-15 11:01:01.165397074 +0200
++++ lxc/doc/lxc.conf.sgml.in	2011-09-20 23:56:57.261283643 +0200
+@@ -590,7 +590,7 @@ Foundation, Inc., 59 Temple Place, Suite
+ 	lxc.network.link = br0
+ 	lxc.network.name = eth0
+ 	lxc.network.hwaddr = 4a:49:43:49:79:bf
+-	lxc.network.ipv4 = 1.2.3.5/24 1.2.3.255
++	lxc.network.ipv4 = 10.2.3.5/24 10.2.3.255
+ 	lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+       </programlisting>
+     </refsect2>
+@@ -621,21 +621,21 @@ Foundation, Inc., 59 Temple Place, Suite
+ 	lxc.network.flags = up
+ 	lxc.network.link = br0
+ 	lxc.network.hwaddr = 4a:49:43:49:79:bf
+-	lxc.network.ipv4 = 1.2.3.5/24 1.2.3.255
++	lxc.network.ipv4 = 10.2.3.5/24 10.2.3.255
+ 	lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3597
+ 	lxc.network.ipv6 = 2003:db8:1:0:214:5432:feab:3588
+ 	lxc.network.type = macvlan
+ 	lxc.network.flags = up
+ 	lxc.network.link = eth0
+ 	lxc.network.hwaddr = 4a:49:43:49:79:bd
+-	lxc.network.ipv4 = 1.2.3.4/24
++	lxc.network.ipv4 = 10.2.3.4/24
+ 	lxc.network.ipv4 = 192.168.10.125/24
+ 	lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3596
+ 	lxc.network.type = phys
+ 	lxc.network.flags = up
+ 	lxc.network.link = dummy0
+ 	lxc.network.hwaddr = 4a:49:43:49:79:ff
+-	lxc.network.ipv4 = 1.2.3.6/24
++	lxc.network.ipv4 = 10.2.3.6/24
+ 	lxc.network.ipv6 = 2003:db8:1:0:214:1234:fe0b:3297
+ 	lxc.cgroup.cpuset.cpus = 0,1
+ 	lxc.cgroup.cpu.shares = 1234

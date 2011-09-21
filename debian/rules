@@ -4,10 +4,13 @@
 	dh ${@} --with autotools_dev
 
 override_dh_auto_configure:
-	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc
+	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc --enable-doc
 
 override_dh_install:
 	dh_install --fail-missing
+
+	# removing useless files
+	rm -f debian/lxc/usr/lib/lxc/templates/lxc-lenny
 
 override_dh_installinit:
 	dh_installinit --no-restart-on-upgrade
