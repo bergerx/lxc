@@ -1,0 +1,17 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Keeping creation of new containers without previously existing configuration
+ non-interactive.
+
+diff -Naurp lxc.orig/src/lxc/lxc-create.in lxc/src/lxc/lxc-create.in
+--- lxc.orig/src/lxc/lxc-create.in	2011-09-21 12:40:39.632506012 +0200
++++ lxc/src/lxc/lxc-create.in	2011-09-21 12:41:18.068694733 +0200
+@@ -164,8 +164,6 @@ if [ ! -z $lxc_template ]; then
+ 	echo "For more information look at lxc.conf (5)"
+ 	echo
+ 	echo "At this point, I assume you know what you do."
+-	echo "Press <enter> to continue ..."
+-	read dummy
+     fi
+ 
+     ${templatedir}/lxc-$lxc_template --path=$lxc_path/$lxc_name --name=$lxc_name $*
