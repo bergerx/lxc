@@ -1,3 +1,27 @@
+lxc (0.7.5-2) unstable; urgency=low
+
+  * Do not bail out with usage message when invoking lxc-list via lxc
+    wrapper.
+  * Removing useless lenny template, using the debian template for lenny
+    is better.
+  * Building manpages explicitly (Closes: #639276).
+  * Updating lxc-info for changed output of lxc-info as of 0.7.5.
+  * Adding simple lxc-backup and lxc-restore scripts.
+  * Adding patch to use non-routed, private IPv4 address in
+    documentation examples (Closes: #571525).
+  * Removing destroy option from initscript, unlike destroy as used by
+    e.g. xen, it does wipe all data of a container, the initscript would
+    therefore remove all data of all containers at once which is way to
+    dangerous.
+  * Adding debconf handling for lxc/auto (Closes: #632848).
+  * Adding patch to improve debian default container config.
+  * Adding patch to keep creation of new containers without previously
+    existing configuration non-interactive.
+  * Listing auto information in lxc-list.
+  * Rewriting initscript.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 21 Sep 2011 13:31:51 +0200
+
 lxc (0.7.5-1) unstable; urgency=low
 
   [ Jonas Genannt ]
