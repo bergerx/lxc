@@ -15,6 +15,11 @@
 # X-Interactive:	true
 ### END INIT INFO
 
+if [ ! -x /usr/bin/lxc ]
+then
+	exit 0
+fi
+
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
 . /lib/lsb/init-functions
