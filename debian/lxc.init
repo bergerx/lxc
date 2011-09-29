@@ -63,7 +63,7 @@ Lxc ()
 				then
 					log_progress_msg "${_CONTAINER}"
 
-					${_COMMAND} -n ${_CONTAINER} -f ${_CONFIG} -d
+					lxc-${_COMMAND} -n ${_CONTAINER} -f ${_CONFIG} -d
 				else
 					log_progress_msg "${_CONTAINER} (skip)"
 				fi
@@ -72,7 +72,7 @@ Lxc ()
 			*)
 				log_progress_msg "${_CONTAINER}"
 
-				${_COMMAND} -n ${_CONTAINER}
+				lxc-${_COMMAND} -n ${_CONTAINER}
 				;;
 		esac
 	done
