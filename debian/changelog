@@ -1,3 +1,14 @@
+lxc (0.7.5-3) unstable; urgency=low
+
+  * Aborting early in initscript if lxc is not removed but not purged.
+  * Correcting typo in proc mount entry in the default config of the
+    debian template, thanks to Sylvain Collilieux
+    <Sylvain@Collilieux.net> (Closes: #643715).
+  * Correcting incomplete lxc command loop over all containers in
+    initscript, thanks to Biuro <biuro@ntsn.pl> (Closes: #643774).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 30 Sep 2011 01:01:12 +0200
+
 lxc (0.7.5-2) unstable; urgency=low
 
   * Do not bail out with usage message when invoking lxc-list via lxc
