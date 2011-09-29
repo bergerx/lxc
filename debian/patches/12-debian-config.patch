@@ -71,7 +71,7 @@ diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 +#lxc.cgroup.memory.memsw.limit_in_bytes = 1G
 +
 +## Filesystem
-+lxc.mount.entry                         = proc $rootfs/sys proc nodev,noexec,nosuid 0 0
++lxc.mount.entry                         = proc $rootfs/proc proc nodev,noexec,nosuid 0 0
 +lxc.mount.entry                         = sysfs $rootfs/sys sysfs defaults,ro 0 0
 +#lxc.mount.entry                        = /srv/$name $rootfs/srv/$name none defaults,bind 0 0
 +
