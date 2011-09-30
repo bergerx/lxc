@@ -1,3 +1,12 @@
+lxc (0.7.5-3~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Fri, 30 Sep 2011 12:37:53 +0200
+
 lxc (0.7.5-3) unstable; urgency=low
 
   * Aborting early in initscript if lxc is not removed but not purged.
