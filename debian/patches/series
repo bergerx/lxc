@@ -14,3 +14,4 @@
 14-debian-daemontools-run.patch
 15-debian-password.patch
 16-debian-type.patch
+17-debian-chroot.patch
