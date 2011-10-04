@@ -12,3 +12,4 @@
 12-debian-config.patch
 13-lxc-create.patch
 14-debian-daemontools-run.patch
+15-debian-password.patch
