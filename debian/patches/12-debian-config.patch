@@ -2,9 +2,9 @@ Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description: Improving debian default container config.
 
 diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
---- lxc.orig/templates/lxc-debian.in	2011-09-21 13:27:35.402467356 +0200
-+++ lxc/templates/lxc-debian.in	2011-09-21 13:29:11.658935664 +0200
-@@ -217,30 +217,58 @@ copy_configuration()
+--- lxc.orig/templates/lxc-debian.in	2011-10-04 16:02:38.464908701 +0200
++++ lxc/templates/lxc-debian.in	2011-10-04 16:03:45.653238027 +0200
+@@ -217,30 +217,69 @@ copy_configuration()
      rootfs=$2
      name=$3
  
@@ -73,6 +73,17 @@ diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 +## Filesystem
 +lxc.mount.entry                         = proc $rootfs/proc proc nodev,noexec,nosuid 0 0
 +lxc.mount.entry                         = sysfs $rootfs/sys sysfs defaults,ro 0 0
++EOF
++
++    # Adding shared data directory if existing
++    if [ -d /srv/share/$hostname ]; then
++	echo "lxc.mount.entry                         = /srv/share/$hostname $rootfs/srv/$hostname none defaults,bind 0 0" >> $path/config
++    else
++	echo "#lxc.mount.entry                        = /srv/share/$hostname $rootfs/srv/$hostname none defaults,bind 0 0" >> $path/config
++    fi
++
++    cat >> $path/config << EOF
++
 +#lxc.mount.entry                        = /srv/$name $rootfs/srv/$name none defaults,bind 0 0
 +
 +## Network
