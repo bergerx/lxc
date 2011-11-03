@@ -1,0 +1,38 @@
+.\" lxc(1) - convenience Wrapper for LXC programs
+.\" Copyright (C) 2006-2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+.\"
+.\" lxc comes with ABSOLUTELY NO WARRANTY; for details see COPYING.
+.\" This is free software, and you are welcome to redistribute it
+.\" under certain conditions; see COPYING for details.
+.\"
+.\"
+.TH LXC 1 2011\-11\-04 0.7.5-3 "Linux Containers"
+
+.SH NAME
+\fBlxc\fR \- convenience Wrapper for LXC programs
+
+.SH SYNOPSIS
+\fBlxc\fR \fIPROGRAM\fR \fICONTAINER\fR
+
+.SH DESCRIPTION
+\fBlxc\fR is a convenience Wrapper for LXC programs. See \fIlxc\fR(7) for more information about the Linux Container tools (LXC).
+.PP
+Example (normal): lxc -n example.org start
+.PP
+Example (wrapper): lxc start example.org
+
+.SH OPTIONS
+.IP "\fIPROGRAM\fR" 4
+specifies a program of the Linux Container tools (LXC), see \fIlxc\fR(7).
+.IP "\fICONTAINER\fR" 4
+specifies a Linux Container in the LXC path (default /var/lib/lxc).
+
+.SH SEE ALSO
+\fIlxc\fR(7),
+\fIlxc\-list\fR(1).
+
+.SH BUGS
+Bugs can be reported by submitting a bugreport for the lxc package in the Debian Bug Tracking System at <\fIhttp://bugs.debian.org/\fR> or by writing a mail to the author.
+
+.SH AUTHOR
+lxc was written by Daniel Baumann <\fIdaniel.baumann@progress-technologies.net\fR>.

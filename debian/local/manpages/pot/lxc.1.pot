@@ -46,20 +46,10 @@ msgstr ""
 msgid "NAME"
 msgstr ""
 
-#. type: Plain text
-#: en/lxc-list.1:13
-msgid "B<lxc-list> - list Linux Containers by state"
-msgstr ""
-
 #. type: SH
 #: en/lxc-list.1:14 en/lxc.1:14
 #, no-wrap
 msgid "SYNOPSIS"
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-list.1:16
-msgid "B<lxc-list>"
 msgstr ""
 
 #. type: SH
@@ -68,31 +58,16 @@ msgstr ""
 msgid "DESCRIPTION"
 msgstr ""
 
-#. type: Plain text
-#: en/lxc-list.1:19
-msgid "B<lxc-list> lists Linux Containers by state."
-msgstr ""
-
 #. type: SH
 #: en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
 
-#. type: Plain text
-#: en/lxc-list.1:22
-msgid "lxc-list has no options."
-msgstr ""
-
 #. type: SH
 #: en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-list.1:26
-msgid "I<lxc>(7), I<lxc>(1)."
 msgstr ""
 
 #. type: SH
@@ -116,8 +91,62 @@ msgid "AUTHOR"
 msgstr ""
 
 #. type: Plain text
-#: en/lxc-list.1:31
+#: en/lxc.1:13
+msgid "B<lxc> - convenience Wrapper for LXC programs"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:16
+msgid "B<lxc> I<PROGRAM> I<CONTAINER>"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:19
 msgid ""
-"lxc-list was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"B<lxc> is a convenience Wrapper for LXC programs. See I<lxc>(7) for more "
+"information about the Linux Container tools (LXC)."
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:21
+msgid "Example (normal): lxc -n example.org start"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:23
+msgid "Example (wrapper): lxc start example.org"
+msgstr ""
+
+#. type: IP
+#: en/lxc.1:25
+#, no-wrap
+msgid "I<PROGRAM>"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:27
+msgid "specifies a program of the Linux Container tools (LXC), see I<lxc>(7)."
+msgstr ""
+
+#. type: IP
+#: en/lxc.1:27
+#, no-wrap
+msgid "I<CONTAINER>"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:29
+msgid "specifies a Linux Container in the LXC path (default /var/lib/lxc)."
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:33
+msgid "I<lxc>(7), I<lxc-list>(1)."
+msgstr ""
+
+#. type: Plain text
+#: en/lxc.1:38
+msgid ""
+"lxc was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt>."
 msgstr ""
