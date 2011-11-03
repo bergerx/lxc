@@ -2,19 +2,19 @@
 
 set -e
 
-_COMMAND="${1}"
+_PROGRAM="${1}"
 
-if [ -n "${_COMMAND}" ]
+if [ -n "${_PROGRAM}" ]
 then
 	shift
 else
-	echo "Usage: ${0} COMMAND CONTAINER"
+	echo "Usage: ${0} PROGRAM CONTAINER"
 	exit 1
 fi
 
-if [ ! -x "$(which lxc-${_COMMAND} 2>/dev/null)" ]
+if [ ! -x "$(which lxc-${_PROGRAM} 2>/dev/null)" ]
 then
-	echo "E: lxc-${_COMMAND} - no such command"
+	echo "E: lxc-${_PROGRAM} - no such program"
 	exit 1
 fi
 
@@ -32,15 +32,15 @@ then
 
 	_OPTIONS="--name ${_CONTAINER}"
 else
-	case "${_COMMAND}" in
+	case "${_PROGRAM}" in
 		backup|list|restore)
 			;;
 
 		*)
-			echo "Usage: ${0} COMMAND CONTAINER"
+			echo "Usage: ${0} PROGRAM CONTAINER"
 			exit 1
 			;;
 	esac
 fi
 
-lxc-${_COMMAND} ${_OPTIONS} ${@}
+lxc-${_PROGRAM} ${_OPTIONS} ${@}
