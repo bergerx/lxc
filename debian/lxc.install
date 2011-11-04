@@ -6,4 +6,4 @@ usr/lib/lxc/templates
 usr/share/doc
 usr/share/man
 
-debian/local/*	/usr/bin
+debian/local/lxc*	/usr/bin
