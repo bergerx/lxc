@@ -1,3 +1,33 @@
+lxc (0.7.5-4) unstable; urgency=low
+
+  * Adding patch to add entry for daemontools-run to /etc/inittab in
+    debian template if required.
+  * Adding patch to set a random root password in debian template.
+  * Updating debian-config.patch to create mount entries for shared data
+    directory conditionally upon existence.
+  * Adding patch to silence type call for debootstrap in debian
+    template.
+  * Adding patch to avoid warnings about locales if the target locale
+    and the source locale don't match by using C for all chroot calls
+    within the debian template.
+  * Using compression level 9 also for binary packages.
+  * Adding lxctl to suggests.
+  * Adding manpage for lxc-list.
+  * Using more precise program term instead of command when refering to
+    lxc tools in lxc wrapper.
+  * Adding manpage for lxc wrapper.
+  * Correcting typo in conffile name of lxc config script.
+  * Adding lxc postrm script to remove /etc/default/lxc when purging
+    package.
+  * Adding linux-container support package, currently exactely
+    replicating what lxc-debian does, see readme.
+  * Updating todo file.
+  * Adding readme for linux-container package.
+  * Adjusting wildcard in lxc install file to not include manpages.
+  * Adding manpages file for lxc to include local manpages.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 04 Nov 2011 16:55:08 +0100
+
 lxc (0.7.5-3) unstable; urgency=low
 
   * Aborting early in initscript if lxc is not removed but not purged.
