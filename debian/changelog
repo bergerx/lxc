@@ -30,7 +30,7 @@ lxc (0.7.5-4) unstable; urgency=low
 
 lxc (0.7.5-3) unstable; urgency=low
 
-  * Aborting early in initscript if lxc is not removed but not purged.
+  * Aborting early in initscript if lxc is removed but not purged.
   * Correcting typo in proc mount entry in the default config of the
     debian template, thanks to Sylvain Collilieux
     <Sylvain@Collilieux.net> (Closes: #643715).
