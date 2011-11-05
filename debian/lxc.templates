@@ -11,3 +11,12 @@ _Description: Linux Container: Automatic start and stop
  boot and shutdown on reboot/halt.
  .
  If unsure, choose yes (default).
+
+Template: lxc/directory
+Type: string
+Default: /var/lib/lxc
+_Description: LXC directory:
+ Please specify the directory that will be used to store the
+ Linux Containers.
+ .
+ If unsure, use /var/lib/lxc (default).
