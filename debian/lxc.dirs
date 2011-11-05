@@ -2,4 +2,3 @@ etc/lxc
 etc/lxc/auto
 usr/bin
 usr/sbin
-var/lib/lxc
