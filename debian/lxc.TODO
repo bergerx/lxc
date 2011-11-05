@@ -1,7 +1,7 @@
 * extend README.Debian to include all information from http://wiki.progress-linux.org/software/lxc/
-* expose lxc-setcap run with debconf
 * update package description
 * add bash completion for lxc/lxc-* commands
+* expose lxc-setcap run with debconf
 * use /usr/share/lxc/templates/* prefered over /var/cache/lxc
 * integrate debian packages that contain /usr/share/lxc/templates/*
 * include lxc-debconf from progress
