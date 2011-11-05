@@ -6,6 +6,9 @@
 override_dh_auto_configure:
 	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc --enable-doc
 
+override_dh_builddeb:
+	dh_builddeb -- -Zgzip -z9
+
 override_dh_install:
 	dh_install --fail-missing
 
@@ -17,6 +20,3 @@ override_dh_installinit:
 
 override_dh_strip:
 	dh_strip --dbg-package=lxc-dbg
-
-override_dh_builddeb:
-	dh_builddeb -- -Zgzip -z9
