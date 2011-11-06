@@ -24,8 +24,9 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
 . /lib/lsb/init-functions
 
-if [ -f /etc/default/lxc ] ; then
-  . /etc/default/lxc
+if [ -f /etc/default/lxc ]
+then
+	. /etc/default/lxc
 fi
 
 LXC_AUTO="${LXC_AUTO:-true}"
