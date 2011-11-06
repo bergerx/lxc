@@ -12,7 +12,20 @@ case "${1}" in
 		LINUX_CONTAINER_ENABLE="${RET}" # boolean
 
 		db_get linux-container/hostname
-		LINUX_CONTAINER_HOSTNAME="${RET:-debian}" # string
+		LINUX_CONTAINER_HOSTNAME="${RET}" # string
+
+		if [ -z "${LINUX_CONTAINER_HOSTNAME}" ]
+		then
+			if [ -n "$(cat /etc/hostname 2> /dev/null)" ]
+			then
+				LINUX_CONTAINER_HOSTNAME="$(cat /etc/hostname)"
+			elif [ -x /usr/bin/lsb_release ]
+			then
+				LINUX_CONTAINER_HOSTNAME="$(lsb_release -is | tr [A-Z] [a-z])"
+			else
+				LINUX_CONTAINER_HOSTNAME="debian"
+			fi
+		fi
 
 		db_stop
 
@@ -23,7 +36,6 @@ cat > "${_CONFFILE}" << EOF
 # /etc/default/linux-container
 
 LINUX_CONTAINER_ENABLE="${LINUX_CONTAINER_ENABLE}"
-LINUX_CONTAINER_HOSTNAME="${LINUX_CONTAINER_HOSTNAME}"
 EOF
 		fi
 
@@ -37,7 +49,6 @@ EOF
 		echo "LINUX_CONTAINER_ENABLE=" >> "${_CONFFILE}"
 
 		sed     -e "s|^ *LINUX_CONTAINER_ENABLE=.*|LINUX_CONTAINER_ENABLE=\"${LINUX_CONTAINER_ENABLE}\"|" \
-			-e "s|^ *LINUX_CONTAINER_HOSTNAME=.*|LINUX_CONTAINER_HOSTNAME=\"${LINUX_CONTAINER_HOSTNAME}\"|" \
 		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
 
 		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
