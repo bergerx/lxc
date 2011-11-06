@@ -17,6 +17,7 @@ Section: admin
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: debootstrap, libcap2-bin
+Conflicts: cgroup-bin
 Description: Linux containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
  for filesystem, network, pids, ipc, cpu and memory allocation and which can be
