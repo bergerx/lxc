@@ -1,7 +1,7 @@
-.\" lxc(1) - convenience Wrapper for LXC programs
+.\" lxc-halt(1) - shutdown a Linux Container
 .\" Copyright (C) 2006-2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
 .\"
-.\" lxc comes with ABSOLUTELY NO WARRANTY; for details see COPYING.
+.\" lxc-halt comes with ABSOLUTELY NO WARRANTY; for details see COPYING.
 .\" This is free software, and you are welcome to redistribute it
 .\" under certain conditions; see COPYING for details.
 .\"
@@ -14,28 +14,23 @@
 .TH LXC 1 06.11.2011 0.7.5\-4 "Linux Containers"
 
 .SH NAME
-\fBlxc\fP \- Convenience Wrapper für LXC Programme
+\fBlxc\-halt\fP \- fährt einen Linux Container herunter
 
 .SH SYNTAX
-\fBlxc\fP \fIPROGRAMM\fP \fICONTAINER\fP
+\fBlxc\-halt\fP \fICONTAINER\fP
 
 .SH BESCHREIBUNG
-\fBlxc\fP ist ein Convenience Wrapper für LXC Programme. Siehe \fIlxc\fP(7) für
-mehr Informationen über die Linux Container Tools (LXC).
-.PP
-Beispiel (normal): lxc \-n example.org start
-.PP
-Example (Wrapper): lxc start example.org
+\fBlxc\-halt\fP fährt einen Linux Container herunter ohne alle dessen Prozesse
+zu killen wie es lxc\-stop tut. Es führt einen ordentlichen Shutdown mittels
+eines Wechsel zu Runlevel 0 innerhalb des Containers durch.
 
 .SH OPTIONEN
-.IP \fIPROGRAMM\fP 4
-bezeichnet ein Programm der Linux Container Tools (LXC), siehe \fIlxc\fP(7).
 .IP \fICONTAINER\fP 4
 bezeichnet einen Linux Container im LXC Pfad (Standardeinstellung
 /var/lib/lxc).
 
 .SH "SIEHE AUCH"
-\fIlxc\fP(7), \fIlxc\-halt\fP(1), \fIlxc\-list\fP(1).
+\fIlxc\fP(7), \fIlxc\fP(1), \fIlxc\-list\fP(1).
 
 .SH FEHLER
 Fehler können durch Einreichen eines Fehlerberichtes für das lxc Paket im
@@ -43,5 +38,5 @@ Debian Bug Tracking System unter <\fIhttp://bugs.debian.org/\fP> oder
 durch Senden einer E\-Mail an den Autor mitgeteilt werden.
 
 .SH AUTOR
-lxc wurde von Daniel Baumann
+lxc\-halt wurde von Daniel Baumann
 <\fIdaniel.baumann@progress\-technologies.net\fP> geschrieben.
