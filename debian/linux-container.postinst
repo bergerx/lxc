@@ -104,26 +104,38 @@ EOF
 			echo "${LINUX_CONTAINER_HOSTNAME}" > /etc/hostname
 
 			# remove pointless services in a container
-			update-rc.d -f checkroot.sh remove # S
-			update-rc.d checkroot.sh stop 09 S .
+			update-rc.d -f checkroot.sh remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d checkroot.sh stop 09 S . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f umountfs remove # 0 6
-			update-rc.d umountfs start 09 0 6 .
+			update-rc.d -f umountfs remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d umountfs start 09 0 6 . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f umountroot remove # 0 6
-			update-rc.d umountroot start 10 0 6 .
+			update-rc.d -f umountroot remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d umountroot start 10 0 6 . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 
 			# The following initscripts don't provide an empty start or stop block.
 			# To prevent them being enabled on upgrades, we leave a start link on
 			# runlevel 3.
-			update-rc.d -f hwclock.sh remove # S 0 6
-			update-rc.d hwclock.sh start 10 3 .
+			update-rc.d -f hwclock.sh remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d hwclock.sh start 10 3 . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f hwclockfirst.sh remove # S
-			update-rc.d hwclockfirst.sh start 08 3 .
+			update-rc.d -f hwclockfirst.sh remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d hwclockfirst.sh start 08 3 . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f module-init-tools remove # S
-			update-rc.d module-init-tools start 10 3 .
+			update-rc.d -f module-init-tools remove \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
+			update-rc.d module-init-tools start 10 3 . \ |
+			grep -v 'update-rc.d: using dependency based boot sequencing'
 		fi
 		;;
 
