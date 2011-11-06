@@ -48,4 +48,7 @@ then
 	fi
 
 	rsync -aPHv --delete --progress /var/lib/lxc/${_CONTAINER}/rootfs.backup${_BACKUP}/ /var/lib/lxc/${_CONTAINER}/rootfs
+else
+	echo "E: /var/lib/lxc/${_CONTAINER}/rootfs.backup* - no such directories"
+	exit 1
 fi
