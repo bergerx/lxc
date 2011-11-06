@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-2\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-06 06:48+0100\n"
+"POT-Creation-Date: 2011-11-06 07:49+0100\n"
 "PO-Revision-Date: 2010-07-20 05:54+0200\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -54,6 +54,16 @@ msgstr "Linux Container: Rechnername für diesen Container?"
 #: ../linux-container.templates:3001
 msgid "What should be the hostname of the current container?"
 msgstr "Was soll der Rechnername dieses Containers sein?"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid ""
+"This defaults to either /etc/hostname (if present), is automatically guessed "
+"through lsb_release (if present), or otherwise set to 'debian'."
+msgstr ""
+"Der Standardwert wird aus /etc/hostname ermittelt (falls vorhanden), "
+"andernfalls mittels lsb_release bestimmt oder auf 'debian' gesetzt."
 
 #. Type: title
 #. Description
