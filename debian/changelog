@@ -1,3 +1,27 @@
+lxc (0.7.5-5) unstable; urgency=low
+
+  * Correcting wording in 0.7.5-3 changelog entry.
+  * Updating copyright file to reflect rewrite of packaging.
+  * Sorting overrides in rules alphabetically.
+  * Adding debconf support for managing lxc directory.
+  * Updating todo files.
+  * Adding conflicts against cgroup-bin for the time being (Closes:
+    #647769).
+  * Silencing update-rc.d calls in linux-container postinst.
+  * Update bailout in linux-container postinst if disabled.
+  * Adding error message in lxc-backup and lxc-restore if container
+    directories do not exist.
+  * Adding lxc-halt command.
+  * Correcting indenting in lxc init script.
+  * Renaming internal command variable to program in lxc init script for
+    consistency with local lxc tools.
+  * Allowing to choose shutdown method trough debconf (Closes: #595926).
+  * Using lxc convenience wrapper in lxc init script.
+  * Adding manpage for lxc-halt.
+  * Updating linux-container hostname handling.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 06 Nov 2011 07:53:56 +0100
+
 lxc (0.7.5-4) unstable; urgency=low
 
   * Adding patch to add entry for daemontools-run to /etc/inittab in
