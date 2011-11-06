@@ -12,6 +12,7 @@ Package: lxc
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: debootstrap, libcap2-bin
+Conflicts: cgroup-bin
 Suggests: lxctl
 Description: Linux containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
