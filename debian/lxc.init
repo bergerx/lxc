@@ -74,7 +74,7 @@ Lxc ()
 			*)
 				log_progress_msg "${_CONTAINER}"
 
-				lxc-${_PROGRAM} -n ${_CONTAINER}
+				lxc ${_PROGRAM} ${_CONTAINER}
 				;;
 		esac
 	done
