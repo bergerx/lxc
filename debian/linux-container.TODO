@@ -1,10 +1,10 @@
-* add debconf handling for network config (re-using stuff from d-i for multiple interfaces)
+* split out postinst into /usr/sbin/linux-container-update
+* add dpkg post hook to call /usr/sbin/linux-container-update?
+* add debconf handling for multiple network config (re-using stuff from d-i)
 * use same preseed field names as d-i where possible
-* make number of ttys configurable through debconf (medium)
 * integrate support for systemd
 * integrate support for upstart
 * integrate support for runit
 * integrate support for file-rc
-* use lsb_release (and fallbacks) to apply vendor and distribution specific modifications
 * disable udev
 * disable update-initramfs
