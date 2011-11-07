@@ -12,7 +12,7 @@ case "${1}" in
 		LINUX_CONTAINER_ENABLE="${RET}" # boolean
 
 		db_get linux-container/hostname
-		LINUX_CONTAINER_HOSTNAME="${RET}" # string
+		LINUX_CONTAINER_HOSTNAME="${RET}" # string (w/o empty)
 
 		if [ -z "${LINUX_CONTAINER_HOSTNAME}" ]
 		then
