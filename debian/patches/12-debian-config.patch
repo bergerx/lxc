@@ -3,7 +3,7 @@ Description: Improving debian default container config.
 
 diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 --- lxc.orig/templates/lxc-debian.in	2011-11-07 10:28:41.540436153 +0100
-+++ lxc/templates/lxc-debian.in	2011-11-07 10:54:17.552049541 +0100
++++ lxc/templates/lxc-debian.in	2011-11-07 10:56:09.840596548 +0100
 @@ -217,30 +217,83 @@ copy_configuration()
      rootfs=$2
      name=$3
@@ -43,7 +43,7 @@ diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 +#lxc.console                            = /var/log/lxc/$name.console
 +
 +## Capabilities
-+lxc.cap.drop                            = sys_admin
++lxc.cap.drop                            = sys_admin sys_module mac_admin mac_override
 +
 +## Devices
 +# Allow all devices
