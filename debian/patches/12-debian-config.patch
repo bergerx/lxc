@@ -2,9 +2,9 @@ Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description: Improving debian default container config.
 
 diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
---- lxc.orig/templates/lxc-debian.in	2011-10-04 16:02:38.464908701 +0200
-+++ lxc/templates/lxc-debian.in	2011-10-04 16:03:45.653238027 +0200
-@@ -217,30 +217,69 @@ copy_configuration()
+--- lxc.orig/templates/lxc-debian.in	2011-11-07 10:28:41.540436153 +0100
++++ lxc/templates/lxc-debian.in	2011-11-07 10:28:12.064279464 +0100
+@@ -217,30 +217,74 @@ copy_configuration()
      rootfs=$2
      name=$3
  
@@ -35,8 +35,13 @@ diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 +lxc.cap.drop                            = sys_admin
 +
 +## Devices
++# Allow all devices
 +#lxc.cgroup.devices.allow               = a
++# Deny all devices
 +lxc.cgroup.devices.deny                 = a
++# Allow to mknod all devices (but not using them)
++lxc.cgroup.devices.allow = c *:* m
++lxc.cgroup.devices.allow = b *:* m
 +# /dev/null
 +lxc.cgroup.devices.allow                = c 1:3 rwm
 +# /dev/zero
