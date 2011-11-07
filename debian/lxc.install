@@ -6,4 +6,8 @@ usr/lib/lxc/templates
 usr/share/doc
 usr/share/man
 
-debian/local/lxc*	/usr/bin
+debian/local/lxc		/usr/bin
+debian/local/lxc-backup		/usr/bin
+debian/local/lxc-halt		/usr/bin
+debian/local/lxc-list		/usr/bin
+debian/local/lxc-restore	/usr/bin
