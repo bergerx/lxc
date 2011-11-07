@@ -3,8 +3,8 @@ Description: Improving debian default container config.
 
 diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 --- lxc.orig/templates/lxc-debian.in	2011-11-07 10:28:41.540436153 +0100
-+++ lxc/templates/lxc-debian.in	2011-11-07 10:28:12.064279464 +0100
-@@ -217,30 +217,74 @@ copy_configuration()
++++ lxc/templates/lxc-debian.in	2011-11-07 10:46:28.065721539 +0100
+@@ -217,30 +217,76 @@ copy_configuration()
      rootfs=$2
      name=$3
  
@@ -68,6 +68,8 @@ diff -Naurp lxc.orig/templates/lxc-debian.in lxc/templates/lxc-debian.in
 +lxc.cgroup.devices.allow                = c 5:2 rwm
 +# /dev/rtc
 +lxc.cgroup.devices.allow                = c 254:0 rwm
++# /dev/fuse
++lxc.cgroup.devices.allow                = c 10:229 rwm
 +
 +## Limits
 +#lxc.cgroup.cpu.shares                  = 1024
