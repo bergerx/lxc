@@ -1,0 +1,147 @@
+# Portuguese translation of lxc debconf templates.
+# Copyright (C) 2011 Miguel Figueiredo <elmig@debianpt.org>
+# This file is distributed under the same license as the lxc package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lxc\n"
+"Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
+"POT-Creation-Date: 2011-11-10 11:02+0100\n"
+"PO-Revision-Date: 2011-11-08 21:40+0000\n"
+"Last-Translator: Miguel Figueiredo <elmig@debianpt.org>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
+"Language: Portuguese\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: title
+#. Description
+#: ../linux-container.templates:1001
+msgid "Linux Container (Setup)"
+msgstr "Linux Container (Configuração)"
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+msgid "Linux Container: enable setup for LXC?"
+msgstr "Linux Container: activar configuração para LXC?"
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+msgid ""
+"Linux Container can do all the necessary modifications needed within a "
+"container to make it work with LXC. Do you want to proceed?"
+msgstr ""
+"O Linux Container pode fazer todas as alterações necessárias dentro de um "
+"container para o fazer funcionar com LXC. Deseja continuar?"
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+msgid "If unsure, choose no (default)."
+msgstr "Em caso de dúvida, escolha não (pré-definido)."
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid "Linux Container: Hostname for LXC?"
+msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid "What should be the hostname of the current container?"
+msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid ""
+"This defaults to either /etc/hostname (if present), is automatically guessed "
+"through lsb_release (if present), or otherwise set to 'debian'."
+msgstr ""
+"É definido, por defeito, para /etc/hostname (se existir), ou é "
+"automaticamente adivinhado através do lsb_release (se existente), ou em "
+"último caso definido para 'debian'."
+
+#. Type: title
+#. Description
+#: ../lxc.templates:1001
+msgid "Linux Containers (LXC) setup"
+msgstr "Configuração de Linux Containers (LXC)"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "Automatically start Linux Containers on boot?"
+msgstr "Iniciar automaticamente Linux Containers no arranque?"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be automatically started during system boot and shut "
+#| "down on reboot or halt."
+msgid ""
+"Linux Containers that have their configuration files copied or symlinked to "
+"the /etc/lxc/auto directory can be automatically started during system boot, "
+"and shut down on reboot or halt."
+msgstr ""
+"Os Linux Containers podem ser automaticamente iniciados durante o arranque "
+"do sistema e parados durante ao reiniciar ou desligar."
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "If unsure, choose yes (default)."
+msgstr "Em caso de dúvida, escolha sim (pré-definido)."
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid "Linux Container: Stop method"
+msgstr "Linux Container: Método de paragem"
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid ""
+"Linux Containers can be stopped in different ways. The stop method kills all "
+"processes inside the container. The halt method initiates a shutdown, which "
+"takes longer and can have problems with containers that don't shutdown "
+"themselfs properly."
+msgstr ""
+"Os Linux Containers podem ser parados de várias formas. O método stop mata "
+"todos os processos dentro do container. O método halt inicia uma paragem, "
+"que demora mais e pode ter problemas com containers que não se desligam a "
+"eles próprios correctamente."
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid "If unsure, choose stop (default)."
+msgstr "Em caso de dúvida, escolha stop (pré-definido)."
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "LXC directory:"
+msgstr "Directório do LXC:"
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid ""
+"Please specify the directory that will be used to store the Linux Containers."
+msgstr ""
+"Por favor especique o directório que pode ser utilizado para guardar os "
+"Linux Containers."
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "If unsure, use /var/lib/lxc (default)."
+msgstr "Em caso de dúvida, utilize /var/lib/lxc (pré-definido)."
