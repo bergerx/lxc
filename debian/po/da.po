@@ -1,0 +1,144 @@
+# Danish translation of lxc debconf templates.
+# Copyright (C) 2011 Joe Hansen <joedalton2@yahoo.dk>
+# This file is distributed under the same license as the lxc package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lxc\n"
+"Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
+"POT-Creation-Date: 2011-11-10 11:02+0100\n"
+"PO-Revision-Date: 2011-10-23 17:30+01:00\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: title
+#. Description
+#: ../linux-container.templates:1001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container (Setup)"
+msgstr "Opsætning af Linuxcontainere (LXC)"
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container: enable setup for LXC?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+msgid ""
+"Linux Container can do all the necessary modifications needed within a "
+"container to make it work with LXC. Do you want to proceed?"
+msgstr ""
+
+#. Type: boolean
+#. Description
+#: ../linux-container.templates:2001
+msgid "If unsure, choose no (default)."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container: Hostname for LXC?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid "What should be the hostname of the current container?"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid ""
+"This defaults to either /etc/hostname (if present), is automatically guessed "
+"through lsb_release (if present), or otherwise set to 'debian'."
+msgstr ""
+
+#. Type: title
+#. Description
+#: ../lxc.templates:1001
+msgid "Linux Containers (LXC) setup"
+msgstr "Opsætning af Linuxcontainere (LXC)"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "Automatically start Linux Containers on boot?"
+msgstr "Igangsæt automatisk Linuxcontainere ved opstart?"
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be automatically started during system boot and shut "
+#| "down on reboot or halt."
+msgid ""
+"Linux Containers that have their configuration files copied or symlinked to "
+"the /etc/lxc/auto directory can be automatically started during system boot, "
+"and shut down on reboot or halt."
+msgstr ""
+"Linuxcontainere kan automatisk igangsættes ved systemopstart og lukke ned "
+"ved genstart eller stop."
+
+#. Type: boolean
+#. Description
+#: ../lxc.templates:2001
+msgid "If unsure, choose yes (default)."
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container: Stop method"
+msgstr "Opsætning af Linuxcontainere (LXC)"
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid ""
+"Linux Containers can be stopped in different ways. The stop method kills all "
+"processes inside the container. The halt method initiates a shutdown, which "
+"takes longer and can have problems with containers that don't shutdown "
+"themselfs properly."
+msgstr ""
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid "If unsure, choose stop (default)."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "LXC directory:"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid ""
+"Please specify the directory that will be used to store the Linux Containers."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "If unsure, use /var/lib/lxc (default)."
+msgstr ""
