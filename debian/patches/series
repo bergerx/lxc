@@ -1,5 +1,5 @@
 01-lxc-libdir.patch
 02-lxc-distclean.patch
 03-lxc-configuration-path.patch
-11-doc-ip-address.patch
-13-lxc-create.patch
+04-lxc-create.patch
+05-doc-ip-address.patch
