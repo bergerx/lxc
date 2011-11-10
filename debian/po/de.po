@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-2\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-06 07:49+0100\n"
+"POT-Creation-Date: 2011-11-10 11:02+0100\n"
 "PO-Revision-Date: 2010-07-20 05:54+0200\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -68,22 +68,22 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-msgid "Linux Container (LXC)"
-msgstr "Linux Container (LXC)"
+msgid "Linux Containers (LXC) setup"
+msgstr "Linux Container (LXC) Setup"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
-msgid "Linux Container: Automatic start and stop"
-msgstr "Linux Container: Automatischer Start und Stop"
+msgid "Automatically start Linux Containers on boot?"
+msgstr "Linux Container beim Hochfahren des Systems automatisch starten?"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid ""
 "Linux Containers that have their configuration files copied or symlinked to "
-"the /etc/lxc/auto directory can be automatically started during system boot "
-"and shutdown on reboot/halt."
+"the /etc/lxc/auto directory can be automatically started during system boot, "
+"and shut down on reboot or halt."
 msgstr ""
 "Linux Container welche ihre Konfigurationsdateien in das /etc/lxc/auto "
 "Verzeichnis kopiert oder gelinkt haben, können automatisch beim "
