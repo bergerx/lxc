@@ -75,7 +75,7 @@ msgstr "Linux Container (LXC) Setup"
 #. Description
 #: ../lxc.templates:2001
 msgid "Automatically start Linux Containers on boot?"
-msgstr "Linux Container beim Hochfahren des Systems automatisch starten?"
+msgstr "Linux Container automatisch beim Hochfahren starten?"
 
 #. Type: boolean
 #. Description
@@ -86,8 +86,9 @@ msgid ""
 "and shut down on reboot or halt."
 msgstr ""
 "Linux Container welche ihre Konfigurationsdateien in das /etc/lxc/auto "
-"Verzeichnis kopiert oder gelinkt haben, können automatisch beim "
-"Hochfahrendes Systems gestarted und beim Herunterfahren gestoppt werden."
+"Verzeichnis kopiert oder gelinkt haben, können während des Hochfahrens "
+"automatisch gestartet und während des Herunterfahrens oder Neustarts "
+"automatisch beendet werden."
 
 #. Type: boolean
 #. Description
