@@ -14,6 +14,9 @@ case "${1}" in
 		db_get linux-container/hostname
 		LINUX_CONTAINER_HOSTNAME="${RET}" # string (w/o empty)
 
+		db_get linux-container/dhcp
+		LINUX_CONTAINER_DHCP="${RET}" # boolean
+
 		if [ -z "${LINUX_CONTAINER_HOSTNAME}" ]
 		then
 			if [ -n "$(cat /etc/hostname 2> /dev/null)" ]
@@ -25,6 +28,27 @@ case "${1}" in
 			else
 				LINUX_CONTAINER_HOSTNAME="debian"
 			fi
+		fi
+
+		if [ "${LINUX_CONTAINER_DHCP}" = "false" ]
+		then
+			db_get linux-container/address
+			LINUX_CONTAINER_ADDRESS="${RET:-192.168.0.1}" # string (w/o empty)
+
+			db_get linux-container/broadcast
+			LINUX_CONTAINER_BROADCAST="${RET}" # string (w/ empty)
+
+			db_get linux-container/gateway
+			LINUX_CONTAINER_GATEWAY="${RET}" # string (w/ empty)
+
+			db_get linux-container/netmask
+			LINUX_CONTAINER_NETMASK="${RET:-255.255.255.0}" # string (w/o empty)
+
+			db_get linux-container/network
+			LINUX_CONTAINER_NETWORK="${RET}" # string (w/ empty)
+
+			db_get linux-container/nameservers
+			LINUX_CONTAINER_NAMESERVERS="${RET}" # string (w/ empty)
 		fi
 
 		db_stop
@@ -105,14 +129,78 @@ EOF
 		mkdir -p /selinux
 		echo 0 > /selinux/enforce
 
-		# configure the network using the dhcp
+		# configure the network
+		if [ "${LINUX_CONTAINER_DHCP}" = "false" ]
+		then
+
+cat > /etc/hosts << EOF
+127.0.0.1	localhost
+${LINUX_CONTAINER_ADDRESS}	${LINUX_CONTAINER_HOSTNAME}
+::1		localhost ip6-localhost ip6-loopback
+fe00::0		ip6-localnet
+ff00::0		ip6-mcastprefix
+ff02::1		ip6-allnodes
+ff02::2		ip6-allrouters
+EOF
+
+		fi
+
 cat > /etc/network/interfaces << EOF
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
 auto lo
 iface lo inet loopback
 
+# The primary network interface
 auto eth0
+EOF
+
+		case "${LINUX_CONTAINER_DHCP}" in
+			true)
+
+cat >> /etc/network/interfaces << EOF
 iface eth0 inet dhcp
 EOF
+
+				;;
+
+			false)
+
+cat >> /etc/network/interfaces << EOF
+iface eth0 inet static
+	address ${LINUX_CONTAINER_ADDRESS}
+EOF
+
+				if [ -n "${LINUX_CONTAINER_BROADCAST}" ]
+				then
+					echo "	broadcast ${LINUX_CONTAINER_BROADCAST}" >> /etc/network/interfaces
+				fi
+
+				if [ -n "${LINUX_CONTAINER_GATEWAY}" ]
+				then
+					echo "	gateway ${LINUX_CONTAINER_GATEWAY}" >> /etc/network/interfaces
+				fi
+
+				echo "	netmask ${LINUX_CONTAINER_NETMASK}" >> /etc/network/interfaces
+
+				if [ -n "${LINUX_CONTAINER_NETWORK}" ]
+				then
+					echo "	network ${LINUX_CONTAINER_NETWORK}" >> /etc/network/interfaces
+				fi
+
+				if [ -n "${LINUX_CONTAINER_NAMESERVERS}" ]
+				then
+					rm -f /etc/resolv.conf
+
+					for _NAMESERVER in $(echo ${LINUX_CONTAINER_NAMESERVERS} | sed -e 's|,| |g')
+					do
+						echo "nameserver ${_NAMESERVER}" >> /etc/resolv.conf
+					done
+				fi
+				;;
+		esac
 
 		# set the hostname
 		echo "${LINUX_CONTAINER_HOSTNAME}" > /etc/hostname
