@@ -82,6 +82,61 @@ EOF
 			exit 0
 		fi
 
+		# Applying bug fixes
+		if [ -x /usr/bin/lsb_release ]
+		then
+			_DISTRIBUTOR="$(lsb_release -is | tr [A-Z] [a-z])"
+			_CODENAME="$(lsb_release -cs | tr [A-Z] [a-z])"
+		else
+			if [ -e /etc/progress_version ]
+			then
+				_DISTRIBUTOR="progress"
+				_VERSION="$(awk -F. '{ print $1 "." $2 }' /etc/progress_version)"
+
+				case "${_VERSION}" in
+					1.0)
+						_CODENAME="artax"
+						;;
+
+					1.9)
+						_CODENAME="artax-backports"
+						;;
+
+					2.0)
+						_CODENAME="baureo"
+						;;
+				esac
+			elif [ -e /etc/debian_version ]
+			then
+				_DISTRIBUTOR="debian"
+
+				if grep -qs sid /etc/debian_version
+				then
+					_CODENAME="sid"
+				else
+					_VERSION="$(awk -F. '{ print $1 "." $2 }' /etc/debian_version)"
+				fi
+
+				case "${_VERSION}" in
+					6.0)
+						_CODENAME="squeeze"
+						;;
+
+					7.0)
+						_CODENAME="wheezy"
+						;;
+				esac
+			fi
+		fi
+
+		if ls "/usr/share/linux-container/bugs/${_DISTRIBUTOR}-${_CODENAME}"/* > /dev/null 2>&1
+		then
+			for _SCRIPT in "/usr/share/linux-container/bugs/${_DISTRIBUTOR}-${_CODENAME}"/*
+			do
+				./"${_SCRIPT}"
+			done
+		fi
+
 		# squeeze only has /dev/tty and /dev/tty0 by default,
 		# therefore creating missing device nodes for tty1-4.
 		for tty in $(seq 1 4)
