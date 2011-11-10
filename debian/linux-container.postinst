@@ -56,11 +56,15 @@ case "${1}" in
 		if [ ! -e "${_CONFFILE}" ]
 		then
 
+			echo -n "P: Creating file ${_CONFFILE}..."
+
 cat > "${_CONFFILE}" << EOF
 # /etc/default/linux-container
 
 LINUX_CONTAINER_ENABLE="${LINUX_CONTAINER_ENABLE}"
 EOF
+
+			echo " done."
 		fi
 
 		cp -a -f "${_CONFFILE}" "${_CONFFILE}.tmp"
@@ -68,14 +72,18 @@ EOF
 		# If the admin deleted or commented some variables but then set
 		# them via debconf, (re-)add them to the config file.
 
+		echo -n "P: Updating file ${_CONFFILE}..."
+
 		test -z "${LINUX_CONTAINER_ENABLE}" || \
 		grep -Eq '^ *LINUX_CONTAINER_ENABLE=' "${_CONFFILE}" || \
 		echo "LINUX_CONTAINER_ENABLE=" >> "${_CONFFILE}"
 
-		sed     -e "s|^ *LINUX_CONTAINER_ENABLE=.*|LINUX_CONTAINER_ENABLE=\"${LINUX_CONTAINER_ENABLE}\"|" \
+		sed -e "s|^ *LINUX_CONTAINER_ENABLE=.*|LINUX_CONTAINER_ENABLE=\"${LINUX_CONTAINER_ENABLE}\"|" \
 		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
 
 		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
+
+		echo " done."
 
 		if [ "${LINUX_CONTAINER_ENABLE}" != "true" ]
 		then
@@ -91,18 +99,18 @@ EOF
 			if [ -e /etc/progress_version ]
 			then
 				_DISTRIBUTOR="progress"
-				_VERSION="$(awk -F. '{ print $1 "." $2 }' /etc/progress_version)"
+				_VERSION="$(cat /etc/progress_version)"
 
 				case "${_VERSION}" in
-					1.0)
+					1.0*)
 						_CODENAME="artax"
 						;;
 
-					1.9)
+					1.9*)
 						_CODENAME="artax-backports"
 						;;
 
-					2.0)
+					2.0*)
 						_CODENAME="baureo"
 						;;
 				esac
@@ -114,15 +122,15 @@ EOF
 				then
 					_CODENAME="sid"
 				else
-					_VERSION="$(awk -F. '{ print $1 "." $2 }' /etc/debian_version)"
+					_VERSION="$(cat /etc/debian_version)"
 				fi
 
 				case "${_VERSION}" in
-					6.0)
+					6.0*)
 						_CODENAME="squeeze"
 						;;
 
-					7.0)
+					7.0*)
 						_CODENAME="wheezy"
 						;;
 				esac
@@ -139,19 +147,37 @@ EOF
 
 		# squeeze only has /dev/tty and /dev/tty0 by default,
 		# therefore creating missing device nodes for tty1-4.
-		for tty in $(seq 1 4)
+		for _NUMBER in $(seq 1 6)
 		do
-			if [ ! -e /dev/tty$tty ]
+			if [ ! -e "/dev/tty${_NUMBER}" ]
 			then
-				mknod /dev/tty$tty c 4 $tty
+				echo -n "P: Creating file /dev/tty${_NUMBER}..."
+
+				mknod "/dev/tty${_NUMBER}" c 4 "${_NUMBER}"
+
+				echo " done."
 			fi
 		done
 
 		# setup /etc/inittab
 
 cat > /etc/inittab << EOF
+# /etc/inittab: init(8) configuration.
+
+# The default runlevel.
 id:2:initdefault:
+
+# Boot-time system configuration/initialization script.
+# This is run first except when booting in emergency (-b) mode.
 si::sysinit:/etc/init.d/rcS
+
+# /etc/init.d executes the S and K scripts upon change
+# of runlevel.
+#
+# Runlevel 0 is halt.
+# Runlevel 1 is single-user.
+# Runlevels 2-5 are multi-user.
+# Runlevel 6 is reboot.
 l0:0:wait:/etc/init.d/rc 0
 l1:1:wait:/etc/init.d/rc 1
 l2:2:wait:/etc/init.d/rc 2
@@ -161,6 +187,18 @@ l5:5:wait:/etc/init.d/rc 5
 l6:6:wait:/etc/init.d/rc 6
 # Normally not reached, but fallthrough in case of emergency.
 z6:6:respawn:/sbin/sulogin
+
+# /sbin/getty invocations for the runlevels.
+#
+# The "id" field MUST be the same as the last
+# characters of the device (after "tty").
+#
+# Format:
+#  <id>:<runlevels>:<action>:<process>
+#
+# Note that on most Debian systems tty7 is used by the X Window System,
+# so if you want to add more getty's go ahead but skip tty7 if you run X.
+#
 1:2345:respawn:/sbin/getty 38400 console
 c1:12345:respawn:/sbin/getty 38400 tty1 linux
 c2:12345:respawn:/sbin/getty 38400 tty2 linux
@@ -181,12 +219,18 @@ EOF
 		fi
 
 		# disable selinux
+		echo -n "P: Disabling feature selinux..."
+
 		mkdir -p /selinux
 		echo 0 > /selinux/enforce
+
+		echo " done."
 
 		# configure the network
 		if [ "${LINUX_CONTAINER_DHCP}" = "false" ]
 		then
+
+			echo -n "P: Creating file /etc/hosts..."
 
 cat > /etc/hosts << EOF
 127.0.0.1	localhost
@@ -198,11 +242,14 @@ ff02::1		ip6-allnodes
 ff02::2		ip6-allrouters
 EOF
 
+			echo " done."
 		fi
 
+echo -n "P: Creating file /etc/network/interfaces..."
+
 cat > /etc/network/interfaces << EOF
-# This file describes the network interfaces available on your system
-# and how to activate them. For more information, see interfaces(5).
+# Used by ifup(8) and ifdown(8). See the interfaces(5) manpage or
+# /usr/share/doc/ifupdown/examples for more information.
 
 # The loopback network interface
 auto lo
@@ -219,6 +266,7 @@ cat >> /etc/network/interfaces << EOF
 iface eth0 inet dhcp
 EOF
 
+				echo " done."
 				;;
 
 			false)
@@ -245,54 +293,61 @@ EOF
 					echo "	network ${LINUX_CONTAINER_NETWORK}" >> /etc/network/interfaces
 				fi
 
+				echo " done."
+
 				if [ -n "${LINUX_CONTAINER_NAMESERVERS}" ]
 				then
+					echo -n "P: Creating file /etc/resolv.conf..."
+
 					rm -f /etc/resolv.conf
 
 					for _NAMESERVER in $(echo ${LINUX_CONTAINER_NAMESERVERS} | sed -e 's|,| |g')
 					do
 						echo "nameserver ${_NAMESERVER}" >> /etc/resolv.conf
 					done
+
+					echo " done."
 				fi
 				;;
 		esac
 
 		# set the hostname
+		echo -n "P: Creating file /etc/hostname..."
+
 		echo "${LINUX_CONTAINER_HOSTNAME}" > /etc/hostname
 
+		echo " done."
+
 		# remove pointless services in a container
-		update-rc.d -f checkroot.sh remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d checkroot.sh stop 09 S . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+		for _SERVICE in checkroot.sh umountfs umountroot
+		do
+			if [ -e "/etc/init.d/${_SERVICE}" ]
+			then
+				echo -n "P: Disabling service ${_SERVICE}..."
 
-		update-rc.d -f umountfs remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d umountfs start 09 0 6 . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+				update-rc.d -f ${_SERVICE} remove | \
+					grep -v "update-rc.d: using dependency based boot sequencing" || true
 
-		update-rc.d -f umountroot remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d umountroot start 10 0 6 . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+				echo " done."
+			fi
+		done
 
 		# The following initscripts don't provide an empty start or stop block.
 		# To prevent them being enabled on upgrades, we leave a start link on
-		# runlevel 3.
-		update-rc.d -f hwclock.sh remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d hwclock.sh start 10 3 . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+		# runlevel 3. FIXME
 
-		update-rc.d -f hwclockfirst.sh remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d hwclockfirst.sh start 08 3 . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+		for _SERVICE in hwclock.sh hwclockfirst.sh module-init-tools
+		do
+			if [ -e "/etc/init.d/${_SERVICE}" ]
+			then
+				echo -n "P: Disabling service ${_SERVICE}..."
 
-		update-rc.d -f module-init-tools remove \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
-		update-rc.d module-init-tools start 10 3 . \ |
-		grep -v 'update-rc.d: using dependency based boot sequencing'
+				update-rc.d -f ${_SERVICE} remove | \
+					grep -v "update-rc.d: using dependency based boot sequencing" || true
+
+				echo " done."
+			fi
+		done
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
