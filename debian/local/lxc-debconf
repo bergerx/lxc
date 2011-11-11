@@ -182,6 +182,13 @@ Package: *
 Pin: release n=${_DIST}-updates
 Pin-Priority: 999
 EOF
+			# Import archive keys
+			for _KEY in 1.0-artax-automatic 1.0-artax-stable
+			do
+				wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+				Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
+				rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+			done
 
 			case "${_DISTRIBUTION}" in
 				*-backports)
@@ -195,19 +202,21 @@ EOF
 
 					;;
 			esac
+			;;
+	esac
 
-		# Mount pseudo-filesystems
-		mount -o bind /dev/pts "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
-		mount -o bind /proc "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
-		mount -o bind /sys "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
+	# Mount pseudo-filesystems
+	mount -o bind /dev/pts "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
+	mount -o bind /proc "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
+	mount -o bind /sys "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
 
-		# Disable dpkg syncing
+	# Disable dpkg syncing
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
 force-unsafe-io
 EOF
 
-		# Create policy-rc.d file
+	# Create policy-rc.d file
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d" << EOF
 #!/bin/sh
@@ -215,42 +224,32 @@ echo "All runlevel operations denied by policy" >&2
 exit 101
 EOF
 
-		chmod 0755 "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
+	chmod 0755 "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
 
-		# Import archive keys (FIXME)
-		for _KEY in 1.0-artax-automatic 1.0-artax-stable
-		do
-			wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-			Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
-			rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-		done
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
 
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
+	# Upgrade to Progress
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes upgrade"
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes dist-upgrade"
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes autoremove"
+	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get clean"
 
-		# Upgrade to Progress
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes upgrade"
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes dist-upgrade"
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes autoremove"
-		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get clean"
+	# Cleanup
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf"
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
 
-		# Temporary hack for base-files (FIXME)
-		for _FILE in motd profile
-		do
-			rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/${_FILE}"
-			cp "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/share/base-files/${_FILE}" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc"
-		done
+	# Unmount pseudo-filesystems
+	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
+	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
+	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
 
-		# Cleanup
-		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf"
-		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
-
-		# Unmount pseudo-filesystems
-		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
-		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
-		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
-		;;
-	esac
+	# Temporary hack for base-files (FIXME)
+	for _FILE in motd profile
+	do
+		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/${_FILE}"
+		cp "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/share/base-files/${_FILE}" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc"
+	done
 
 	# Removing openssh-server host keys
 	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"/etc/ssh/ssh_host_*_key
