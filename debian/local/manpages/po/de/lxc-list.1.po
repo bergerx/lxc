@@ -1,0 +1,127 @@
+# German translations for lxc-list
+# 2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+# This file is distributed under the same license as the lxc packaging.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lxc\n"
+"POT-Creation-Date: 2011-11-04 14:18+0100\n"
+"PO-Revision-Date: 2010-05-24 09:59+0300\n"
+"Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. type: TH
+#: en/lxc-list.1:9 en/lxc.1:9
+#, no-wrap
+msgid "LXC"
+msgstr "LXC"
+
+#. type: TH
+#: en/lxc-list.1:9 en/lxc.1:9
+#, no-wrap
+msgid "2011-11-04"
+msgstr "04.11.2011"
+
+#. type: TH
+#: en/lxc-list.1:9 en/lxc.1:9
+#, no-wrap
+msgid "0.7.5-3"
+msgstr "0.7.5-3"
+
+#. type: TH
+#: en/lxc-list.1:9 en/lxc.1:9
+#, no-wrap
+msgid "Linux Containers"
+msgstr "Linux Containers"
+
+#. type: SH
+#: en/lxc-list.1:11 en/lxc.1:11
+#, no-wrap
+msgid "NAME"
+msgstr "NAME"
+
+#. type: Plain text
+#: en/lxc-list.1:13
+msgid "B<lxc-list> - list Linux Containers by state"
+msgstr "B<lxc-list> - listet Linux Container nach Status"
+
+#. type: SH
+#: en/lxc-list.1:14 en/lxc.1:14
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr "SYNTAX"
+
+#. type: Plain text
+#: en/lxc-list.1:16
+msgid "B<lxc-list>"
+msgstr "B<lxc-list>"
+
+#. type: SH
+#: en/lxc-list.1:17 en/lxc.1:17
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr "BESCHREIBUNG"
+
+#. type: Plain text
+#: en/lxc-list.1:19
+msgid "B<lxc-list> lists Linux Containers by state."
+msgstr "B<lxc-list> listed Linux Container nach Status"
+
+#. type: SH
+#: en/lxc-list.1:20 en/lxc.1:24
+#, no-wrap
+msgid "OPTIONS"
+msgstr "OPTIONEN"
+
+#. type: Plain text
+#: en/lxc-list.1:22
+msgid "lxc-list has no options."
+msgstr "lxc-list hat keine Optionen."
+
+#. type: SH
+#: en/lxc-list.1:23 en/lxc.1:30
+#, no-wrap
+msgid "SEE ALSO"
+msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: en/lxc-list.1:26
+msgid "I<lxc>(7), I<lxc>(1)."
+msgstr "I<lxc>(7), I<lxc>(1)."
+
+#. type: SH
+#: en/lxc-list.1:27 en/lxc.1:34
+#, no-wrap
+msgid "BUGS"
+msgstr "FEHLER"
+
+#. type: Plain text
+#: en/lxc-list.1:29 en/lxc.1:36
+msgid ""
+"Bugs can be reported by submitting a bugreport for the lxc package in the "
+"Debian Bug Tracking System at E<lt>I<http://bugs.debian.org/>E<gt> or by "
+"writing a mail to the author."
+msgstr ""
+"Fehler können durch Einreichen eines Fehlerberichtes für das lxc Paket im "
+"Debian Bug Tracking System unter E<lt>I<http://bugs.debian.org/>E<gt> oder "
+"durch Senden einer E-Mail an den Autor mitgeteilt werden."
+
+#. type: SH
+#: en/lxc-list.1:30 en/lxc.1:37
+#, no-wrap
+msgid "AUTHOR"
+msgstr "AUTOR"
+
+#. type: Plain text
+#: en/lxc-list.1:31
+msgid ""
+"lxc-list was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"technologies.net>E<gt>."
+msgstr ""
+"lxc-list wurde von Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"technologies.net>E<gt> geschrieben."

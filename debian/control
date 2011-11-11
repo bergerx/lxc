@@ -12,6 +12,7 @@ Package: lxc
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: debootstrap, libcap2-bin
+Suggests: lxctl
 Description: Linux containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
  for filesystem, network, pids, ipc, cpu and memory allocation and which can be
@@ -47,3 +48,16 @@ Description: Linux containers userspace tools (development)
  Kernels.
  .
  This package contains the development files.
+
+Package: linux-container
+Architecture: all
+Depends: ${misc:Depends}
+Description: Linux containers userspace tools (container support package)
+ Containers are insulated areas inside a system, which have their own namespace
+ for filesystem, network, pids, ipc, cpu and memory allocation and which can be
+ created using the Control Group and Namespace features included in recent Linux
+ Kernels.
+ .
+ This package contains the necessary modifications needed within a container to
+ make it work with LXC. A package management integrated version of the
+ lxc-debian template.

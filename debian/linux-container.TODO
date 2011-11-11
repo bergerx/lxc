@@ -1,0 +1,7 @@
+* add debconf handling for network config
+* make number of ttys configurable through debconf (medium)
+* integrate support for systemd
+* integrate support for upstart
+* integrate support for runit
+* integrate support for file-rc
+* use lsb_release (and fallbacks) to apply vendor and distribution specific modifications

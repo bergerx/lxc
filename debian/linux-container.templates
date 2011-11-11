@@ -1,0 +1,18 @@
+Template: linux-container/title
+Type: title
+_Description: Linux Container (Setup)
+
+Template: linux-container/enable
+Type: boolean
+Default: false
+_Description: Linux Container: enable setup for LXC?
+ Linux Container can do all the necessary modifications needed within a
+ container to make it work with LXC. Do you want to proceed?
+ .
+ If unsure, choose no (default).
+
+Template: linux-container/hostname
+Type: string
+Default: debian
+_Description: Linux Container: Hostname for LXC?
+ What should be the hostname of the current container?

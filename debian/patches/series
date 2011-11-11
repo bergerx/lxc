@@ -11,3 +11,7 @@
 11-doc-ip-address.patch
 12-debian-config.patch
 13-lxc-create.patch
+14-debian-daemontools-run.patch
+15-debian-password.patch
+16-debian-type.patch
+17-debian-chroot.patch
