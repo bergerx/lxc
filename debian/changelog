@@ -1,3 +1,12 @@
+lxc (0.7.5-4~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Fri, 11 Nov 2011 16:35:26 +0100
+
 lxc (0.7.5-4) unstable; urgency=low
 
   * Adding patch to add entry for daemontools-run to /etc/inittab in
