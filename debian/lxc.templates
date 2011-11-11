@@ -1,6 +1,6 @@
 Template: lxc/title
 Type: title
-_Description: Linux Containers (LXC) setup
+_Description: Linux Containers: LXC setup
 
 Template: lxc/auto
 Type: boolean

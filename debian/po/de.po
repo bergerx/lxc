@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-2\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-11 10:49+0100\n"
+"POT-Creation-Date: 2011-11-11 15:32+0100\n"
 "PO-Revision-Date: 2010-07-20 05:54+0200\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -18,8 +18,8 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../linux-container.templates:1001
-msgid "Linux Container (Setup)"
-msgstr "Linux Container (Setup)"
+msgid "Linux Container: Container setup"
+msgstr "Linux Container: Container Setup"
 
 #. Type: boolean
 #. Description
@@ -61,7 +61,8 @@ msgstr "Wieviele Konsolen sollen diese Container zur Verfügung stellen?"
 msgid ""
 "This defaults to 6 and will result in six getty processes per container."
 msgstr ""
-"Der Standardwert ist 6 und bedeutet, dass sechs getty Prozesse im Container gestartet werden."
+"Der Standardwert ist 6 und bedeutet, dass sechs getty Prozesse im Container "
+"gestartet werden."
 
 #. Type: string
 #. Description
@@ -223,8 +224,8 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-msgid "Linux Containers (LXC) setup"
-msgstr "Linux Container (LXC) Setup"
+msgid "Linux Containers: LXC setup"
+msgstr "Linux Containers: LXC setup"
 
 #. Type: boolean
 #. Description

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-11 10:49+0100\n"
+"POT-Creation-Date: 2011-11-11 15:32+0100\n"
 "PO-Revision-Date: 2011-11-08 21:40+0000\n"
 "Last-Translator: Miguel Figueiredo <elmig@debianpt.org>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -18,8 +18,10 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../linux-container.templates:1001
-msgid "Linux Container (Setup)"
-msgstr "Linux Container (Configuração)"
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container: Container setup"
+msgstr "Configuração de Linux Containers (LXC)"
 
 #. Type: boolean
 #. Description
@@ -247,7 +249,9 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-msgid "Linux Containers (LXC) setup"
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Containers: LXC setup"
 msgstr "Configuração de Linux Containers (LXC)"
 
 #. Type: boolean
