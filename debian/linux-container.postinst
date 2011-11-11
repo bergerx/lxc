@@ -11,11 +11,11 @@ case "${1}" in
 		db_get linux-container/enable
 		LINUX_CONTAINER_ENABLE="${RET}" # boolean
 
+		db_get linux-container/consoles
+		LINUX_CONTAINER_CONSOLES="${RET:-6}" # string (w/o empty)
+
 		db_get linux-container/hostname
 		LINUX_CONTAINER_HOSTNAME="${RET}" # string (w/o empty)
-
-		db_get linux-container/dhcp
-		LINUX_CONTAINER_DHCP="${RET}" # boolean
 
 		if [ -z "${LINUX_CONTAINER_HOSTNAME}" ]
 		then
@@ -29,6 +29,9 @@ case "${1}" in
 				LINUX_CONTAINER_HOSTNAME="debian"
 			fi
 		fi
+
+		db_get linux-container/dhcp
+		LINUX_CONTAINER_DHCP="${RET}" # boolean
 
 		if [ "${LINUX_CONTAINER_DHCP}" = "false" ]
 		then
@@ -147,19 +150,20 @@ EOF
 
 		# squeeze only has /dev/tty and /dev/tty0 by default,
 		# therefore creating missing device nodes for tty1-4.
-		for _NUMBER in $(seq 1 6)
+		for _CONSOLE in $(seq 1 ${LINUX_CONTAINER_CONSOLES})
 		do
-			if [ ! -e "/dev/tty${_NUMBER}" ]
+			if [ ! -e "/dev/tty${_CONSOLE}" ]
 			then
-				echo -n "P: Creating file /dev/tty${_NUMBER}..."
+				echo -n "P: Creating file /dev/tty${_CONSOLE}..."
 
-				mknod "/dev/tty${_NUMBER}" c 4 "${_NUMBER}"
+				mknod "/dev/tty${_CONSOLE}" c 4 "${_CONSOLE}"
 
 				echo " done."
 			fi
 		done
 
 		# setup /etc/inittab
+		echo -n "P: Creating file /etc/inittab..."
 
 cat > /etc/inittab << EOF
 # /etc/inittab: init(8) configuration.
@@ -200,23 +204,27 @@ z6:6:respawn:/sbin/sulogin
 # so if you want to add more getty's go ahead but skip tty7 if you run X.
 #
 1:2345:respawn:/sbin/getty 38400 console
-c1:12345:respawn:/sbin/getty 38400 tty1 linux
-c2:12345:respawn:/sbin/getty 38400 tty2 linux
-c3:12345:respawn:/sbin/getty 38400 tty3 linux
-c4:12345:respawn:/sbin/getty 38400 tty4 linux
 EOF
+
+		for _CONSOLE in $(seq 1 ${LINUX_CONTAINER_CONSOLES})
+		do
+			echo "c${_CONSOLE}:12345:respawn:/sbin/getty 38400 tty${_CONSOLE} linux" >> /etc/inittab
+		done
 
 		# add daemontools-run entry
 		if [ -e /var/lib/dpkg/info/daemontools.list ]
 		then
 
 cat >> /etc/inittab << EOF
+
 #-- daemontools-run begin
 SV:123456:respawn:/usr/bin/svscanboot
 #-- daemontools-run end
 EOF
 
 		fi
+
+		echo " done."
 
 		# disable selinux
 		echo -n "P: Disabling feature selinux..."

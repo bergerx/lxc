@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-10 11:51+0100\n"
+"POT-Creation-Date: 2011-11-11 10:49+0100\n"
 "PO-Revision-Date: 2011-11-01 10:07+0100\n"
 "Last-Translator: Martin Bagge / brother <brother@bsnet.se>\n"
 "Language-Team: Swedish <debian-l10n-swedish@lists.debian.org>\n"
@@ -52,18 +52,39 @@ msgstr ""
 #: ../linux-container.templates:3001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
-msgid "Linux Container: Hostname for LXC?"
+msgid "Linux Container: How many consoles for LXC?"
 msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
-msgid "What should be the hostname of the current container?"
+msgid "How many concurrent consoles should the current container provide?"
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
+msgid ""
+"This defaults to 6 and will result in six getty processes per container."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:4001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
+msgid "Linux Container: Hostname for LXC?"
+msgstr "Inställningar för Linux Containers (LXC)"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:4001
+msgid "What should be the hostname of the current container?"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:4001
 msgid ""
 "This defaults to either /etc/hostname (if present), is automatically guessed "
 "through lsb_release (if present), or otherwise set to 'debian'."
@@ -71,7 +92,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Use DHCP?"
@@ -79,13 +100,13 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 msgid "Should the containers address be determined by using DHCP?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 msgid ""
 "This defaults to yes and will require that you run a dhcp-server in your "
 "network."
@@ -93,7 +114,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: IP Address?"
@@ -101,19 +122,19 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 msgid "What should be the IP address of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 msgid "This defaults to 192.168.1.2."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Broadcast Address?"
@@ -121,19 +142,19 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 msgid "What should be the broadcast address of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 msgid "This defaults to 192.168.1.255 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Gateway Address?"
@@ -141,19 +162,19 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 msgid "What should be the gateway address of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 msgid "This defaults to 192.168.1.1 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Network Mask?"
@@ -161,19 +182,19 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 msgid "What should be the netmask of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 msgid "This defaults to 255.255.255.0."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Network Address?"
@@ -181,19 +202,19 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 msgid "What should be the network address of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 msgid "This defaults to 192.168.1.0 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Nameserver Addresses?"
@@ -201,14 +222,14 @@ msgstr "Inställningar för Linux Containers (LXC)"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 msgid ""
 "What should be the IP addresses of the nameservers of the current container?"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 msgid ""
 "This defaults to 192.168.1.1 but can be left empty. Multiple nameservers can "
 "be separated by comma or whitespace."
