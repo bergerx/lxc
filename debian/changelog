@@ -1,3 +1,13 @@
+lxc (0.7.5-7) unstable; urgency=low
+
+  * Touching empty fstab in lxc-debconf.
+  * Correcting rm calls in lxc-debconf to actually match what is
+    intended to be removed.
+  * Shuffling dist-upgrade arround in lxc-debconf to be active in all
+    modes.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 11 Nov 2011 18:53:39 +0100
+
 lxc (0.7.5-6) unstable; urgency=low
 
   * Updating debian-config.patch to allow mknod calls in containers by
