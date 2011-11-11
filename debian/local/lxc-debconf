@@ -145,6 +145,8 @@ Download_system ()
 		return 1
 	fi
 
+	touch "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/fstab"
+
 	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list"
 
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
