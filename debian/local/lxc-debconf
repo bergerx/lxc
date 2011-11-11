@@ -250,6 +250,10 @@ EOF
 		;;
 	esac
 
+	# Removing openssh-server host keys
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key"
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key.pub"
+
 	mv "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
 	echo "Download complete."
 
