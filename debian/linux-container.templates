@@ -1,6 +1,6 @@
 Template: linux-container/title
 Type: title
-_Description: Linux Container (Setup)
+_Description: Linux Container: Container setup
 
 Template: linux-container/enable
 Type: boolean
