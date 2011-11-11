@@ -11,6 +11,14 @@ _Description: Linux Container: enable setup for LXC?
  .
  If unsure, choose no (default).
 
+Template: linux-container/consoles
+Type: string
+Default: 6
+_Description: Linux Container: How many consoles for LXC?
+ How many concurrent consoles should the current container provide?
+ .
+ This defaults to 6 and will result in six getty processes per container.
+
 Template: linux-container/hostname
 Type: string
 Default: debian

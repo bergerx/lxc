@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-10 11:51+0100\n"
+"POT-Creation-Date: 2011-11-11 10:49+0100\n"
 "PO-Revision-Date: 2011-11-08 21:40+0000\n"
 "Last-Translator: Miguel Figueiredo <elmig@debianpt.org>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -46,18 +46,39 @@ msgstr "Em caso de dúvida, escolha não (pré-definido)."
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
-msgid "Linux Container: Hostname for LXC?"
+#, fuzzy
+#| msgid "Linux Container: Hostname for LXC?"
+msgid "Linux Container: How many consoles for LXC?"
 msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
+msgid "How many concurrent consoles should the current container provide?"
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid ""
+"This defaults to 6 and will result in six getty processes per container."
+msgstr ""
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:4001
+msgid "Linux Container: Hostname for LXC?"
+msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
+
+#. Type: string
+#. Description
+#: ../linux-container.templates:4001
 msgid "What should be the hostname of the current container?"
 msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:3001
+#: ../linux-container.templates:4001
 msgid ""
 "This defaults to either /etc/hostname (if present), is automatically guessed "
 "through lsb_release (if present), or otherwise set to 'debian'."
@@ -68,7 +89,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 #, fuzzy
 #| msgid "Linux Container: Hostname for LXC?"
 msgid "Linux Container: Use DHCP?"
@@ -76,13 +97,13 @@ msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 msgid "Should the containers address be determined by using DHCP?"
 msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../linux-container.templates:4001
+#: ../linux-container.templates:5001
 msgid ""
 "This defaults to yes and will require that you run a dhcp-server in your "
 "network."
@@ -90,7 +111,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 #, fuzzy
 #| msgid "Linux Container: Stop method"
 msgid "Linux Container: IP Address?"
@@ -98,7 +119,7 @@ msgstr "Linux Container: Método de paragem"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid "What should be the IP address of the current container?"
@@ -106,13 +127,13 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:5001
+#: ../linux-container.templates:6001
 msgid "This defaults to 192.168.1.2."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 #, fuzzy
 #| msgid "Linux Container: Hostname for LXC?"
 msgid "Linux Container: Broadcast Address?"
@@ -120,7 +141,7 @@ msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid "What should be the broadcast address of the current container?"
@@ -128,13 +149,13 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:6001
+#: ../linux-container.templates:7001
 msgid "This defaults to 192.168.1.255 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 #, fuzzy
 #| msgid "Linux Container: Hostname for LXC?"
 msgid "Linux Container: Gateway Address?"
@@ -142,7 +163,7 @@ msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid "What should be the gateway address of the current container?"
@@ -150,13 +171,13 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:7001
+#: ../linux-container.templates:8001
 msgid "This defaults to 192.168.1.1 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 #, fuzzy
 #| msgid "Linux Container: Stop method"
 msgid "Linux Container: Network Mask?"
@@ -164,7 +185,7 @@ msgstr "Linux Container: Método de paragem"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid "What should be the netmask of the current container?"
@@ -172,13 +193,13 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:8001
+#: ../linux-container.templates:9001
 msgid "This defaults to 255.255.255.0."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 #, fuzzy
 #| msgid "Linux Container: Stop method"
 msgid "Linux Container: Network Address?"
@@ -186,7 +207,7 @@ msgstr "Linux Container: Método de paragem"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid "What should be the network address of the current container?"
@@ -194,13 +215,13 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:9001
+#: ../linux-container.templates:10001
 msgid "This defaults to 192.168.1.0 but can be left empty."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 #, fuzzy
 #| msgid "Linux Container: Hostname for LXC?"
 msgid "Linux Container: Nameserver Addresses?"
@@ -208,7 +229,7 @@ msgstr "Container Linux: Nome de máquina (hostname) para LXC?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 #, fuzzy
 #| msgid "What should be the hostname of the current container?"
 msgid ""
@@ -217,7 +238,7 @@ msgstr "Qual deve ser o nome da máquina (hostname) do container actual?"
 
 #. Type: string
 #. Description
-#: ../linux-container.templates:10001
+#: ../linux-container.templates:11001
 msgid ""
 "This defaults to 192.168.1.1 but can be left empty. Multiple nameservers can "
 "be separated by comma or whitespace."
