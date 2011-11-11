@@ -356,6 +356,25 @@ EOF
 				echo " done."
 			fi
 		done
+
+		# Recreating openssh-server host keys
+		if [ ! -e /etc/ssh/ssh_host_rsa_key ]
+		then
+			echo -n "P: Creating files /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_rsa_key.pub..."
+
+			ssh-keygen -q -f /etc/ssh/ssh_host_rsa_key -N "" -t rsa
+
+			echo " done."
+		fi
+
+		if [ ! -e /etc/ssh/ssh_host_dsa_key ]
+		then
+			echo -n "P: Creating files /etc/ssh/ssh_host_dsa_key /etc/ssh/ssh_host_dsa_key.pub..."
+
+			ssh-keygen -q -f /etc/ssh/ssh_host_dsa_key -N "" -t dsa
+
+			echo " done."
+		fi
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)
