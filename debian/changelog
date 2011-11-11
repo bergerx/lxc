@@ -1,3 +1,12 @@
+lxc (0.7.5-6~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Fri, 11 Nov 2011 18:00:52 +0100
+
 lxc (0.7.5-6) unstable; urgency=low
 
   * Updating debian-config.patch to allow mknod calls in containers by
