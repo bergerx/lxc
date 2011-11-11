@@ -1,3 +1,64 @@
+lxc (0.7.5-6) unstable; urgency=low
+
+  * Updating debian-config.patch to allow mknod calls in containers by
+    default.
+  * Updating debian-config.patch to allow accessing /dev/fuse by
+    default.
+  * Updating debian-config.patch to have devices by default better
+    commented and sorted.
+  * Updating debian-config.patch to also drop sys_module, mac_admin, and
+    mac_override capabilities by default.
+  * Listing local additions in lxc install file explicitly.
+  * Correcting syntax for db_input calls in linux-container config
+    script.
+  * Updating comments for debconf queries with strings that cannot be
+    empty.
+  * Setting debconf questions to unseen when the answer is read from
+    conffile.
+  * Applying some of the suggestions from the "reviewed" control file
+    from debian-l10n-english (Closes: #645850).
+  * Applying some of the suggestions from the "reviewed" templates file
+    from debian-l10n-english.
+  * Updating German debconf translations.
+  * Adding Czech debconf translations from Michal Simunek
+    <michal.simunek@gmail.com> (Closes: #647208).
+  * Adding Danish debconf translations from Joe Hansen
+    <joedalton2@yahoo.dk> (Closes: #646322).
+  * Improving wording on two strings in the German debconf translations,
+    thanks to Erik Pfannenstein <epfannenstein@gmx.de> (Closes:
+    #648059).
+  * Adding Spanish debconf translations from Camaleón
+    <noelamac@gmail.com> (Closes: #647612).
+  * Adding French debconf translations from Julien Patriarca
+    <patriarcaj@gmail.com> (Closes: #646696).
+  * Adding Portuguese debconf translations from Miguel Figueiredo
+    <elmig@debianpt.org> (Closes: #647957).
+  * Adding Russian debconf translations from Yuri Kozlov
+    <yuray@komyakino.ru> (Closes: #646419).
+  * Adding Swedish debconf translations from Martin Bagge
+    <brother@bsnet.se> (Closes: #647256).
+  * Adding Chinese (Simplified) debconf translations from syq
+    <wzssyqa@gmail.com>.
+  * Adding support for static network configuration in linux-container.
+  * Adding scripts to workaround broken squeeze release.
+  * Improving shell code in linux-container config and postinst files.
+  * Updating lxc-create patch to trim warning message when creating new
+    containers without previously existing configuration.
+  * Adding lxc-debconf template.
+  * Replacing upstreams debian template by using newly added debconf
+    template.
+  * Renumbering patches.
+  * Adding debconf handling in linux-container for number of consoles to
+    be run.
+  * Removing openssh-server host keys in cached chroot and recreate them
+    with linux-container.
+  * Reverting title suggestion by debian-l10n-english in debconf
+    templates and use a consistent version for both lxc and linux-
+    container.
+  * Updating todo files.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 11 Nov 2011 15:49:51 +0100
+
 lxc (0.7.5-5) unstable; urgency=low
 
   * Correcting wording in 0.7.5-3 changelog entry.
