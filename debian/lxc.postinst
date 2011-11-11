@@ -15,7 +15,7 @@ case "${1}" in
 		LXC_SHUTDOWN="${RET}" # select
 
 		db_get lxc/directory
-		LXC_DIRECTORY="${RET:-/var/lib/lxc}" # string
+		LXC_DIRECTORY="${RET:-/var/lib/lxc}" # string (w/o empty)
 
 		db_stop
 

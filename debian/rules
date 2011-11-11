@@ -6,14 +6,24 @@
 override_dh_auto_configure:
 	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc --enable-doc
 
+override_dh_auto_install:
+	dh_auto_install
+
+	# replacing upstreams debian template
+	rm -f debian/tmp/usr/lib/lxc/templates/lxc-debian
+	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-debian
+
+	# adding progress template symlink
+	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
+
+	# removing useless files
+	rm -f debian/tmp/usr/lib/lxc/templates/lxc-lenny
+
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip -z9
 
 override_dh_install:
 	dh_install --fail-missing
-
-	# removing useless files
-	rm -f debian/lxc/usr/lib/lxc/templates/lxc-lenny
 
 override_dh_installinit:
 	dh_installinit --no-restart-on-upgrade

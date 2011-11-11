@@ -11,18 +11,18 @@ Homepage: http://lxc.sourceforge.net/
 Package: lxc
 Architecture: linux-any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: debootstrap, libcap2-bin
+Recommends: debootstrap | cdebootstrap, libcap2-bin
 Conflicts: cgroup-bin
 Suggests: lxctl
-Description: Linux containers userspace tools
+Description: Linux Containers userspace tools
  Containers are insulated areas inside a system, which have their own namespace
- for filesystem, network, pids, ipc, cpu and memory allocation and which can be
- created using the Control Group and Namespace features included in recent Linux
- Kernels.
+ for filesystem, network, PID, IPC, CPU and memory allocation and which can be
+ created using the Control Group and Namespace features included in the Linux
+ kernel.
  .
- This package contains the lxc-* tools which can be used to start a single
+ This package provides the lxc-* tools, which can be used to start a single
  daemon in a container, or to boot an entire "containerized" system, and to
- successively manage and debug your containers.
+ manage and debug your containers.
 
 Package: lxc-dbg
 Section: debug
@@ -30,11 +30,11 @@ Priority: extra
 Architecture: linux-any
 Depends:
  ${misc:Depends}, lxc (= ${binary:Version}), lxc-dev (= ${binary:Version})
-Description: Linux containers userspace tools (debug)
+Description: Linux Containers userspace tools (debug)
  Containers are insulated areas inside a system, which have their own namespace
- for filesystem, network, pids, ipc, cpu and memory allocation and which can be
- created using the Control Group and Namespace features included in recent Linux
- Kernels.
+ for filesystem, network, PID, IPC, CPU and memory allocation and which can be
+ created using the Control Group and Namespace features included in the Linux
+ kernel.
  .
  This package contains the debugging symbols.
 
@@ -42,11 +42,11 @@ Package: lxc-dev
 Section: libdevel
 Architecture: linux-any
 Depends: ${misc:Depends}, lxc (= ${binary:Version})
-Description: Linux containers userspace tools (development)
+Description: Linux Containers userspace tools (development)
  Containers are insulated areas inside a system, which have their own namespace
- for filesystem, network, pids, ipc, cpu and memory allocation and which can be
- created using the Control Group and Namespace features included in recent Linux
- Kernels.
+ for filesystem, network, PID, IPC, CPU and memory allocation and which can be
+ created using the Control Group and Namespace features included in the Linux
+ kernel.
  .
  This package contains the development files.
 

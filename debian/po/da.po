@@ -1,16 +1,16 @@
-# German translation of lxc debconf templates.
-# Copyright (C) 2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+# Danish translation of lxc debconf templates.
+# Copyright (C) 2011 Joe Hansen <joedalton2@yahoo.dk>
 # This file is distributed under the same license as the lxc package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: lxc 0.7.5-2\n"
+"Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
 "POT-Creation-Date: 2011-11-11 15:32+0100\n"
-"PO-Revision-Date: 2010-07-20 05:54+0200\n"
-"Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
-"Language-Team: none\n"
-"Language: de\n"
+"PO-Revision-Date: 2011-10-23 17:30+01:00\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,14 +18,18 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../linux-container.templates:1001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Container setup"
-msgstr "Linux Container: Container Setup"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: boolean
 #. Description
 #: ../linux-container.templates:2001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: enable setup for LXC?"
-msgstr "Linux Container: aktivieren des Setups für LXC?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: boolean
 #. Description
@@ -34,26 +38,26 @@ msgid ""
 "Linux Container can do all the necessary modifications needed within a "
 "container to make it work with LXC. Do you want to proceed?"
 msgstr ""
-"Linux Container kann alle Änderungen vornehmen die nötig sind, um einen "
-"Container mit LXC benutzbar zu machen. Möchten Sie fortfahren?"
 
 #. Type: boolean
 #. Description
 #: ../linux-container.templates:2001
 msgid "If unsure, choose no (default)."
-msgstr "Wenn Sie unsicher sind, wählen sie nein (Standard)."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: How many consoles for LXC?"
-msgstr "Linux Container: Wieviele Konsolen für diesen Container?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:3001
 msgid "How many concurrent consoles should the current container provide?"
-msgstr "Wieviele Konsolen sollen diese Container zur Verfügung stellen?"
+msgstr ""
 
 #. Type: string
 #. Description
@@ -61,20 +65,20 @@ msgstr "Wieviele Konsolen sollen diese Container zur Verfügung stellen?"
 msgid ""
 "This defaults to 6 and will result in six getty processes per container."
 msgstr ""
-"Der Standardwert ist 6 und bedeutet, dass sechs getty Prozesse im Container "
-"gestartet werden."
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:4001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Hostname for LXC?"
-msgstr "Linux Container: Rechnername für diesen Container?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:4001
 msgid "What should be the hostname of the current container?"
-msgstr "Was soll der Rechnername dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
@@ -83,20 +87,20 @@ msgid ""
 "This defaults to either /etc/hostname (if present), is automatically guessed "
 "through lsb_release (if present), or otherwise set to 'debian'."
 msgstr ""
-"Der Standardwert wird aus /etc/hostname ermittelt (falls vorhanden), "
-"andernfalls mittels lsb_release bestimmt oder auf 'debian' gesetzt."
 
 #. Type: boolean
 #. Description
 #: ../linux-container.templates:5001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Use DHCP?"
-msgstr "Linux Container: Soll DHCP verwendet werden?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: boolean
 #. Description
 #: ../linux-container.templates:5001
 msgid "Should the containers address be determined by using DHCP?"
-msgstr "Soll die Adresse des Containers mit DHCP ermittelt werden?"
+msgstr ""
 
 #. Type: boolean
 #. Description
@@ -105,111 +109,121 @@ msgid ""
 "This defaults to yes and will require that you run a dhcp-server in your "
 "network."
 msgstr ""
-"Wenn Sie diese Option wählen, wird ein DHCP Server in ihrem Netzwerk "
-"benötigt."
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:6001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: IP Address?"
-msgstr "Linux Container IP Adresse?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:6001
 msgid "What should be the IP address of the current container?"
-msgstr "Was soll die IP Adresse dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:6001
 msgid "This defaults to 192.168.1.2."
-msgstr "Der Standardwert ist 192.168.1.2."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:7001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Broadcast Address?"
-msgstr "Linux Container: Broadcast Adresse?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:7001
 msgid "What should be the broadcast address of the current container?"
-msgstr "Was soll die Broadcast Adresse dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:7001
 msgid "This defaults to 192.168.1.255 but can be left empty."
-msgstr "Der Standardwert ist 192.168.1.255 kann aber auch weggelassen werden."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:8001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Gateway Address?"
-msgstr "Linux Container: Gateway Adresse?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:8001
 msgid "What should be the gateway address of the current container?"
-msgstr "Was soll der Rechnername dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:8001
 msgid "This defaults to 192.168.1.1 but can be left empty."
-msgstr "Der Standardwert ist 192.168.1.1 kann aber auch weggelassen werden."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:9001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Network Mask?"
-msgstr "Linux Container Netzwerkmaske?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:9001
 msgid "What should be the netmask of the current container?"
-msgstr "Was soll die Netzwerkmaske dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:9001
 msgid "This defaults to 255.255.255.0."
-msgstr "Der Standardwert ist 255.255.255.0."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:10001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Network Address?"
-msgstr "Linux Container Netzwerk Adresse"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:10001
 msgid "What should be the network address of the current container?"
-msgstr "Was soll die Netzwerk Adresse dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:10001
 msgid "This defaults to 192.168.1.0 but can be left empty."
-msgstr "Der Standardwert ist 192.168.1.0 kann aber weggelassen werden."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:11001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Nameserver Addresses?"
-msgstr "Linux Container: Nameserver Adressen?"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: string
 #. Description
 #: ../linux-container.templates:11001
 msgid ""
 "What should be the IP addresses of the nameservers of the current container?"
-msgstr "Was sollen die IP Adressen der Nameserver dieses Containers sein?"
+msgstr ""
 
 #. Type: string
 #. Description
@@ -218,45 +232,49 @@ msgid ""
 "This defaults to 192.168.1.1 but can be left empty. Multiple nameservers can "
 "be separated by comma or whitespace."
 msgstr ""
-"Der Standardwert ist 192.168.1.1 kann aber weggelassen werden. Mehrere "
-"Nameserver können mittels Komma separiert werden."
 
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Containers: LXC setup"
-msgstr "Linux Containers: LXC setup"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "Automatically start Linux Containers on boot?"
-msgstr "Linux Container automatisch beim Hochfahren starten?"
+msgstr "Igangsæt automatisk Linuxcontainere ved opstart?"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be automatically started during system boot and shut "
+#| "down on reboot or halt."
 msgid ""
 "Linux Containers that have their configuration files copied or symlinked to "
 "the /etc/lxc/auto directory can be automatically started during system boot, "
 "and shut down on reboot or halt."
 msgstr ""
-"Linux Container welche ihre Konfigurationsdateien in das /etc/lxc/auto "
-"Verzeichnis kopiert oder gelinkt haben, können während des Hochfahrens "
-"automatisch gestartet und während des Herunterfahrens oder Neustarts "
-"automatisch beendet werden."
+"Linuxcontainere kan automatisk igangsættes ved systemopstart og lukke ned "
+"ved genstart eller stop."
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "If unsure, choose yes (default)."
-msgstr "Wenn Sie unsicher sind, wählen sie ja (Standard)."
+msgstr ""
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
+#, fuzzy
+#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Stop method"
-msgstr "Linux Container Stopp Methode"
+msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: select
 #. Description
@@ -267,22 +285,18 @@ msgid ""
 "takes longer and can have problems with containers that don't shutdown "
 "themselfs properly."
 msgstr ""
-"Linux Container können auf unterschiedliche Weise gestoppt werden. Die Stopp "
-"Methode killt alle Prozesse innerhalb des Containers. The Halt Methode "
-"initiiert ein Herunterfahren welches länger dauert und Probleme bereiten "
-"kann mit Container, die sich nicht selbst korrekt herunterfahren können."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 msgid "If unsure, choose stop (default)."
-msgstr "Wenn Sie unsicher sind, wählen sie stop (Standard)."
+msgstr ""
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "LXC directory:"
-msgstr "LXC Verzeichnis:"
+msgstr ""
 
 #. Type: string
 #. Description
@@ -290,11 +304,9 @@ msgstr "LXC Verzeichnis:"
 msgid ""
 "Please specify the directory that will be used to store the Linux Containers."
 msgstr ""
-"Bitte geben Sie das Verzeichnis an, welches für die Container verwendet "
-"werden soll."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
-msgstr "Wenn Sie unsicher sind, benutzen sie /var/lib/lxc (Standard)."
+msgstr ""

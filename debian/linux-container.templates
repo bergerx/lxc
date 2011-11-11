@@ -1,6 +1,6 @@
 Template: linux-container/title
 Type: title
-_Description: Linux Container (Setup)
+_Description: Linux Container: Container setup
 
 Template: linux-container/enable
 Type: boolean
@@ -11,6 +11,14 @@ _Description: Linux Container: enable setup for LXC?
  .
  If unsure, choose no (default).
 
+Template: linux-container/consoles
+Type: string
+Default: 6
+_Description: Linux Container: How many consoles for LXC?
+ How many concurrent consoles should the current container provide?
+ .
+ This defaults to 6 and will result in six getty processes per container.
+
 Template: linux-container/hostname
 Type: string
 Default: debian
@@ -19,3 +27,60 @@ _Description: Linux Container: Hostname for LXC?
  .
  This defaults to either /etc/hostname (if present), is automatically guessed
  through lsb_release (if present), or otherwise set to 'debian'.
+
+Template: linux-container/dhcp
+Type: boolean
+Default: true
+_Description: Linux Container: Use DHCP?
+ Should the containers address be determined by using DHCP?
+ .
+ This defaults to yes and will require that you run a dhcp-server in your network.
+
+Template: linux-container/address
+Type: string
+Default: 192.168.1.2
+_Description: Linux Container: IP Address?
+ What should be the IP address of the current container?
+ .
+ This defaults to 192.168.1.2.
+
+Template: linux-container/broadcast
+Type: string
+Default: 192.168.1.255
+_Description: Linux Container: Broadcast Address?
+ What should be the broadcast address of the current container?
+ .
+ This defaults to 192.168.1.255 but can be left empty.
+
+Template: linux-container/gateway
+Type: string
+Default: 192.168.1.1
+_Description: Linux Container: Gateway Address?
+ What should be the gateway address of the current container?
+ .
+ This defaults to 192.168.1.1 but can be left empty.
+
+Template: linux-container/netmask
+Type: string
+Default: 255.255.255.0
+_Description: Linux Container: Network Mask?
+ What should be the netmask of the current container?
+ .
+ This defaults to 255.255.255.0.
+
+Template: linux-container/network
+Type: string
+Default: 192.168.1.0
+_Description: Linux Container: Network Address?
+ What should be the network address of the current container?
+ .
+ This defaults to 192.168.1.0 but can be left empty.
+
+Template: linux-container/nameservers
+Type: string
+Default: 192.168.1.1
+_Description: Linux Container: Nameserver Addresses?
+ What should be the IP addresses of the nameservers of the current container?
+ .
+ This defaults to 192.168.1.1 but can be left empty.
+ Multiple nameservers can be separated by comma or whitespace.

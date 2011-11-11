@@ -1,0 +1,683 @@
+#!/bin/bash
+
+Chroot ()
+{
+	_CHROOT="${1}"
+	shift
+
+	chroot "${_CHROOT}" /usr/bin/env -i \
+		PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
+		DEBIAN_FRONTEND="${_DEBCONF_FRONTEND}" DEBIAN_PRIORITY="${_DEBCONF_PRIORITY}" \
+		${@}
+}
+
+Configure_system ()
+{
+	_ROOTFS="${1}"
+
+	# Mount pseudo-filesystems
+	mount -o bind /dev/pts "${_ROOTFS}/dev/pts"
+	mount -o bind /proc "${_ROOTFS}/proc"
+	mount -o bind /sys "${_ROOTFS}/sys"
+
+	# Disable dpkg syncing
+
+cat > "${_ROOTFS}/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
+force-unsafe-io
+EOF
+
+	# Create policy-rc.d file
+
+cat > "${_ROOTFS}/usr/sbin/policy-rc.d" << EOF
+#!/bin/sh
+echo "All runlevel operations denied by policy" >&2
+exit 101
+EOF
+
+	chmod 0755 "${_ROOTFS}/usr/sbin/policy-rc.d"
+
+	# Upgrade system
+	Chroot "${_ROOTFS}" "apt-get update"
+	Chroot "${_ROOTFS}" "apt-get --yes upgrade"
+	Chroot "${_ROOTFS}" "apt-get --yes dist-upgrade"
+
+	# Preseed system
+	if [ -e "${_PRESEED_FILE}" ]
+	then
+		cat "${_PRESEED_FILE}" > "${_ROOTFS}/preseed.cfg"
+	fi
+
+	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+
+	rm -f "${_ROOTFS}/preseed.cfg"
+
+	# Install additional packages
+	# Currently only supported through preseed file, no multiline (use private debconf for that later, FIXME)
+	if grep -qs "linux-container/packages" "${_PRESEED_FILE}"
+	then
+		_PACKAGES="$(awk -Flinux-container/packages '/linux-container\/packages/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+
+		if [ -n "${_PACKAGES}" ]
+		then
+			Chroot "${_ROOTFS}" "apt-get --yes install ${_PACKAGES}"
+		fi
+	fi
+
+	# Configure linux-container
+
+cat > "${_ROOTFS}/preseed.cfg" << EOF
+linux-container linux-container/enable boolean true
+EOF
+
+	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+
+	rm -f "${_ROOTFS}/preseed.cfg"
+
+	if ls /usr/share/lxc/linux-container*deb > /dev/null 2>&1
+	then
+		# Install local linux-container package
+		cp -L /usr/share/lxc/linux-container_*.deb "${_ROOTFS}"
+
+		Chroot "${_ROOTFS}" "dpkg -i $(basename ${_ROOTFS}/linux-container_*.deb)"
+		Chroot "${_ROOTFS}" "rm -f $(basename ${_ROOTFS}/linux-container_*.deb)"
+	else
+		# Install remote linux-container package
+		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
+	fi
+
+	Chroot "${_ROOTFS}" "apt-get --yes autoremove"
+	Chroot "${_ROOTFS}" "apt-get clean"
+
+	# Cleanup
+	rm -f "${_ROOTFS}/etc/dpkg/dpkg.cfg.d/lxc-debconf"
+	rm -f "${_ROOTFS}/usr/sbin/policy-rc.d"
+
+	# Unmount pseudo-filesystems
+	umount "${_ROOTFS}/dev/pts"
+	umount "${_ROOTFS}/proc"
+	umount "${_ROOTFS}/sys"
+
+	# Set root password
+	_PASSWORD="$(dd if=/dev/urandom bs=6 count=1 2> /dev/null | base64)"
+
+	echo "root:${_PASSWORD}" | Chroot "${_ROOTFS}" "chpasswd"
+	echo "P: Setting root password to ${_PASSWORD}"
+
+	return 0
+}
+
+Download_system ()
+{
+	_CACHE="${1}"
+	_ARCHITECTURE="${2}"
+
+	_PACKAGES="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+
+	# check the minimal system was not already downloaded
+	mkdir -p "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
+
+	if [ "${?}" -ne 0 ]
+	then
+		echo "Failed to create '${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial' directory"
+		return 1
+	fi
+
+	# download a minimal system into a cache
+	echo "Downloading minimal system..."
+
+	if [ -x "$(which cdebootstrap 2>/dev/null)" ]
+	then
+		cdebootstrap --arch=${_ARCHITECTURE} \
+			--flavour=minimal --include=${_PACKAGES} \
+			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
+
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "dpkg --purge cdebootstrap-helper-rc.d"
+	elif [ -x "$(which debootstrap 2>/dev/null)" ]
+	then
+		debootstrap --verbose --arch=${_ARCHITECTURE} \
+			--variant=minbase --include=${_PACKAGES} \
+			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
+	fi
+
+	if [ "${?}" -ne 0 ]
+	then
+		echo "Failed to download the rootfs, aborting."
+		return 1
+	fi
+
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list"
+
+	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
+deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
+deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
+deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates main
+deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
+EOF
+
+	case "${_MODE}" in
+		progress)
+			_DIST="$(echo ${_DISTRIBUTION} | sed -e 's|-backports||')"
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
+deb ${_MIRROR} ${_DIST} main
+deb ${_MIRROR_SECURITY} ${_DIST}-security main
+deb ${_MIRROR} ${_DIST}-updates main
+deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
+EOF
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
+Package: *
+Pin: release n=${_DIST}
+Pin-Priority: 999
+
+Package: *
+Pin: release n=${_DIST}-security
+Pin-Priority: 999
+
+Package: *
+Pin: release n=${_DIST}-updates
+Pin-Priority: 999
+EOF
+
+			case "${_DISTRIBUTION}" in
+				*-backports)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
+
+Package: *
+Pin: release n=${_DIST}-backports
+Pin-Priority: 999
+EOF
+
+					;;
+			esac
+
+		# Mount pseudo-filesystems
+		mount -o bind /dev/pts "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
+		mount -o bind /proc "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
+		mount -o bind /sys "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
+
+		# Disable dpkg syncing
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
+force-unsafe-io
+EOF
+
+		# Create policy-rc.d file
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d" << EOF
+#!/bin/sh
+echo "All runlevel operations denied by policy" >&2
+exit 101
+EOF
+
+		chmod 0755 "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
+
+		# Import archive keys (FIXME)
+		for _KEY in 1.0-artax-automatic 1.0-artax-stable
+		do
+			wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+			Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
+			rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+		done
+
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
+
+		# Upgrade to Progress
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes upgrade"
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes dist-upgrade"
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes autoremove"
+		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get clean"
+
+		# Temporary hack for base-files (FIXME)
+		for _FILE in motd profile
+		do
+			rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/${_FILE}"
+			cp "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/share/base-files/${_FILE}" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc"
+		done
+
+		# Cleanup
+		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf"
+		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
+
+		# Unmount pseudo-filesystems
+		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
+		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
+		umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
+		;;
+	esac
+
+	# Removing openssh-server host keys
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key"
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key.pub"
+
+	mv "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+	echo "Download complete."
+
+	return 0
+}
+
+Copy_system ()
+{
+	_CACHE="${1}"
+	_ARCHITECTURE="${2}"
+	_ROOTFS="${3}"
+
+	# make a local copy of the minimal system
+	echo -n "Copying rootfs to ${_ROOTFS}..."
+	cp -a "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
+	return 0
+}
+
+Install_system ()
+{
+	_CACHE="/var/cache/lxc/${_MODE}"
+	_ROOTFS="${1}"
+
+	mkdir -p /var/lock/subsys/
+	(
+		flock -n -x 200
+
+		if [ "${?}" -ne 0 ]
+		then
+			echo "Cache repository is busy."
+			return 1
+		fi
+
+		# Code taken from debootstrap
+		if type dpkg > /dev/null 2>&1 && dpkg --print-architecture > /dev/null 2>&1
+		then
+			_ARCHITECTURE="$(dpkg --print-architecture)"
+		elif type udpkg > /dev/null 2>&1 && udpkg --print-architecture > /dev/null 2>&1
+		then
+			_ARCHITECTURE="$(udpkg --print-architecture)"
+		else
+			_ARCHITECTURE="$(arch)"
+
+			case "${arch}" in
+				686)
+					_ARCHITECTURE="i386"
+					;;
+
+				x86_64)
+					_ARCHITECTURE="amd64"
+					;;
+
+				ppc)
+					_ARCHITECTURE="powerpc"
+					;;
+			esac
+		fi
+
+		echo "Checking cache download in ${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}... "
+
+		if [ ! -e "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
+		then
+			Download_system "${_CACHE}" "${_ARCHITECTURE}"
+
+			if [ "${?}" -ne 0 ]
+			then
+				echo "Failed to download base system"
+				return 1
+			fi
+		fi
+
+		Copy_system "${_CACHE}" "${_ARCHITECTURE}" "${_ROOTFS}"
+
+		if [ "${?}" -ne 0 ]
+		then
+			echo "Failed to copy rootfs"
+			return 1
+		fi
+
+		return 0
+	) 200>/var/lock/subsys/lxc
+
+	return "${?}"
+}
+
+Copy_configuration()
+{
+	_PATH="${1}"
+	_ROOTFS="${2}"
+	_NAME="${3}"
+
+cat >> "${_PATH}/config" << EOF
+# ${_PATH}/config
+
+## Container
+lxc.utsname                             = ${_NAME}
+lxc.rootfs                              = ${_ROOTFS}
+lxc.tty                                 = 4
+lxc.pts                                 = 1024
+#lxc.console                            = /var/log/lxc/${_NAME}.console
+
+## Capabilities
+lxc.cap.drop                            = sys_admin sys_module mac_admin mac_override
+
+## Devices
+# Allow all devices
+#lxc.cgroup.devices.allow               = a
+# Deny all devices
+lxc.cgroup.devices.deny                 = a
+# Allow to mknod all devices (but not using them)
+lxc.cgroup.devices.allow = c *:* m
+lxc.cgroup.devices.allow = b *:* m
+
+# /dev/console
+lxc.cgroup.devices.allow                = c 136:* rwm
+# /dev/fuse
+lxc.cgroup.devices.allow                = c 10:229 rwm
+# /dev/null
+lxc.cgroup.devices.allow                = c 1:3 rwm
+# /dev/ptmx
+lxc.cgroup.devices.allow                = c 5:2 rwm
+# /dev/random
+lxc.cgroup.devices.allow                = c 1:8 rwm
+# /dev/rtc
+lxc.cgroup.devices.allow                = c 254:0 rwm
+# /dev/tty1
+lxc.cgroup.devices.allow                = c 4:1 rwm
+# /dev/tty2
+lxc.cgroup.devices.allow                = c 4:2 rwm
+# /dev/tty3
+lxc.cgroup.devices.allow                = c 4:3 rwm
+# /dev/tty4
+lxc.cgroup.devices.allow                = c 4:4 rwm
+# /dev/tty5
+lxc.cgroup.devices.allow                = c 4:5 rwm
+# /dev/tty6
+lxc.cgroup.devices.allow                = c 4:6 rwm
+# /dev/urandom
+lxc.cgroup.devices.allow                = c 1:9 rwm
+# /dev/zero
+lxc.cgroup.devices.allow                = c 1:5 rwm
+
+## Limits
+#lxc.cgroup.cpu.shares                  = 1024
+#lxc.cgroup.cpuset.cpus                 = 0
+#lxc.cgroup.memory.limit_in_bytes       = 256M
+#lxc.cgroup.memory.memsw.limit_in_bytes = 1G
+
+## Filesystem
+lxc.mount.entry                         = proc ${_ROOTFS}/proc proc nodev,noexec,nosuid 0 0
+lxc.mount.entry                         = sysfs ${_ROOTFS}/sys sysfs defaults,ro 0 0
+EOF
+
+	# Adding shared data directory if existing
+	if [ -d "/srv/share/${_NAME}" ]
+	then
+		echo "lxc.mount.entry                         = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	else
+		echo "#lxc.mount.entry                        = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	fi
+
+cat >> "${_PATH}/config" << EOF
+#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0
+
+## Network
+lxc.network.type                        = veth
+lxc.network.flags                       = up
+lxc.network.hwaddr                      = 00:FF:33:44:55:66
+lxc.network.link                        = br0
+lxc.network.mtu                         = 1500
+lxc.network.name                        = eth0
+lxc.network.veth.pair                   = veth-${_NAME}
+EOF
+
+	if [ "${?}" -ne 0 ]
+	then
+		echo "Failed to add configuration"
+		return 1
+	fi
+
+	return 0
+}
+
+Clean ()
+{
+	_CACHE="/var/cache/lxc/${_MODE}"
+
+	if [ ! -e "${_CACHE}" ]
+	then
+		exit 0
+	fi
+
+	# lock, so we won't purge while someone is creating a repository
+	(
+		flock -n -x 200
+
+		if [ "${?}" != 0 ]
+		then
+			echo "Cache repository is busy."
+			exit 1
+		fi
+
+		echo -n "Purging the download cache..."
+		rm --preserve-root --one-file-system -rf $cache && echo "done." || exit 1
+
+		exit 0
+	) 200>/var/lock/subsys/lxc
+}
+
+Usage ()
+{
+	echo "Usage: $(basename ${0}) --debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
+
+	return 0
+}
+
+_OPTIONS="$(getopt -o d:hp:n:c -l debconf-frontend:,debconf-priority:,distribution:,preseed-file:,help,path:,name:,clean -- "$@")"
+
+if [ "${?}" -ne 0 ]
+then
+	Usage
+	exit 1
+fi
+
+eval set -- "${_OPTIONS}"
+
+while true
+do
+	case "${1}" in
+		--debconf-frontend)
+			_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND}"
+			shift 2
+			;;
+
+		--debconf-priority)
+			_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY}"
+			shift 2
+			;;
+
+		-d|--distribution)
+			_DISTRIBUTION="${2}"
+			shift 2
+			;;
+
+		--preseed-file)
+			_PRESEED_FILE="${2}"
+			shift 2
+			;;
+
+		-h|--help)
+			Usage
+			exit 0
+			;;
+
+		-p|--path)
+			_PATH="${2}"
+			shift 2
+			;;
+
+		-n|--name)
+			_NAME="${2}"
+			shift 2
+			;;
+
+		-c|--clean)
+			_CLEAN="${2}"
+			shift 2
+			;;
+
+		--)
+			shift 1
+			break
+			;;
+
+		*)
+			break
+			;;
+	esac
+done
+
+_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-dialog}"
+_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY:-high}"
+
+# Get distributor from template filename
+_MODE="$(basename ${0} | sed -e 's|^lxc-||' -e 's|debconf||')"
+
+case "${_MODE}" in
+	progress)
+		# Set defaults for Progress
+		_DISTRIBUTION="${_DISTRIBUTION:-artax}"
+		_MIRROR="${_MIRROR:-http://archive.progress-linux.org/progress/}"
+		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://archive.progress-linux.org/progress/}"
+		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://archive.progress-linux.org/progress/}"
+
+		_PARENT_DISTRIBUTION="${_PARENT_DISTRIBUTION:-squeeze}"
+		_PARENT_MIRROR="${_PARENT_MIRROR:-http://ftp.debian.org/debian/}"
+		_PARENT_MIRROR_SECURITY="${_PARENT_MIRROR_SECURITY:-http://security.debian.org/}"
+		_PARENT_MIRROR_BACKPORTS="${_PARENT_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
+		;;
+
+	*)
+		# Set defaults for Debian
+		_DISTRIBUTION="${_DISTRIBUTION:-squeeze}"
+		_MIRROR="${_MIRROR:-http://ftp.debian.org/debian/}"
+		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://security.debian.org/}"
+		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
+
+		_PARENT_DISTRIBUTION="${_DISTRIBUTION}"
+		_PARENT_MIRROR="${_MIRROR}"
+		_PARENT_MIRROR_SECURITY="${_MIRROR_SECURITY}"
+		_PARENT_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS}"
+		;;
+esac
+
+if [ -e "${_PRESEED_FILE}" ]
+then
+	# This should be handled by debconf on the host, however,
+	# doing that in a policy conformant way of not poluting/abusing hosts
+	# debconf db needs some further thought first.
+
+	if grep -qs "linux-container/debconf-frontend" "${_PRESEED_FILE}"
+	then
+		_DEBCONF_FRONTEND="$(awk -Flinux-container/debconf-frontend '/linux-container\/debconf-frontend/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/debconf-priority" "${_PRESEED_FILE}"
+	then
+		_DEBCONF_PRIORITY="$(awk -Flinux-container/debconf-priority '/linux-container\/debconf-priority/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/distribution" "${_PRESEED_FILE}"
+	then
+		_DISTRIBUTION="$(awk -Flinux-container/distribution '/linux-container\/distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/mirror" "${_PRESEED_FILE}"
+	then
+		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/mirror-security" "${_PRESEED_FILE}"
+	then
+		_MIRROR_SECURITY="$(awk -Flinux-container/mirror-security '/linux-container\/mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/mirror-backports" "${_PRESEED_FILE}"
+	then
+		_MIRROR_BACKPORTS="$(awk -Flinux-container/mirror-backports '/linux-container\/mirror-backports/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/parent-distribution" "${_PRESEED_FILE}"
+	then
+		_PARENT_DISTRIBUTION="$(awk -Flinux-container/parent-distribution '/linux-container\/parent-distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/parent-mirror" "${_PRESEED_FILE}"
+	then
+		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/parent-mirror-security" "${_PRESEED_FILE}"
+	then
+		_PARENT_MIRROR_SECURITY="$(awk -Flinux-container/parent-mirror-security '/linux-container\/parent-mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/parent-mirror-backports" "${_PRESEED_FILE}"
+	then
+		_PARENT_MIRROR_BACKPORTS="$(awk -Flinux-container/parent-mirror-backports '/linux-container\/parent-mirror-backports/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+fi
+
+if [ -n "${_CLEAN}" ] && [ -z "${_PATH}" ]
+then
+	Clean || exit 1
+	exit 0
+fi
+
+if ! type debootstrap > /dev/null 2>&1 \
+&& ! type cdebootstrap > /dev/null 2>&1
+then
+	echo "E: neither debootstrap nor cdebootstrap found."
+	exit 1
+fi
+
+if [ -z "${_PATH}" ]
+then
+	echo "'path' parameter is required"
+	exit 1
+fi
+
+if [ "$(id -u)" != "0" ]
+then
+	echo "$(basename ${0}) should be run as 'root'"
+	exit 1
+fi
+
+_ROOTFS="${_PATH}/rootfs"
+
+Install_system "${_ROOTFS}"
+
+if [ "${?}" -ne 0 ]
+then
+	echo "failed to install system"
+	exit 1
+fi
+
+Configure_system "${_ROOTFS}" "${_NAME}"
+
+if [ "${?}" -ne 0 ]
+then
+	echo "failed to configure system for a container"
+	exit 1
+fi
+
+Copy_configuration "${_PATH}" "${_ROOTFS}" "${_NAME}"
+
+if [ "${?}" -ne 0 ]
+then
+	echo "failed write configuration file"
+	exit 1
+fi
+
+if [ -n "${_CLEAN}" ]
+then
+	Clean || exit 1
+	exit 0
+fi
