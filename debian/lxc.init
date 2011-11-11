@@ -24,15 +24,17 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin
 
 . /lib/lsb/init-functions
 
-if [ -f /etc/default/lxc ] ; then
-  . /etc/default/lxc
+if [ -f /etc/default/lxc ]
+then
+	. /etc/default/lxc
 fi
 
 LXC_AUTO="${LXC_AUTO:-true}"
+LXC_SHUTDOWN="${LXC_SHUTDOWN:-stop}"
 
 Lxc ()
 {
-	_COMMAND="${@}"
+	_PROGRAM="${@}"
 
 	# no containers available
 	if ! ls /etc/lxc/auto/* > /dev/null 2>&1
@@ -47,7 +49,7 @@ Lxc ()
 	do
 		_CONTAINER="$(basename ${_CONFIG} .conf)"
 
-		case "${_COMMAND}" in
+		case "${_PROGRAM}" in
 			start)
 				# initscript is disabled
 				case "${LXC_AUTO}" in
@@ -63,7 +65,7 @@ Lxc ()
 				then
 					log_progress_msg "${_CONTAINER}"
 
-					lxc-${_COMMAND} -n ${_CONTAINER} -f ${_CONFIG} -d
+					lxc-${_PROGRAM} -n ${_CONTAINER} -f ${_CONFIG} -d
 				else
 					log_progress_msg "${_CONTAINER} (skip)"
 				fi
@@ -72,7 +74,7 @@ Lxc ()
 			*)
 				log_progress_msg "${_CONTAINER}"
 
-				lxc-${_COMMAND} -n ${_CONTAINER}
+				lxc ${_PROGRAM} ${_CONTAINER}
 				;;
 		esac
 	done
@@ -90,13 +92,13 @@ case "${1}" in
 	stop)
 		log_daemon_msg "Stopping Linux Containers"
 
-		Lxc stop
+		Lxc ${LXC_SHUTDOWN}
 		;;
 
 	restart|force-reload)
 		log_daemon_msg "Restarting Linux Containers"
 
-		Lxc stop
+		Lxc ${LXC_SHUTDOWN}
 		Lxc start
 		;;
 

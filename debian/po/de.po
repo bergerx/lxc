@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-2\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-04 15:43+0100\n"
+"POT-Creation-Date: 2011-11-06 07:49+0100\n"
 "PO-Revision-Date: 2010-07-20 05:54+0200\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -55,6 +55,16 @@ msgstr "Linux Container: Rechnername für diesen Container?"
 msgid "What should be the hostname of the current container?"
 msgstr "Was soll der Rechnername dieses Containers sein?"
 
+#. Type: string
+#. Description
+#: ../linux-container.templates:3001
+msgid ""
+"This defaults to either /etc/hostname (if present), is automatically guessed "
+"through lsb_release (if present), or otherwise set to 'debian'."
+msgstr ""
+"Der Standardwert wird aus /etc/hostname ermittelt (falls vorhanden), "
+"andernfalls mittels lsb_release bestimmt oder auf 'debian' gesetzt."
+
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
@@ -84,3 +94,50 @@ msgstr ""
 #: ../lxc.templates:2001
 msgid "If unsure, choose yes (default)."
 msgstr "Wenn Sie unsicher sind, wählen sie ja (Standard)."
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid "Linux Container: Stop method"
+msgstr "Linux Container Stopp Methode"
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid ""
+"Linux Containers can be stopped in different ways. The stop method kills all "
+"processes inside the container. The halt method initiates a shutdown, which "
+"takes longer and can have problems with containers that don't shutdown "
+"themselfs properly."
+msgstr ""
+"Linux Container können auf unterschiedliche Weise gestoppt werden. Die Stopp "
+"Methode killt alle Prozesse innerhalb des Containers. The Halt Methode "
+"initiiert ein Herunterfahren welches länger dauert und Probleme bereiten "
+"kann mit Container, die sich nicht selbst korrekt herunterfahren können."
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+msgid "If unsure, choose stop (default)."
+msgstr "Wenn Sie unsicher sind, wählen sie stop (Standard)."
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "LXC directory:"
+msgstr "LXC Verzeichnis:"
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid ""
+"Please specify the directory that will be used to store the Linux Containers."
+msgstr ""
+"Bitte geben Sie das Verzeichnis an, welches für die Container verwendet "
+"werden soll."
+
+#. Type: string
+#. Description
+#: ../lxc.templates:4001
+msgid "If unsure, use /var/lib/lxc (default)."
+msgstr "Wenn Sie unsicher sind, benutzen sie /var/lib/lxc (Standard)."

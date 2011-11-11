@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -e
+
+_CONTAINER="${1}"
+
+if [ -n "${_CONTAINER}" ]
+then
+	shift
+else
+	echo "Usage: ${0} CONTAINER"
+	exit 1
+fi
+
+if lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "STOPPED"
+then
+	echo "P: ${_CONTAINER} - already stopped"
+	exit 0
+fi
+
+# FIXME: Assumption of /var/lib/lxc
+if [ -e /var/lib/lxc/${_CONTAINER}/rootfs ]
+then
+	chroot /var/lib/lxc/${_CONTAINER}/rootfs telinit 0
+else
+	echo "E: /var/lib/lxc/${_CONTAINER}/rootfs - no such directory"
+	exit 1
+fi

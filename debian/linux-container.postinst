@@ -12,7 +12,20 @@ case "${1}" in
 		LINUX_CONTAINER_ENABLE="${RET}" # boolean
 
 		db_get linux-container/hostname
-		LINUX_CONTAINER_HOSTNAME="${RET:-debian}" # string
+		LINUX_CONTAINER_HOSTNAME="${RET}" # string
+
+		if [ -z "${LINUX_CONTAINER_HOSTNAME}" ]
+		then
+			if [ -n "$(cat /etc/hostname 2> /dev/null)" ]
+			then
+				LINUX_CONTAINER_HOSTNAME="$(cat /etc/hostname)"
+			elif [ -x /usr/bin/lsb_release ]
+			then
+				LINUX_CONTAINER_HOSTNAME="$(lsb_release -is | tr [A-Z] [a-z])"
+			else
+				LINUX_CONTAINER_HOSTNAME="debian"
+			fi
+		fi
 
 		db_stop
 
@@ -23,7 +36,6 @@ cat > "${_CONFFILE}" << EOF
 # /etc/default/linux-container
 
 LINUX_CONTAINER_ENABLE="${LINUX_CONTAINER_ENABLE}"
-LINUX_CONTAINER_HOSTNAME="${LINUX_CONTAINER_HOSTNAME}"
 EOF
 		fi
 
@@ -37,24 +49,26 @@ EOF
 		echo "LINUX_CONTAINER_ENABLE=" >> "${_CONFFILE}"
 
 		sed     -e "s|^ *LINUX_CONTAINER_ENABLE=.*|LINUX_CONTAINER_ENABLE=\"${LINUX_CONTAINER_ENABLE}\"|" \
-			-e "s|^ *LINUX_CONTAINER_HOSTNAME=.*|LINUX_CONTAINER_HOSTNAME=\"${LINUX_CONTAINER_HOSTNAME}\"|" \
 		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
 
 		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
 
-		if [ "${LINUX_CONTAINER_ENABLE}" = "true" ]
+		if [ "${LINUX_CONTAINER_ENABLE}" != "true" ]
 		then
-			# squeeze only has /dev/tty and /dev/tty0 by default,
-			# therefore creating missing device nodes for tty1-4.
-			for tty in $(seq 1 4)
-			do
-				if [ ! -e /dev/tty$tty ]
-				then
-					mknod /dev/tty$tty c 4 $tty
-				fi
-			done
+			exit 0
+		fi
 
-			# setup /etc/inittab
+		# squeeze only has /dev/tty and /dev/tty0 by default,
+		# therefore creating missing device nodes for tty1-4.
+		for tty in $(seq 1 4)
+		do
+			if [ ! -e /dev/tty$tty ]
+			then
+				mknod /dev/tty$tty c 4 $tty
+			fi
+		done
+
+		# setup /etc/inittab
 
 cat > /etc/inittab << EOF
 id:2:initdefault:
@@ -75,9 +89,9 @@ c3:12345:respawn:/sbin/getty 38400 tty3 linux
 c4:12345:respawn:/sbin/getty 38400 tty4 linux
 EOF
 
-			# add daemontools-run entry
-			if [ -e /var/lib/dpkg/info/daemontools.list ]
-			then
+		# add daemontools-run entry
+		if [ -e /var/lib/dpkg/info/daemontools.list ]
+		then
 
 cat >> /etc/inittab << EOF
 #-- daemontools-run begin
@@ -85,13 +99,13 @@ SV:123456:respawn:/usr/bin/svscanboot
 #-- daemontools-run end
 EOF
 
-			fi
+		fi
 
-			# disable selinux
-			mkdir -p /selinux
-			echo 0 > /selinux/enforce
+		# disable selinux
+		mkdir -p /selinux
+		echo 0 > /selinux/enforce
 
-			# configure the network using the dhcp
+		# configure the network using the dhcp
 cat > /etc/network/interfaces << EOF
 auto lo
 iface lo inet loopback
@@ -100,31 +114,42 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
-			# set the hostname
-			echo "${LINUX_CONTAINER_HOSTNAME}" > /etc/hostname
+		# set the hostname
+		echo "${LINUX_CONTAINER_HOSTNAME}" > /etc/hostname
 
-			# remove pointless services in a container
-			update-rc.d -f checkroot.sh remove # S
-			update-rc.d checkroot.sh stop 09 S .
+		# remove pointless services in a container
+		update-rc.d -f checkroot.sh remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d checkroot.sh stop 09 S . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f umountfs remove # 0 6
-			update-rc.d umountfs start 09 0 6 .
+		update-rc.d -f umountfs remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d umountfs start 09 0 6 . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f umountroot remove # 0 6
-			update-rc.d umountroot start 10 0 6 .
+		update-rc.d -f umountroot remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d umountroot start 10 0 6 . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			# The following initscripts don't provide an empty start or stop block.
-			# To prevent them being enabled on upgrades, we leave a start link on
-			# runlevel 3.
-			update-rc.d -f hwclock.sh remove # S 0 6
-			update-rc.d hwclock.sh start 10 3 .
+		# The following initscripts don't provide an empty start or stop block.
+		# To prevent them being enabled on upgrades, we leave a start link on
+		# runlevel 3.
+		update-rc.d -f hwclock.sh remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d hwclock.sh start 10 3 . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f hwclockfirst.sh remove # S
-			update-rc.d hwclockfirst.sh start 08 3 .
+		update-rc.d -f hwclockfirst.sh remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d hwclockfirst.sh start 08 3 . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 
-			update-rc.d -f module-init-tools remove # S
-			update-rc.d module-init-tools start 10 3 .
-		fi
+		update-rc.d -f module-init-tools remove \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
+		update-rc.d module-init-tools start 10 3 . \ |
+		grep -v 'update-rc.d: using dependency based boot sequencing'
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

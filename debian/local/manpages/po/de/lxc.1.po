@@ -1,14 +1,13 @@
-# German translations for live-config package
-# Copyright (C) 2011 Free Software Foundation, Inc.
-# This file is distributed under the same license as the live-config package.
-# Automatically generated, 2011.
+# German translations for lxc-list
+# 2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+# This file is distributed under the same license as the lxc packaging.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: live-config VERSION\n"
-"POT-Creation-Date: 2011-11-04 14:18+0100\n"
-"PO-Revision-Date: 2011-11-03 12:42+0100\n"
-"Last-Translator: Automatically generated\n"
+"Project-Id-Version: lxc\n"
+"POT-Creation-Date: 2011-11-06 07:28+0100\n"
+"PO-Revision-Date: 2010-05-24 09:59+0300\n"
+"Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -17,67 +16,80 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. type: TH
-#: en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
 msgid "LXC"
 msgstr "LXC"
 
 #. type: TH
-#: en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "2011-11-04"
-msgstr "04.11.2011"
+msgid "2011-11-06"
+msgstr "06.11.2011"
 
 #. type: TH
-#: en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "0.7.5-3"
-msgstr "0.7.5-3"
+msgid "0.7.5-4"
+msgstr "0.7.5-4"
 
 #. type: TH
-#: en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
 msgid "Linux Containers"
 msgstr "Linux Containers"
 
 #. type: SH
-#: en/lxc-list.1:11 en/lxc.1:11
+#: en/lxc-halt.1:11 en/lxc-list.1:11 en/lxc.1:11
 #, no-wrap
 msgid "NAME"
 msgstr "NAME"
 
 #. type: SH
-#: en/lxc-list.1:14 en/lxc.1:14
+#: en/lxc-halt.1:14 en/lxc-list.1:14 en/lxc.1:14
 #, no-wrap
 msgid "SYNOPSIS"
 msgstr "SYNTAX"
 
 #. type: SH
-#: en/lxc-list.1:17 en/lxc.1:17
+#: en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr "BESCHREIBUNG"
 
 #. type: SH
-#: en/lxc-list.1:20 en/lxc.1:24
+#: en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr "OPTIONEN"
 
+#. type: IP
+#: en/lxc-halt.1:21 en/lxc.1:27
+#, no-wrap
+msgid "I<CONTAINER>"
+msgstr "I<CONTAINER>"
+
+#. type: Plain text
+#: en/lxc-halt.1:23 en/lxc.1:29
+msgid "specifies a Linux Container in the LXC path (default /var/lib/lxc)."
+msgstr ""
+"bezeichnet einen Linux Container im LXC Pfad (Standardeinstellung /var/lib/"
+"lxc)."
+
 #. type: SH
-#: en/lxc-list.1:23 en/lxc.1:30
+#: en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
 msgstr "SIEHE AUCH"
 
 #. type: SH
-#: en/lxc-list.1:27 en/lxc.1:34
+#: en/lxc-halt.1:29 en/lxc-list.1:28 en/lxc.1:35
 #, no-wrap
 msgid "BUGS"
 msgstr "FEHLER"
 
 #. type: Plain text
-#: en/lxc-list.1:29 en/lxc.1:36
+#: en/lxc-halt.1:31 en/lxc-list.1:30 en/lxc.1:37
 msgid ""
 "Bugs can be reported by submitting a bugreport for the lxc package in the "
 "Debian Bug Tracking System at E<lt>I<http://bugs.debian.org/>E<gt> or by "
@@ -88,7 +100,7 @@ msgstr ""
 "durch Senden einer E-Mail an den Autor mitgeteilt werden."
 
 #. type: SH
-#: en/lxc-list.1:30 en/lxc.1:37
+#: en/lxc-halt.1:32 en/lxc-list.1:31 en/lxc.1:38
 #, no-wrap
 msgid "AUTHOR"
 msgstr "AUTOR"
@@ -134,26 +146,13 @@ msgid "specifies a program of the Linux Container tools (LXC), see I<lxc>(7)."
 msgstr ""
 "bezeichnet ein Programm der Linux Container Tools (LXC), siehe I<lxc>(7)."
 
-#. type: IP
-#: en/lxc.1:27
-#, no-wrap
-msgid "I<CONTAINER>"
-msgstr "I<CONTAINER>"
+#. type: Plain text
+#: en/lxc.1:34
+msgid "I<lxc>(7), I<lxc-halt>(1), I<lxc-list>(1)."
+msgstr "I<lxc>(7), I<lxc-halt>(1), I<lxc-list>(1)."
 
 #. type: Plain text
-#: en/lxc.1:29
-msgid "specifies a Linux Container in the LXC path (default /var/lib/lxc)."
-msgstr ""
-"bezeichnet einen Linux Container im LXC Pfad (Standardeinstellung /var/lib/"
-"lxc)."
-
-#. type: Plain text
-#: en/lxc.1:33
-msgid "I<lxc>(7), I<lxc-list>(1)."
-msgstr "I<lxc>(7), I<lxc-list>(1)."
-
-#. type: Plain text
-#: en/lxc.1:38
+#: en/lxc.1:39
 msgid ""
 "lxc was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt>."

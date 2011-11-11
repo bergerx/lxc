@@ -45,11 +45,21 @@ msgstr "Linux Containers"
 msgid "NAME"
 msgstr "NAME"
 
+#. type: Plain text
+#: en/lxc-halt.1:13
+msgid "B<lxc-halt> - shutdown Linux Containers by state"
+msgstr "B<lxc-halt> - fährt einen Linux Container herunter"
+
 #. type: SH
 #: en/lxc-halt.1:14 en/lxc-list.1:14 en/lxc.1:14
 #, no-wrap
 msgid "SYNOPSIS"
 msgstr "SYNTAX"
+
+#. type: Plain text
+#: en/lxc-halt.1:16
+msgid "B<lxc-halt> I<CONTAINER>"
+msgstr "B<lxc-halt> I<CONTAINER>"
 
 #. type: SH
 #: en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
@@ -57,17 +67,46 @@ msgstr "SYNTAX"
 msgid "DESCRIPTION"
 msgstr "BESCHREIBUNG"
 
+#. type: Plain text
+#: en/lxc-halt.1:19
+msgid ""
+"B<lxc-halt> shuts down a Linux Container by not killing all processes of it "
+"like lxc-stop does. It does an ordinary shutdown by issueing a switch to "
+"runlevel 0 within the container."
+msgstr ""
+"B<lxc-halt> fährt einen Linux Container herunter ohne alle dessen Prozesse "
+"zu killen wie es lxc-stop tut. Es führt einen ordentlichen Shutdown mittels "
+"eines Wechsel zu Runlevel 0 innerhalb des Containers durch."
+
 #. type: SH
 #: en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr "OPTIONEN"
 
+#. type: IP
+#: en/lxc-halt.1:21 en/lxc.1:27
+#, no-wrap
+msgid "I<CONTAINER>"
+msgstr "I<CONTAINER>"
+
+#. type: Plain text
+#: en/lxc-halt.1:23 en/lxc.1:29
+msgid "specifies a Linux Container in the LXC path (default /var/lib/lxc)."
+msgstr ""
+"bezeichnet einen Linux Container im LXC Pfad (Standardeinstellung /var/lib/"
+"lxc)."
+
 #. type: SH
 #: en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
 msgstr "SIEHE AUCH"
+
+#. type: Plain text
+#: en/lxc-halt.1:28
+msgid "I<lxc>(7), I<lxc>(1), I<lxc-list>(1)."
+msgstr "I<lxc>(7), I<lxc>(1), I<lxc-list>(1)."
 
 #. type: SH
 #: en/lxc-halt.1:29 en/lxc-list.1:28 en/lxc.1:35
@@ -93,35 +132,10 @@ msgid "AUTHOR"
 msgstr "AUTOR"
 
 #. type: Plain text
-#: en/lxc-list.1:13
-msgid "B<lxc-list> - list Linux Containers by state"
-msgstr "B<lxc-list> - listet Linux Container nach Status"
-
-#. type: Plain text
-#: en/lxc-list.1:16
-msgid "B<lxc-list>"
-msgstr "B<lxc-list>"
-
-#. type: Plain text
-#: en/lxc-list.1:19
-msgid "B<lxc-list> lists Linux Containers by state."
-msgstr "B<lxc-list> listed Linux Container nach Status"
-
-#. type: Plain text
-#: en/lxc-list.1:22
-msgid "lxc-list has no options."
-msgstr "lxc-list hat keine Optionen."
-
-#. type: Plain text
-#: en/lxc-list.1:27
-msgid "I<lxc>(7), I<lxc>(1), I<lxc-halt>(1)."
-msgstr "I<lxc>(7), I<lxc>(1), I<lxc-halt>(1)."
-
-#. type: Plain text
-#: en/lxc-list.1:32
+#: en/lxc-halt.1:33
 msgid ""
-"lxc-list was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"lxc-halt was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt>."
 msgstr ""
-"lxc-list wurde von Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"lxc-halt wurde von Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt> geschrieben."

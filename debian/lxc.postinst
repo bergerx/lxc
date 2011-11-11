@@ -11,6 +11,12 @@ case "${1}" in
 		db_get lxc/auto
 		LXC_AUTO="${RET}" # boolean
 
+		db_get lxc/shutdown
+		LXC_SHUTDOWN="${RET}" # select
+
+		db_get lxc/directory
+		LXC_DIRECTORY="${RET:-/var/lib/lxc}" # string
+
 		db_stop
 
 		if [ ! -e "${_CONFFILE}" ]
@@ -20,6 +26,8 @@ cat > "${_CONFFILE}" << EOF
 # /etc/default/lxc
 
 LXC_AUTO="${LXC_AUTO}"
+LXC_SHUTDOWN="${LXC_SHUTDOWN}"
+LXC_DIRECTORY="${LXC_DIRECTORY}"
 EOF
 		fi
 
@@ -32,10 +40,41 @@ EOF
 		grep -Eq '^ *LXC_AUTO=' "${_CONFFILE}" || \
 		echo "LXC_AUTO=" >> "${_CONFFILE}"
 
+		test -z "${LXC_SHUTDOWN}" || \
+		grep -Eq '^ *LXC_SHUTDOWN=' "${_CONFFILE}" || \
+		echo "LXC_SHUTDOWN=" >> "${_CONFFILE}"
+
+		test -z "${LXC_DIRECTORY}" || \
+		grep -Eq '^ *LXC_DIRECTORY=' "${_CONFFILE}" || \
+		echo "LXC_DIRECTORY=" >> "${_CONFFILE}"
+
 		sed -e "s|^ *LXC_AUTO=.*|LXC_AUTO=\"${LXC_AUTO}\"|" \
+		    -e "s|^ *LXC_SHUTDOWN=.*|LXC_SHUTDOWN=\"${LXC_SHUTDOWN}\"|" \
+		    -e "s|^ *LXC_DIRECTORY=.*|LXC_DIRECTORY=\"${LXC_DIRECTORY}\"|" \
 		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
 
 		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
+
+		# Create lxc directory
+		if [ ! -e "${LXC_DIRECTORY}" ]
+		then
+			mkdir -p "${LXC_DIRECTORY}"
+		fi
+
+		if [ "${LXC_DIRECTORY}" != "/var/lib/lxc" ]
+		then
+			if [ -h /var/lib/lxc ]
+			then
+				# Remove possibly old symlink
+				rm -f /var/lib/lxc
+			elif [ -e /var/lib/lxc ]
+			then
+				# Move old lxc directory
+				mv /var/lib/lxc /var/lib/lxc.orig
+			fi
+
+			ln -s "${LXC_DIRECTORY}" /var/lib/lxc
+		fi
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

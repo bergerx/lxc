@@ -11,3 +11,24 @@ _Description: Linux Container: Automatic start and stop
  boot and shutdown on reboot/halt.
  .
  If unsure, choose yes (default).
+
+Template: lxc/shutdown
+Type: select
+Choices: stop, halt
+Default: stop
+_Description: Linux Container: Stop method
+ Linux Containers can be stopped in different ways. The stop method kills
+ all processes inside the container. The halt method initiates a shutdown,
+ which takes longer and can have problems with containers that don't
+ shutdown themselfs properly.
+ .
+ If unsure, choose stop (default).
+
+Template: lxc/directory
+Type: string
+Default: /var/lib/lxc
+_Description: LXC directory:
+ Please specify the directory that will be used to store the Linux
+ Containers.
+ .
+ If unsure, use /var/lib/lxc (default).

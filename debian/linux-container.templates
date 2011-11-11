@@ -16,3 +16,6 @@ Type: string
 Default: debian
 _Description: Linux Container: Hostname for LXC?
  What should be the hostname of the current container?
+ .
+ This defaults to either /etc/hostname (if present), is automatically guessed
+ through lsb_release (if present), or otherwise set to 'debian'.
