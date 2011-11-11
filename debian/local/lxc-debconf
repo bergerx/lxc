@@ -79,7 +79,7 @@ EOF
 		cp -L /usr/share/lxc/linux-container_*.deb "${_ROOTFS}"
 
 		Chroot "${_ROOTFS}" "dpkg -i $(basename ${_ROOTFS}/linux-container_*.deb)"
-		Chroot "${_ROOTFS}" "rm -f $(basename ${_ROOTFS}/linux-container_*.deb)"
+		rm -f "${_ROOTFS}"/linux-container_*.deb
 	else
 		# Install remote linux-container package
 		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
@@ -253,8 +253,8 @@ EOF
 	esac
 
 	# Removing openssh-server host keys
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key"
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/ssh/ssh_host_*_key.pub"
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"/etc/ssh/ssh_host_*_key
+	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"/etc/ssh/ssh_host_*_key.pub
 
 	mv "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
 	echo "Download complete."
