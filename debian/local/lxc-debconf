@@ -178,6 +178,15 @@ deb ${_MIRROR} ${_DIST}-updates main
 deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
 EOF
 
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
+Acquire::PDiffs "false";
+APT::Clean-Installed "true";
+APT::Get:AutomaticRemove "true";
+APT::Get::HideAutoRemove "false";
+APT::Get:Show-Upgraded "true";
+APT::Install-Recommends "false";
+EOF
+
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
 Package: *
 Pin: release n=${_DIST}
