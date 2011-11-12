@@ -599,9 +599,9 @@ then
 		_DISTRIBUTION="$(awk -Flinux-container/distribution '/linux-container\/distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
-	if grep -qs "linux-container/mirror" "${_PRESEED_FILE}"
+	if grep -qs "linux-container/mirror " "${_PRESEED_FILE}"
 	then
-		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
 	if grep -qs "linux-container/mirror-security" "${_PRESEED_FILE}"
@@ -619,9 +619,9 @@ then
 		_PARENT_DISTRIBUTION="$(awk -Flinux-container/parent-distribution '/linux-container\/parent-distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
-	if grep -qs "linux-container/parent-mirror" "${_PRESEED_FILE}"
+	if grep -qs "linux-container/parent-mirror " "${_PRESEED_FILE}"
 	then
-		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
 	if grep -qs "linux-container/parent-mirror-security" "${_PRESEED_FILE}"
