@@ -221,6 +221,17 @@ EOF
 					;;
 			esac
 			;;
+
+		*)
+			if [ "${_APT_RECOMMENDS}" = "false" ]
+			then
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/recommends.conf" << EOF
+APT::Install-Recommends "false";
+EOF
+
+			fi
+			;;
 	esac
 
 	# Mount pseudo-filesystems
@@ -484,12 +495,12 @@ Clean ()
 
 Usage ()
 {
-	echo "Usage: $(basename ${0}) --debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
+	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
 
 	return 0
 }
 
-_OPTIONS="$(getopt -o d:hp:n:c -l debconf-frontend:,debconf-priority:,distribution:,preseed-file:,help,path:,name:,clean -- "$@")"
+_OPTIONS="$(getopt -o d:hp:n:c -l apt-recommends:,debconf-frontend:,debconf-priority:,distribution:,preseed-file:,help,path:,name:,clean -- "$@")"
 
 if [ "${?}" -ne 0 ]
 then
@@ -502,6 +513,11 @@ eval set -- "${_OPTIONS}"
 while true
 do
 	case "${1}" in
+		--apt-recommends)
+			_APT_RECOMMENDS="${_APT_RECOMMENDS}"
+			shift 2
+			;;
+
 		--debconf-frontend)
 			_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND}"
 			shift 2
@@ -592,6 +608,11 @@ then
 	# This should be handled by debconf on the host, however,
 	# doing that in a policy conformant way of not poluting/abusing hosts
 	# debconf db needs some further thought first.
+
+	if grep -qs "linux-container/apt-recommends" "${_PRESEED_FILE}"
+	then
+		_DEBCONF_FRONTEND="$(awk -Flinux-container/apt-recommends '/linux-container\/apt-recommends/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*boolean\s*||')"
+	fi
 
 	if grep -qs "linux-container/debconf-frontend" "${_PRESEED_FILE}"
 	then
