@@ -8,3 +8,5 @@
 * integrate support for file-rc
 * disable udev
 * disable update-initramfs
+* use upgrade and user changes proof way of handling other packages config files
+  at install and removal time.
