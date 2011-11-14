@@ -1,3 +1,17 @@
+lxc (0.7.5-8) unstable; urgency=low
+
+  * Adding default comments in fstab when using lxc-debconf.
+  * Adding temporary dirty worarkound to avoid wrong matches as long as
+    preseed-files are manually parsed.
+  * Adding apt config for progress in lxc-debconf.
+  * Correcting check for daemontools in linux-container postinst.
+  * Adding upgrade and user-changes proof handling for /etc/inittab.
+  * Updating todo files.
+  * Adding config option to disable automatic installation of
+    recommended packages in lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 14 Nov 2011 17:45:27 +0100
+
 lxc (0.7.5-7) unstable; urgency=low
 
   * Touching empty fstab in lxc-debconf.
