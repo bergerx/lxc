@@ -211,8 +211,8 @@ EOF
 			echo "c${_CONSOLE}:12345:respawn:/sbin/getty 38400 tty${_CONSOLE} linux" >> /etc/inittab
 		done
 
-		# add daemontools-run entry
-		if [ -e /var/lib/dpkg/info/daemontools.list ]
+		# Enable daemontools-run
+		if [ -e /var/lib/dpkg/info/daemontools-run.list ]
 		then
 
 cat >> /etc/inittab << EOF
