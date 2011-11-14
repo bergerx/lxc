@@ -162,69 +162,58 @@ EOF
 			fi
 		done
 
-		# setup /etc/inittab
-		echo -n "P: Creating file /etc/inittab..."
+		echo -n "P: Updating file /etc/inittab..."
 
-cat > /etc/inittab << EOF
-# /etc/inittab: init(8) configuration.
+		# Disable sulogin
+		#   ~~:S:wait:/sbin/sulogin
+		sed -i -e 's|\(^[^#].*S:wait:.*$\)|#\1|' /etc/inittab
 
-# The default runlevel.
-id:2:initdefault:
+		# Disable ctrlaltdel
+		#   ca:12345:ctrlaltdel:/sbin/shutdown -t1 -a -r now
+		sed -i -e 's|\(^[^#].*:ctrlaltdel:.*$\)|#\1|' /etc/inittab
 
-# Boot-time system configuration/initialization script.
-# This is run first except when booting in emergency (-b) mode.
-si::sysinit:/etc/init.d/rcS
+		# Disable power
+		#   pf::powerwait:/etc/init.d/powerfail start
+		#   pn::powerfailnow:/etc/init.d/powerfail now
+		#   po::powerokwait:/etc/init.d/powerfail stop
+		sed -i -e 's|\(^[^#].*:power.*:.*$\)|#\1|' /etc/inittab
 
-# /etc/init.d executes the S and K scripts upon change
-# of runlevel.
-#
-# Runlevel 0 is halt.
-# Runlevel 1 is single-user.
-# Runlevels 2-5 are multi-user.
-# Runlevel 6 is reboot.
-l0:0:wait:/etc/init.d/rc 0
-l1:1:wait:/etc/init.d/rc 1
-l2:2:wait:/etc/init.d/rc 2
-l3:3:wait:/etc/init.d/rc 3
-l4:4:wait:/etc/init.d/rc 4
-l5:5:wait:/etc/init.d/rc 5
-l6:6:wait:/etc/init.d/rc 6
-# Normally not reached, but fallthrough in case of emergency.
-z6:6:respawn:/sbin/sulogin
+		# Disable normal getty
+		#  1:2345:respawn:/sbin/getty 38400 tty1
+		#  2:23:respawn:/sbin/getty 38400 tty2
+		#  3:23:respawn:/sbin/getty 38400 tty3
+		#  ...
+		# Keep container getty
+		#  1:2345:respawn:/sbin/getty 38400 console
+		#  c1:23:respawn:/sbin/getty 38400 tty1
+		#  c2:23:respawn:/sbin/getty 38400 tty2
+		#  ...
+		sed -i -e 's|\(^[^#,^c].*:respawn:/sbin/getty.*[^console,linux]$\)|#\1|' /etc/inittab
 
-# /sbin/getty invocations for the runlevels.
-#
-# The "id" field MUST be the same as the last
-# characters of the device (after "tty").
-#
-# Format:
-#  <id>:<runlevels>:<action>:<process>
-#
-# Note that on most Debian systems tty7 is used by the X Window System,
-# so if you want to add more getty's go ahead but skip tty7 if you run X.
-#
-1:2345:respawn:/sbin/getty 38400 console
-EOF
+		# Enable container getty
+		#  1:2345:respawn:/sbin/getty 38400 console
+		#  c1:23:respawn:/sbin/getty 38400 tty1
+		#  c2:23:respawn:/sbin/getty 38400 tty2
+
+		# Assemble new entries
+		_CONSOLES="\n#-- linux-container begin\n1:2345:respawn:/sbin/getty 38400 console"
 
 		for _CONSOLE in $(seq 1 ${LINUX_CONTAINER_CONSOLES})
 		do
-			echo "c${_CONSOLE}:12345:respawn:/sbin/getty 38400 tty${_CONSOLE} linux" >> /etc/inittab
+			_CONSOLES="${_CONSOLES}\nc${_CONSOLE}:12345:respawn:/sbin/getty 38400 tty${_CONSOLE} linux"
 		done
 
-		# add daemontools-run entry
-		if [ -e /var/lib/dpkg/info/daemontools.list ]
-		then
+		_CONSOLES="${_CONSOLES}\n#-- linux-container end"
 
-cat >> /etc/inittab << EOF
+		# Remove old entries
+		sed -e '/#-- linux-container begin/,/#-- linux-container end/d' /etc/inittab > /etc/inittab.tmp
+		mv -f /etc/inittab.tmp /etc/inittab
 
-#-- daemontools-run begin
-SV:123456:respawn:/usr/bin/svscanboot
-#-- daemontools-run end
-EOF
+		# Add new entries
+		_CONSOLE="$(grep '#[0-9].*:respawn:/sbin/getty' /etc/inittab | tail -1)"
 
-		fi
-
-		echo " done."
+		sed -e "s|\(${_CONSOLE}\)|\1${_CONSOLES}|" /etc/inittab > /etc/inittab.tmp
+		mv -f /etc/inittab.tmp /etc/inittab
 
 		# disable selinux
 		echo -n "P: Disabling feature selinux..."

@@ -145,7 +145,16 @@ Download_system ()
 		return 1
 	fi
 
-	touch "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/fstab"
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/fstab" << EOF
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+EOF
 
 	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list"
 
@@ -167,6 +176,15 @@ deb ${_MIRROR} ${_DIST} main
 deb ${_MIRROR_SECURITY} ${_DIST}-security main
 deb ${_MIRROR} ${_DIST}-updates main
 deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
+EOF
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
+Acquire::PDiffs "false";
+APT::Clean-Installed "true";
+APT::Get:AutomaticRemove "true";
+APT::Get::HideAutoRemove "false";
+APT::Get:Show-Upgraded "true";
+APT::Install-Recommends "false";
 EOF
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
@@ -202,6 +220,17 @@ EOF
 
 					;;
 			esac
+			;;
+
+		*)
+			if [ "${_APT_RECOMMENDS}" = "false" ]
+			then
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/recommends.conf" << EOF
+APT::Install-Recommends "false";
+EOF
+
+			fi
 			;;
 	esac
 
@@ -466,12 +495,12 @@ Clean ()
 
 Usage ()
 {
-	echo "Usage: $(basename ${0}) --debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
+	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
 
 	return 0
 }
 
-_OPTIONS="$(getopt -o d:hp:n:c -l debconf-frontend:,debconf-priority:,distribution:,preseed-file:,help,path:,name:,clean -- "$@")"
+_OPTIONS="$(getopt -o d:hp:n:c -l apt-recommends:,debconf-frontend:,debconf-priority:,distribution:,preseed-file:,help,path:,name:,clean -- "$@")"
 
 if [ "${?}" -ne 0 ]
 then
@@ -484,6 +513,11 @@ eval set -- "${_OPTIONS}"
 while true
 do
 	case "${1}" in
+		--apt-recommends)
+			_APT_RECOMMENDS="${_APT_RECOMMENDS}"
+			shift 2
+			;;
+
 		--debconf-frontend)
 			_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND}"
 			shift 2
@@ -575,6 +609,11 @@ then
 	# doing that in a policy conformant way of not poluting/abusing hosts
 	# debconf db needs some further thought first.
 
+	if grep -qs "linux-container/apt-recommends" "${_PRESEED_FILE}"
+	then
+		_DEBCONF_FRONTEND="$(awk -Flinux-container/apt-recommends '/linux-container\/apt-recommends/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*boolean\s*||')"
+	fi
+
 	if grep -qs "linux-container/debconf-frontend" "${_PRESEED_FILE}"
 	then
 		_DEBCONF_FRONTEND="$(awk -Flinux-container/debconf-frontend '/linux-container\/debconf-frontend/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
@@ -590,9 +629,9 @@ then
 		_DISTRIBUTION="$(awk -Flinux-container/distribution '/linux-container\/distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
-	if grep -qs "linux-container/mirror" "${_PRESEED_FILE}"
+	if grep -qs "linux-container/mirror " "${_PRESEED_FILE}"
 	then
-		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
 	if grep -qs "linux-container/mirror-security" "${_PRESEED_FILE}"
@@ -610,9 +649,9 @@ then
 		_PARENT_DISTRIBUTION="$(awk -Flinux-container/parent-distribution '/linux-container\/parent-distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
-	if grep -qs "linux-container/parent-mirror" "${_PRESEED_FILE}"
+	if grep -qs "linux-container/parent-mirror " "${_PRESEED_FILE}"
 	then
-		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
 	if grep -qs "linux-container/parent-mirror-security" "${_PRESEED_FILE}"
