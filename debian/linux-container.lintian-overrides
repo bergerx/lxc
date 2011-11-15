@@ -1,5 +1,0 @@
-# false positives, we're doing that on purpose, see README.Debian
-linux-container: init.d-script-not-included-in-package
-linux-container: init.d-script-not-marked-as-conffile
-linux-container: mknod-in-maintainer-script
-linux-container: postrm-does-not-call-updaterc.d-for-init.d-script
