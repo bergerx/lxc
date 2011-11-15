@@ -1,3 +1,9 @@
+lxc (0.7.5-9) unstable; urgency=low
+
+  * Splitting out linux-container package into own source package.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 15 Nov 2011 22:10:17 +0100
+
 lxc (0.7.5-8) unstable; urgency=low
 
   * Adding default comments in fstab when using lxc-debconf.
