@@ -160,10 +160,20 @@ EOF
 
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
+	case "${_PARENT_DIST}" in
+		lenny)
+			_PARENT_VOLATILE_DIST="lenny/volatile"
+			;;
+
+		*)
+			_PARENT_VOLATILE_DIST="${_PARENT_DIST}-updates"
+			;;
+	esac
+
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
 deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
-deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates main
+deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
 deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
 EOF
 
@@ -174,7 +184,7 @@ EOF
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
 deb ${_MIRROR} ${_DIST} main
 deb ${_MIRROR_SECURITY} ${_DIST}-security main
-deb ${_MIRROR} ${_DIST}-updates main
+deb ${_MIRROR_VOLATILE} ${_DIST}-updates main
 deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
 EOF
 
@@ -581,11 +591,13 @@ case "${_MODE}" in
 		_DISTRIBUTION="${_DISTRIBUTION:-artax}"
 		_MIRROR="${_MIRROR:-http://archive.progress-linux.org/progress/}"
 		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://archive.progress-linux.org/progress/}"
+		_MIRROR_VOLATILE="${_MIRROR_VOLATILE:-http://archive.progress-linux.org/progress/}"
 		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://archive.progress-linux.org/progress/}"
 
 		_PARENT_DISTRIBUTION="${_PARENT_DISTRIBUTION:-squeeze}"
 		_PARENT_MIRROR="${_PARENT_MIRROR:-http://ftp.debian.org/debian/}"
 		_PARENT_MIRROR_SECURITY="${_PARENT_MIRROR_SECURITY:-http://security.debian.org/}"
+		_PARENT_MIRROR_VOLATILE="${_PARENT_MIRROR_VOLATILE:-http://ftp.debian.org/debian/}"
 		_PARENT_MIRROR_BACKPORTS="${_PARENT_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
 		;;
 
@@ -594,11 +606,23 @@ case "${_MODE}" in
 		_DISTRIBUTION="${_DISTRIBUTION:-squeeze}"
 		_MIRROR="${_MIRROR:-http://ftp.debian.org/debian/}"
 		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://security.debian.org/}"
+
+		case "${_DISTRIBUTION}" in
+			lenny*)
+				_MIRROR_VOLATILE="${_MIRROR:-http://volatile.debian.org/debian-volatile/}"
+				;;
+
+			*)
+				_MIRROR_VOLATILE="${_MIRROR:-http://ftp.debian.org/debian/}"
+				;;
+		esac
+
 		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
 
 		_PARENT_DISTRIBUTION="${_DISTRIBUTION}"
 		_PARENT_MIRROR="${_MIRROR}"
 		_PARENT_MIRROR_SECURITY="${_MIRROR_SECURITY}"
+		_PARENT_MIRROR_VOLATILE="${_MIRROR_VOLATILE}"
 		_PARENT_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS}"
 		;;
 esac
@@ -639,6 +663,11 @@ then
 		_MIRROR_SECURITY="$(awk -Flinux-container/mirror-security '/linux-container\/mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
+	if grep -qs "linux-container/mirror-volatile" "${_PRESEED_FILE}"
+	then
+		_MIRROR_VOLATILE="$(awk -Flinux-container/mirror-volatile '/linux-container\/mirror-volatile/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
 	if grep -qs "linux-container/mirror-backports" "${_PRESEED_FILE}"
 	then
 		_MIRROR_BACKPORTS="$(awk -Flinux-container/mirror-backports '/linux-container\/mirror-backports/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
@@ -657,6 +686,11 @@ then
 	if grep -qs "linux-container/parent-mirror-security" "${_PRESEED_FILE}"
 	then
 		_PARENT_MIRROR_SECURITY="$(awk -Flinux-container/parent-mirror-security '/linux-container\/parent-mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
+	fi
+
+	if grep -qs "linux-container/parent-mirror-volatile" "${_PRESEED_FILE}"
+	then
+		_PARENT_MIRROR_VOLATILE="$(awk -Flinux-container/parent-mirror-volatile '/linux-container\/parent-mirror-volatile/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
 	fi
 
 	if grep -qs "linux-container/parent-mirror-backports" "${_PRESEED_FILE}"
