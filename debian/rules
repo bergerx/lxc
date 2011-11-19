@@ -17,6 +17,7 @@ override_dh_auto_install:
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
 
 	# removing useless files
+	rm -f debian/tmp/usr/lib/lxc/templates/lxc-busybox
 	rm -f debian/tmp/usr/lib/lxc/templates/lxc-lenny
 
 override_dh_builddeb:
