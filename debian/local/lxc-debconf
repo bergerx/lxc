@@ -443,6 +443,19 @@ lxc.cgroup.devices.allow                = c 4:4 rwm
 lxc.cgroup.devices.allow                = c 4:5 rwm
 # /dev/tty6
 lxc.cgroup.devices.allow                = c 4:6 rwm
+EOF
+
+	if [ "${_MODE}" = "ubuntu" ]
+	then
+
+cat >> "${_PATH}/config" << EOF
+# /dev/tun
+lxc.cgroup.devices.allow                = c 10:200 rwm
+EOF
+
+	fi
+
+cat >> "${_PATH}/config" << EOF
 # /dev/urandom
 lxc.cgroup.devices.allow                = c 1:9 rwm
 # /dev/zero
