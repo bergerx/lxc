@@ -12,4 +12,4 @@ debian/local/lxc-halt		/usr/bin
 debian/local/lxc-list		/usr/bin
 debian/local/lxc-restore	/usr/bin
 
-debian/local/lxc-debconf	/usr/lib/lxc/templates
+debian/local/lxc-debconf*	/usr/lib/lxc/templates
