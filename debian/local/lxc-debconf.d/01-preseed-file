@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+# Preseed
+db_settitle linux-container/title
+db_input high linux-container/preseed || true
+db_go
+
+db_get linux-container/preseed
+_PRESEED="${RET}" # string (w/ empty)
+echo "_PRESEED=\"${_PRESEED}\"" >> "${_TMPDIR}/debconf.default"
+
+db_reset linux-container/preseed
+db_fset linux-container/preseed seen false
+
+# FIXME
+db_purge
+
+db_stop

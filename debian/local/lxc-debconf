@@ -52,15 +52,9 @@ EOF
 	rm -f "${_ROOTFS}/preseed.cfg"
 
 	# Install additional packages
-	# Currently only supported through preseed file, no multiline (use private debconf for that later, FIXME)
-	if grep -qs "linux-container/packages" "${_PRESEED_FILE}"
+	if [ -n "${_PACKAGES}" ]
 	then
-		_PACKAGES="$(awk -Flinux-container/packages '/linux-container\/packages/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-
-		if [ -n "${_PACKAGES}" ]
-		then
-			Chroot "${_ROOTFS}" "apt-get --yes install ${_PACKAGES}"
-		fi
+		Chroot "${_ROOTFS}" "apt-get --yes install ${_PACKAGES}"
 	fi
 
 	# Configure linux-container
@@ -111,7 +105,7 @@ Download_system ()
 	_CACHE="${1}"
 	_ARCHITECTURE="${2}"
 
-	_PACKAGES="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+	_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
 
 	# check the minimal system was not already downloaded
 	mkdir -p "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
@@ -128,14 +122,14 @@ Download_system ()
 	if [ -x "$(which cdebootstrap 2>/dev/null)" ]
 	then
 		cdebootstrap --arch=${_ARCHITECTURE} \
-			--flavour=minimal --include=${_PACKAGES} \
+			--flavour=minimal --include=${_INCLUDE} \
 			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
 
 		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "dpkg --purge cdebootstrap-helper-rc.d"
 	elif [ -x "$(which debootstrap 2>/dev/null)" ]
 	then
 		debootstrap --verbose --arch=${_ARCHITECTURE} \
-			--variant=minbase --include=${_PACKAGES} \
+			--variant=minbase --include=${_INCLUDE} \
 			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
 	fi
 
@@ -579,126 +573,6 @@ do
 	esac
 done
 
-_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-dialog}"
-_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY:-high}"
-
-# Get distributor from template filename
-_MODE="$(basename ${0} | sed -e 's|^lxc-||' -e 's|debconf||')"
-
-case "${_MODE}" in
-	progress)
-		# Set defaults for Progress
-		_DISTRIBUTION="${_DISTRIBUTION:-artax}"
-		_MIRROR="${_MIRROR:-http://archive.progress-linux.org/progress/}"
-		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://archive.progress-linux.org/progress/}"
-		_MIRROR_VOLATILE="${_MIRROR_VOLATILE:-http://archive.progress-linux.org/progress/}"
-		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://archive.progress-linux.org/progress/}"
-
-		_PARENT_DISTRIBUTION="${_PARENT_DISTRIBUTION:-squeeze}"
-		_PARENT_MIRROR="${_PARENT_MIRROR:-http://ftp.debian.org/debian/}"
-		_PARENT_MIRROR_SECURITY="${_PARENT_MIRROR_SECURITY:-http://security.debian.org/}"
-		_PARENT_MIRROR_VOLATILE="${_PARENT_MIRROR_VOLATILE:-http://ftp.debian.org/debian/}"
-		_PARENT_MIRROR_BACKPORTS="${_PARENT_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
-		;;
-
-	*)
-		# Set defaults for Debian
-		_DISTRIBUTION="${_DISTRIBUTION:-squeeze}"
-		_MIRROR="${_MIRROR:-http://ftp.debian.org/debian/}"
-		_MIRROR_SECURITY="${_MIRROR_SECURITY:-http://security.debian.org/}"
-
-		case "${_DISTRIBUTION}" in
-			lenny*)
-				_MIRROR_VOLATILE="${_MIRROR:-http://volatile.debian.org/debian-volatile/}"
-				;;
-
-			*)
-				_MIRROR_VOLATILE="${_MIRROR:-http://ftp.debian.org/debian/}"
-				;;
-		esac
-
-		_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS:-http://backports.debian.org/debian-backports/}"
-
-		_PARENT_DISTRIBUTION="${_DISTRIBUTION}"
-		_PARENT_MIRROR="${_MIRROR}"
-		_PARENT_MIRROR_SECURITY="${_MIRROR_SECURITY}"
-		_PARENT_MIRROR_VOLATILE="${_MIRROR_VOLATILE}"
-		_PARENT_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS}"
-		;;
-esac
-
-if [ -e "${_PRESEED_FILE}" ]
-then
-	# This should be handled by debconf on the host, however,
-	# doing that in a policy conformant way of not poluting/abusing hosts
-	# debconf db needs some further thought first.
-
-	if grep -qs "linux-container/apt-recommends" "${_PRESEED_FILE}"
-	then
-		_DEBCONF_FRONTEND="$(awk -Flinux-container/apt-recommends '/linux-container\/apt-recommends/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*boolean\s*||')"
-	fi
-
-	if grep -qs "linux-container/debconf-frontend" "${_PRESEED_FILE}"
-	then
-		_DEBCONF_FRONTEND="$(awk -Flinux-container/debconf-frontend '/linux-container\/debconf-frontend/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/debconf-priority" "${_PRESEED_FILE}"
-	then
-		_DEBCONF_PRIORITY="$(awk -Flinux-container/debconf-priority '/linux-container\/debconf-priority/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/distribution" "${_PRESEED_FILE}"
-	then
-		_DISTRIBUTION="$(awk -Flinux-container/distribution '/linux-container\/distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/mirror " "${_PRESEED_FILE}"
-	then
-		_MIRROR="$(awk -Flinux-container/mirror '/linux-container\/mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/mirror-security" "${_PRESEED_FILE}"
-	then
-		_MIRROR_SECURITY="$(awk -Flinux-container/mirror-security '/linux-container\/mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/mirror-volatile" "${_PRESEED_FILE}"
-	then
-		_MIRROR_VOLATILE="$(awk -Flinux-container/mirror-volatile '/linux-container\/mirror-volatile/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/mirror-backports" "${_PRESEED_FILE}"
-	then
-		_MIRROR_BACKPORTS="$(awk -Flinux-container/mirror-backports '/linux-container\/mirror-backports/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/parent-distribution" "${_PRESEED_FILE}"
-	then
-		_PARENT_DISTRIBUTION="$(awk -Flinux-container/parent-distribution '/linux-container\/parent-distribution/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/parent-mirror " "${_PRESEED_FILE}"
-	then
-		_PARENT_MIRROR="$(awk -Flinux-container/parent-mirror '/linux-container\/parent-mirror / { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/parent-mirror-security" "${_PRESEED_FILE}"
-	then
-		_PARENT_MIRROR_SECURITY="$(awk -Flinux-container/parent-mirror-security '/linux-container\/parent-mirror-security/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/parent-mirror-volatile" "${_PRESEED_FILE}"
-	then
-		_PARENT_MIRROR_VOLATILE="$(awk -Flinux-container/parent-mirror-volatile '/linux-container\/parent-mirror-volatile/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-
-	if grep -qs "linux-container/parent-mirror-backports" "${_PRESEED_FILE}"
-	then
-		_PARENT_MIRROR_BACKPORTS="$(awk -Flinux-container/parent-mirror-backports '/linux-container\/parent-mirror-backports/ { print $2 }' ${_PRESEED_FILE} | sed -e 's|^\s*string\s*||')"
-	fi
-fi
-
 if [ -n "${_CLEAN}" ] && [ -z "${_PATH}" ]
 then
 	Clean || exit 1
@@ -726,6 +600,62 @@ fi
 
 _ROOTFS="${_PATH}/rootfs"
 
+# Get distributor from template filename
+_MODE="$(basename ${0} | sed -e 's|^lxc-||' -e 's|debconf||')"
+export _MODE
+
+# Configure local debconf
+_TMPDIR="$(mktemp -d -t $(basename ${0}).XXXXXXXX)"
+export _TMPDIR
+
+# FIXME: check umask, nobody should be able to read these files
+mkdir -p "${_TMPDIR}/debconf"
+
+cat > "${_TMPDIR}/debconf.systemrc" << EOF
+Config: configdb
+Templates: templatedb
+
+Name: config
+Driver: File
+Mode: 644
+Reject-Type: password
+Filename: ${_TMPDIR}/debconf/config.dat
+
+Name: passwords
+Driver: File
+Mode: 600
+Backup: false
+Required: false
+Accept-Type: password
+Filename: ${_TMPDIR}/debconf/passwords.dat
+
+Name: configdb
+Driver: Stack
+Stack: config, passwords
+
+Name: templatedb
+Driver: File
+Mode: 644
+Filename: ${_TMPDIR}/debconf/templates.dat
+EOF
+
+DEBCONF_SYSTEMRC="${_TMPDIR}/debconf.systemrc"
+export DEBCONF_SYSTEMRC
+
+# Run debconf parts
+for _SCRIPT in /usr/lib/lxc/templates/lxc-debconf.d/*
+do
+	if [ -x "${_SCRIPT}" ]
+	then
+		# FIXME
+		#debconf -olxc-debconf "${_SCRIPT}"
+		"${_SCRIPT}"
+	fi
+done
+
+# Read-in configuration from debconf
+. "${_TMPDIR}/debconf.default"
+
 Install_system "${_ROOTFS}"
 
 if [ "${?}" -ne 0 ]
@@ -749,6 +679,9 @@ then
 	echo "failed write configuration file"
 	exit 1
 fi
+
+# remove debconf temporary files
+rm --preserve-root --one-file-system -rf "${_TMPDIR}"
 
 if [ -n "${_CLEAN}" ]
 then

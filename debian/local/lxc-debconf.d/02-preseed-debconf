@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+if [ -e "${_TMPDIR}/debconf.default" ]
+then
+	. "${_TMPDIR}/debconf.default"
+fi
+
+if [ -e "${_PRESEED}" ]
+then
+	# Apply user specified preseed file
+	debconf-set-selections "${_PRESEED}"
+	echo "_PRESEED=\"${_PRESEED}\"" >> "${_TMPDIR}/debconf.default"
+fi

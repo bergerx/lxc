@@ -1,0 +1,85 @@
+Template: linux-container/title
+Type: title
+Description: Linux Container (LXC)
+
+Template: linux-container/distribution
+Type: select
+Default:
+Choices-C: ${CHOICES_C}
+Choices: ${CHOICES}
+Description: Distribution
+ Distribution.
+
+Template: linux-container/parent-distribution
+Type: select
+Default:
+Choices-C: ${CHOICES_C}
+Choices: ${CHOICES}
+Description: for internal use; can be preseeded
+ Parent Distribution.
+
+Template: linux-container/mirror
+Type: string
+Default:
+Description: Mirror
+ Mirror.
+
+Template: linux-container/mirror-security
+Type: string
+Default:
+Description: Mirror Security
+ Mirror Security.
+
+Template: linux-container/mirror-volatile
+Type: string
+Default:
+Description: Mirror Volatile
+ Mirror Volatile.
+
+Template: linux-container/mirror-backports
+Type: string
+Default:
+Description: Mirror Backports
+ Mirror Backports.
+
+Template: linux-container/parent-mirror
+Type: string
+Default:
+Description: Parent Mirror
+ Parent Mirror.
+
+Template: linux-container/parent-mirror-security
+Type: string
+Default:
+Description: Parent Mirror Security
+ Parent Mirror Security.
+
+Template: linux-container/parent-mirror-volatile
+Type: string
+Default:
+Description: Parent Mirror Volatile
+ Parent Mirror Volatile.
+
+Template: linux-container/parent-mirror-backports
+Type: string
+Default:
+Description: Parent Mirror Backports
+ Parent Mirror Backports.
+
+Template: linux-container/packages
+Type: string
+Default:
+Description: Packages
+ Packages.
+
+Template: linux-container/bridge
+Type: string
+Default:
+Description: Bridge
+ Bridge.
+
+Template: linux-container/mac
+Type: string
+Default:
+Description: MAC
+ MAC.
