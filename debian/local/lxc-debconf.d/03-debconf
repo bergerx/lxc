@@ -455,6 +455,49 @@ Packages ()
 	db_fset linux-container/packages seen false
 }
 
+Local_repositories ()
+{
+	_NUMBER="0"
+
+	while db_get linux-container/local${_NUMBER}/repository && [ "${RET}" ]
+	do
+		mkdir -p "${_TMPDIR}/sources.list.d"
+
+		_REPOSITORY="${RET#deb }"
+
+		_LIST="local${_NUMBER}.list"
+		if db_get linux-container/local${_NUMBER}/list
+		then
+			_LIST="$(basename ${RET} .list).list"
+		fi
+
+		_COMMENT=""
+		if db_get linux-container/local${_NUMBER}/comment
+		then
+			_COMMENT="${RET}"
+
+			echo "## ${_COMMENT}" > "${_TMPDIR}/sources.list.d/${_LIST}"
+		fi
+
+		echo "deb ${_REPOSITORY}" >> "${_TMPDIR}/sources.list.d/${_LIST}"
+
+		if db_get linux-container/local${_NUMBER}/source && [ "$RET" = true ]
+		then
+			echo "deb-src ${_REPOSITORY}" >> "${_TMPDIR}/sources.list.d/${_LIST}"
+		fi
+
+		_KEY=""
+		if db_get linux-container/local${_NUMBER}/key
+		then
+			_KEY="${RET}"
+
+			wget -q "${_KEY}" -O "${_TMPDIR}/sources.list.d/$(basename ${_LIST} .list).key"
+		fi
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+}
+
 Bridge ()
 {
 	# FIXME: do guess the default bridge device
@@ -511,6 +554,8 @@ Parent_mirror_volatile
 Parent_mirror_backports
 
 Packages
+
+Local_repositories
 
 Bridge
 Mac
