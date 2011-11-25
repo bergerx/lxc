@@ -105,7 +105,23 @@ Download_system ()
 	_CACHE="${1}"
 	_ARCHITECTURE="${2}"
 
-	_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+	case "${_MODE}" in
+		debian)
+			case "${_DISTRIBUTION}" in
+				lenny)
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,openssh-server"
+					;;
+
+				*)
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+					;;
+			esac
+			;;
+
+		progress)
+			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+			;;
+	esac
 
 	# check the minimal system was not already downloaded
 	mkdir -p "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
