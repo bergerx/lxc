@@ -11,35 +11,57 @@ Chroot ()
 		${@}
 }
 
-Configure_system ()
+Upgrade_system ()
 {
-	_ROOTFS="${1}"
+	_ROOT="${1}"
 
 	# Mount pseudo-filesystems
-	mount -o bind /dev/pts "${_ROOTFS}/dev/pts"
-	mount -o bind /proc "${_ROOTFS}/proc"
-	mount -o bind /sys "${_ROOTFS}/sys"
+	mount -o bind /dev/pts "${_ROOT}/dev/pts"
+	mount -o bind /proc "${_ROOT}/proc"
+	mount -o bind /sys "${_ROOT}/sys"
 
 	# Disable dpkg syncing
 
-cat > "${_ROOTFS}/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
+cat > "${_ROOT}/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
 force-unsafe-io
 EOF
 
 	# Create policy-rc.d file
 
-cat > "${_ROOTFS}/usr/sbin/policy-rc.d" << EOF
+cat > "${_ROOT}/usr/sbin/policy-rc.d" << EOF
 #!/bin/sh
 echo "All runlevel operations denied by policy" >&2
 exit 101
 EOF
 
-	chmod 0755 "${_ROOTFS}/usr/sbin/policy-rc.d"
+	chmod 0755 "${_ROOT}/usr/sbin/policy-rc.d"
 
 	# Upgrade system
-	Chroot "${_ROOTFS}" "apt-get update"
-	Chroot "${_ROOTFS}" "apt-get --yes upgrade"
-	Chroot "${_ROOTFS}" "apt-get --yes dist-upgrade"
+	Chroot "${_ROOT}" "apt-get update"
+	Chroot "${_ROOT}" "apt-get --yes upgrade"
+	Chroot "${_ROOT}" "apt-get --yes dist-upgrade"
+}
+
+Cleanup_system ()
+{
+	_ROOT="${1}"
+
+	Chroot "${_ROOT}" "apt-get --yes autoremove"
+	Chroot "${_ROOT}" "apt-get clean"
+
+	# Cleanup
+	rm -f "${_ROOT}/etc/dpkg/dpkg.cfg.d/lxc-debconf"
+	rm -f "${_ROOT}/usr/sbin/policy-rc.d"
+
+	# Unmount pseudo-filesystems
+	umount "${_ROOT}/dev/pts"
+	umount "${_ROOT}/proc"
+	umount "${_ROOT}/sys"
+}
+
+Configure_system ()
+{
+	_ROOTFS="${1}"
 
 	# Preseed system
 	if [ -e "${_PRESEED_FILE}" ]
@@ -50,6 +72,8 @@ EOF
 	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
 
 	rm -f "${_ROOTFS}/preseed.cfg"
+
+	Upgrade_system "${ROOTFS}"
 
 	# Install additional packages
 	if [ -n "${_PACKAGES}" ]
@@ -79,17 +103,7 @@ EOF
 		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
 	fi
 
-	Chroot "${_ROOTFS}" "apt-get --yes autoremove"
-	Chroot "${_ROOTFS}" "apt-get clean"
-
-	# Cleanup
-	rm -f "${_ROOTFS}/etc/dpkg/dpkg.cfg.d/lxc-debconf"
-	rm -f "${_ROOTFS}/usr/sbin/policy-rc.d"
-
-	# Unmount pseudo-filesystems
-	umount "${_ROOTFS}/dev/pts"
-	umount "${_ROOTFS}/proc"
-	umount "${_ROOTFS}/sys"
+	Cleanup_system "${_ROOTFS}"
 
 	# Set root password
 	_PASSWORD="$(dd if=/dev/urandom bs=6 count=1 2> /dev/null | base64)"
@@ -254,44 +268,8 @@ EOF
 			;;
 	esac
 
-	# Mount pseudo-filesystems
-	mount -o bind /dev/pts "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
-	mount -o bind /proc "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
-	mount -o bind /sys "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
-
-	# Disable dpkg syncing
-
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
-force-unsafe-io
-EOF
-
-	# Create policy-rc.d file
-
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d" << EOF
-#!/bin/sh
-echo "All runlevel operations denied by policy" >&2
-exit 101
-EOF
-
-	chmod 0755 "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
-
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
-
-	# Upgrade to Progress
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get update"
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes upgrade"
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes dist-upgrade"
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get --yes autoremove"
-	Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-get clean"
-
-	# Cleanup
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/dpkg/dpkg.cfg.d/lxc-debconf"
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/sbin/policy-rc.d"
-
-	# Unmount pseudo-filesystems
-	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/dev/pts"
-	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/proc"
-	umount "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/sys"
+	Upgrade_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
+	Cleanup_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
 
 	# Temporary hack for base-files (FIXME)
 	for _FILE in motd profile
