@@ -294,6 +294,10 @@ Copy_system ()
 	_ARCHITECTURE="${2}"
 	_ROOTFS="${3}"
 
+	# Upgrade cache before copying it
+	Upgrade_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+	Cleanup_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+
 	# make a local copy of the minimal system
 	echo -n "Copying rootfs to ${_ROOTFS}..."
 	cp -a "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
@@ -302,19 +306,20 @@ Copy_system ()
 	if ls "${_TMPDIR}/sources.list.d"/*.list > /dev/null 2>&1
 	then
 		cp "${_TMPDIR}/sources.list.d"/*.list "${_ROOTFS}/etc/apt/sources.list.d"
-	fi
 
-	if ls "${_TMPDIR}/sources.list.d"/*.key > /dev/null 2>&1
-	then
-		for _KEY in "${_TMPDIR}/sources.list.d"/*.key
-		do
-			cp "${_KEY}" "${_ROOTFS}"
-			Chroot "${_ROOTFS}" "apt-key add $(basename ${_KEY})"
-			rm -f "${_ROOTFS}/$(basename ${_KEY})"
-		done
-	fi
+		if ls "${_TMPDIR}/sources.list.d"/*.key > /dev/null 2>&1
+		then
+			for _KEY in "${_TMPDIR}/sources.list.d"/*.key
+			do
+				cp "${_KEY}" "${_ROOTFS}"
+				Chroot "${_ROOTFS}" "apt-key add $(basename ${_KEY})"
+				rm -f "${_ROOTFS}/$(basename ${_KEY})"
+			done
+		fi
 
-	Chroot "${_ROOTFS}" "apt-get update"
+		Upgrade_system "${_ROOTFS}"
+		Cleanup_system "${_ROOTFS}"
+	fi
 
 	return 0
 }
