@@ -1,3 +1,19 @@
+lxc (0.7.5-10) unstable; urgency=low
+
+  * Removing not really working busybox template (Closes: #649193).
+  * Adding preseed examples for lxc-debconf.
+  * Adding support for customizable volatile mirrors in lxc-debconf.
+  * Adding debconf handling for pre-chroot stuff in lxc-debconf by using
+    private temporary debconf db.
+  * Adding support for preseeding local repositories in lxc-debconf.
+  * Use distribution and mode specific list of extra packages in lxc-
+    debconf.
+  * Refactor system upgrade mechanism in lxc-debconf.
+  * Upgrading cache before copying it in lxc-debconf.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 29 Nov 2011 20:13:20 +0100
+
 lxc (0.7.5-9) unstable; urgency=low
 
   * Splitting out linux-container package into own source package.
