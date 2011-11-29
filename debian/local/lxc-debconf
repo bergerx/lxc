@@ -420,7 +420,7 @@ lxc.cgroup.devices.allow = c *:* m
 lxc.cgroup.devices.allow = b *:* m
 
 # /dev/console
-lxc.cgroup.devices.allow                = c 136:* rwm
+lxc.cgroup.devices.allow                = c 5:1 rwm
 # /dev/fuse
 lxc.cgroup.devices.allow                = c 10:229 rwm
 # /dev/null
