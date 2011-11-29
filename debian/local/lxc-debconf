@@ -416,8 +416,8 @@ lxc.cap.drop                            = sys_admin sys_module mac_admin mac_ove
 # Deny all devices
 lxc.cgroup.devices.deny                 = a
 # Allow to mknod all devices (but not using them)
-lxc.cgroup.devices.allow = c *:* m
-lxc.cgroup.devices.allow = b *:* m
+lxc.cgroup.devices.allow                = c *:* m
+lxc.cgroup.devices.allow                = b *:* m
 
 # /dev/console
 lxc.cgroup.devices.allow                = c 5:1 rwm
