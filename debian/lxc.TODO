@@ -10,8 +10,6 @@ lxc:
   * add debconf question to ask for putting linux-container local package in /u/s/l-c/
 
 lxc-debconf:
-  * use private debconf db for outside-rootfs questions.
-  * do a dist-upgrade of the container when using it from cache and before installing new packages
   * add manpage
   * handle mac (arp; local; etc.)
   * handle bridge device
@@ -20,7 +18,5 @@ lxc-debconf:
   * if no hostname given, and /etc/lxc/preseed/* existing, show select.
   * if no preseed file for host can be found, create one at the end; or, if one is found, auto update it?
   * use same perseeds as d-i does
-  * check if template can be put into /var/lib/dpkg/info
   * don't embedd lxc config, use a template from etc
-  * allow to add multiple third-party repositories
   * check that veth-foo is not overly long
