@@ -73,7 +73,7 @@ Configure_system ()
 		rm -f "${_ROOTFS}/preseed.cfg"
 	fi
 
-	Upgrade_system "${ROOTFS}"
+	Upgrade_system "${_ROOTFS}"
 
 	# Install additional packages
 	if [ -n "${_PACKAGES}" ]
