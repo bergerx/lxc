@@ -198,8 +198,31 @@ cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
 deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
 deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
+EOF
+
+	case "${_PARENT_DIST}" in
+		lenny)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
 EOF
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/debian.pref" << EOF
+Package: *
+Pin: release a=lenny-backports
+Pin-Priority: 200
+EOF
+
+			;;
+
+		squeeze)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
+deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
+EOF
+
+			;;
+	esac
 
 	case "${_MODE}" in
 		progress)
