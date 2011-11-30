@@ -1,0 +1,566 @@
+#!/bin/sh
+
+set -e
+
+# FIXME: this whole mess should be simplified at some point
+
+. /usr/share/debconf/confmodule
+
+Distribution ()
+{
+	case "${_MODE}" in
+		debian)
+			db_subst linux-container/distribution CHOICES \
+				"Debian GNU/Linux 5.0 \"lenny\", \
+				 Debian GNU/Linux 6.0 \"squeeze\", \
+				 Debian GNU/Linux 7.0 \"wheezy\", \
+				 Debian GNU/Linux unstable/sid"
+
+			db_subst linux-container/distribution CHOICES_C \
+				"lenny,
+				 squeeze,
+				 wheezy,
+				 sid"
+			;;
+
+		progress)
+			db_subst linux-container/distribution CHOICES \
+				"Progress Linux 1.0 (artax), \
+				 Progress Linux 1.9 (artax-backports), \
+				 Progress Linux 2.0 (baureo)"
+
+			db_subst linux-container/distribution CHOICES_C \
+				"artax, \
+				 artax-backports, \
+				 baureo"
+			;;
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/distribution || true
+	db_go
+
+	db_get linux-container/distribution
+	_DISTRIBUTION="${RET}" # select
+	export _DISTRIBUTION
+
+	echo "_DISTRIBUTION=\"${_DISTRIBUTION}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/distribution
+	db_fset linux-container/distribution seen false
+}
+
+Parent_distribution ()
+{
+	db_get linux-container/parent-distribution
+	_PARENT_DISTRIBUTION="${RET}"
+
+	if [ -z "${_PARENT_DISTRIBUTION}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				case "${_DISTRIBUTION}" in
+					artax*)
+						_PARENT_DISTRIBUTION="squeeze"
+						;;
+
+					baureo*)
+						_PARENT_DISTRIBUTION="sid"
+						;;
+				esac
+				;;
+
+			*)
+				_PARENT_DISTRIBUTION="${_DISTRIBUTION}"
+				;;
+		esac
+	fi
+
+	export _PARENT_DISTRIBUTION
+
+	echo "_PARENT_DISTRIBUTION=\"${_PARENT_DISTRIBUTION}\"" >> "${_TMPDIR}/debconf.default"
+}
+
+Mirror ()
+{
+	case "${_MODE}" in
+		debian)
+			db_set linux-container/mirror http://ftp.debian.org/debian/
+			db_fset linux-container/mirror seen false
+			;;
+
+		progress)
+			db_set linux-container/mirror http://archive.progress-linux.org/progress/
+			db_fset linux-container/mirror seen false
+			;;
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/mirror || true
+	db_go
+
+	db_get linux-container/mirror
+	_MIRROR="${RET}" # string (w/o empty)
+
+	if [ -z "${_MIRROR}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				_MIRROR="http://ftp.debian.org/debian/"
+				;;
+
+			progress)
+				_MIRROR="http://archive.progress-linux.org/progress/"
+				;;
+		esac
+	fi
+
+	export _MIRROR
+
+	echo "_MIRROR=\"${_MIRROR}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/mirror
+	db_fset linux-container/mirror seen false
+}
+
+Mirror_security ()
+{
+	case "${_MODE}" in
+		debian)
+			db_set linux-container/mirror-security http://security.debian.org/
+			db_fset linux-container/mirror-security seen false
+			;;
+
+		progress)
+			db_set linux-container/mirror-security http://archive.progress-linux.org/progress/
+			db_fset linux-container/mirror-security seen false
+			;;
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/mirror-security || true
+	db_go
+
+	db_get linux-container/mirror-security
+	_MIRROR_SECURITY="${RET}" # string (w/o empty)
+
+	if [ -z "${_MIRROR_SECURITY}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				_MIRROR_SECURITY="http://security.debian.org/"
+				;;
+
+			progress)
+				_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+				;;
+		esac
+	fi
+
+	export _MIRROR_SECURITY
+
+	echo "_MIRROR_SECURITY=\"${_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/mirror-security
+	db_fset linux-container/mirror-security seen false
+}
+
+Mirror_volatile ()
+{
+	case "${_MODE}" in
+		debian)
+			case "${_DISTRIBUTION}" in
+				lenny)
+					db_set linux-container/mirror-volatile http://volatile.debian.org/
+					db_fset linux-container/mirror-volatile seen false
+					;;
+
+				*)
+					db_set linux-container/mirror-volatile http://ftp.debian.org/
+					db_fset linux-container/mirror-volatile seen false
+					;;
+			esac
+			;;
+
+		progress)
+			db_set linux-container/mirror-volatile http://archive.progress-linux.org/progress/
+			db_fset linux-container/mirror-volatile seen false
+			;;
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/mirror-volatile || true
+	db_go
+
+	db_get linux-container/mirror-volatile
+	_MIRROR_VOLATILE="${RET}" # string (w/o empty)
+
+	if [ -z "${_MIRROR_VOLATILE}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				case "${_DISTRIBUTION}" in
+					lenny)
+						_MIRROR_VOLATILE="http://volatile.debian.org/debian-volatile/"
+						;;
+
+					*)
+						_MIRROR_VOLATILE="http://ftp.debian.org/debian/"
+						;;
+				esac
+				;;
+
+			progress)
+				_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
+				;;
+		esac
+	fi
+
+	export _MIRROR_VOLATILE
+
+	echo "_MIRROR_VOLATILE=\"${_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/mirror-volatile
+	db_fset linux-container/mirror-volatile seen false
+}
+
+Mirror_backports ()
+{
+	case "${_MODE}" in
+		debian)
+			db_set linux-container/mirror-backports http://backports.debian.org/debian-backports/
+			db_fset linux-container/mirror-backports seen false
+			;;
+
+		progress)
+			db_set linux-container/mirror-backports http://archive.progress-linux.org/progress/
+			db_fset linux-container/mirror-backports seen false
+			;;
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/mirror-backports || true
+	db_go
+
+	db_get linux-container/mirror-backports
+	_MIRROR_BACKPORTS="${RET}" # string (w/o empty)
+
+	if [ -z "${_MIRROR_BACKPORTS}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				_MIRROR_BACKPORTS="http://backports.debian.org/debian-backports/"
+				;;
+
+			progress)
+				_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+				;;
+		esac
+	fi
+
+	export _MIRROR_BACKPORTS
+
+	echo "_MIRROR_BACKPORTS=\"${_MIRROR_BACKPORTS}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/mirror-backports
+	db_fset linux-container/mirror-backports seen false
+}
+
+Parent_mirror ()
+{
+	case "${_MODE}" in
+		progress)
+			db_set linux-container/parent-mirror http://ftp.debian.org/debian/
+			db_fset linux-container/parent-mirror seen false
+			;;
+
+		*)
+			db_set linux-container/parent-mirror ${_MIRROR}
+			db_fset linux-container/parent-mirror seen false
+			;;
+
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/parent-mirror || true
+	db_go
+
+	db_get linux-container/parent-mirror
+	_PARENT_MIRROR="${RET}" # string (w/o empty)
+
+	if [ -z "${_PARENT_MIRROR}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				_PARENT_MIRROR="http://archive.progress-linux.org/progress/"
+				;;
+
+			*)
+				_PARENT_MIRROR="${_MIRROR}"
+				;;
+		esac
+	fi
+
+	export _PARENT_MIRROR
+
+	echo "_PARENT_MIRROR=\"${_PARENT_MIRROR}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/parent-mirror
+	db_fset linux-container/parent-mirror seen false
+}
+
+Parent_mirror_security ()
+{
+	case "${_MODE}" in
+		progress)
+			db_set linux-container/parent-mirror-security http://security.debian.org/
+			db_fset linux-container/parent-mirror-security seen false
+			;;
+
+		*)
+			db_set linux-container/parent-mirror-security ${_MIRROR_SECURITY}
+			db_fset linux-container/parent-mirror-security seen false
+			;;
+
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/parent-mirror-security || true
+	db_go
+
+	db_get linux-container/parent-mirror-security
+	_PARENT_MIRROR_SECURITY="${RET}" # string (w/o empty)
+
+	if [ -z "${_PARENT_MIRROR_SECURITY}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				_PARENT_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+				;;
+
+			*)
+				_PARENT_MIRROR_SECURITY="${_MIRROR_SECURITY}"
+				;;
+		esac
+	fi
+
+	export _PARENT_MIRROR_SECURITY
+
+	echo "_PARENT_MIRROR_SECURITY=\"${_PARENT_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/parent-mirror-security
+	db_fset linux-container/parent-mirror-security seen false
+}
+
+Parent_mirror_volatile ()
+{
+	case "${_MODE}" in
+		progress)
+			db_set linux-container/parent-mirror-volatile http://ftp.debian.org/debian/
+			db_fset linux-container/parent-mirror-volatile seen false
+			;;
+
+		*)
+			db_set linux-container/parent-mirror-volatile ${_MIRROR_VOLATILE}
+			db_fset linux-container/parent-mirror-volatile seen false
+			;;
+
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/parent-mirror-volatile || true
+	db_go
+
+	db_get linux-container/parent-mirror-volatile
+	_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
+
+	if [ -z "${_PARENT_MIRROR_VOLATILE}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				_PARENT_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
+				;;
+
+			*)
+				_PARENT_MIRROR_VOLATILE="${_MIRROR_VOLATILE}"
+				;;
+		esac
+	fi
+
+	export _PARENT_MIRROR_VOLATILE
+
+	echo "_PARENT_MIRROR_VOLATILE=\"${_PARENT_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/parent-mirror-volatile
+	db_fset linux-container/parent-mirror-volatile seen false
+}
+
+Parent_mirror_backports ()
+{
+	case "${_MODE}" in
+		progress)
+			db_set linux-container/parent-mirror-backports http://backports.debian.org/debian-backports/
+			db_fset linux-container/parent-mirror-backports seen false
+			;;
+
+		*)
+			db_set linux-container/parent-mirror-backports ${_MIRROR_BACKPORTS}
+			db_fset linux-container/parent-mirror-backports seen false
+			;;
+
+	esac
+
+	db_settitle linux-container/title
+	db_input high linux-container/parent-mirror-backports || true
+	db_go
+
+	db_get linux-container/parent-mirror-backports
+	_PARENT_MIRROR_BACKPORTS="${RET}" # string (w/o empty)
+
+	if [ -z "${_PARENT_MIRROR_BACKPORTS}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				_PARENT_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+				;;
+
+			*)
+				_PARENT_MIRROR_BACKPORTS="${_MIRROR_BACKPORTS}"
+				;;
+		esac
+	fi
+
+	export _PARENT_MIRROR_BACKPORTS
+
+	echo "_PARENT_MIRROR_BACKPORTS=\"${_PARENT_MIRROR_BACKPORTS}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/parent-mirror-backports
+	db_fset linux-container/parent-mirror-backports seen false
+}
+
+Packages ()
+{
+	db_settitle linux-container/title
+	db_input high linux-container/packages || true
+	db_go
+
+	db_get linux-container/packages
+	_PACKAGES="${RET}" # string (w/ empty)
+
+	export _PACKAGES
+
+	echo "_PACKAGES=\"${_PACKAGES}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/packages
+	db_fset linux-container/packages seen false
+}
+
+Local_repositories ()
+{
+	_NUMBER="0"
+
+	while db_get linux-container/local${_NUMBER}/repository && [ "${RET}" ]
+	do
+		mkdir -p "${_TMPDIR}/sources.list.d"
+
+		_REPOSITORY="${RET#deb }"
+
+		_LIST="local${_NUMBER}.list"
+		if db_get linux-container/local${_NUMBER}/list
+		then
+			_LIST="$(basename ${RET} .list).list"
+		fi
+
+		_COMMENT=""
+		if db_get linux-container/local${_NUMBER}/comment
+		then
+			_COMMENT="${RET}"
+
+			echo "## ${_COMMENT}" > "${_TMPDIR}/sources.list.d/${_LIST}"
+		fi
+
+		echo "deb ${_REPOSITORY}" >> "${_TMPDIR}/sources.list.d/${_LIST}"
+
+		if db_get linux-container/local${_NUMBER}/source && [ "$RET" = true ]
+		then
+			echo "deb-src ${_REPOSITORY}" >> "${_TMPDIR}/sources.list.d/${_LIST}"
+		fi
+
+		_KEY=""
+		if db_get linux-container/local${_NUMBER}/key
+		then
+			_KEY="${RET}"
+
+			wget -q "${_KEY}" -O "${_TMPDIR}/sources.list.d/$(basename ${_LIST} .list).key"
+		fi
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+}
+
+Bridge ()
+{
+	# FIXME: do guess the default bridge device
+	db_set linux-container/bridge br0
+	db_fset linux-container/bridge seen false
+
+	db_settitle linux-container/title
+	db_input high linux-container/bridge || true
+	db_go
+
+	db_get linux-container/bridge
+	_BRIDGE="${RET:-br0}" # string (w/o empty)
+
+	export _BRIDGE
+
+	echo "_BRIDGE=\"${_BRIDGE}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/bridge
+	db_fset linux-container/bridge seen false
+}
+
+Mac ()
+{
+	# FIXME: do guess a suitable and unused mac address
+	db_set linux-container/mac 00:ff:00:00:02
+	db_fset linux-container/mac seen false
+
+	db_settitle linux-container/title
+	db_input high linux-container/mac || true
+	db_go
+
+	db_get linux-container/mac
+	_MAC="${RET:-00:ff:00:00:02}" # string (w/o empty)
+
+	export _MAC
+
+	echo "_MAC=\"${_MAC}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_reset linux-container/mac
+	db_fset linux-container/mac seen false
+}
+
+Distribution
+Parent_distribution
+
+Mirror
+Mirror_security
+Mirror_volatile
+Mirror_backports
+
+Parent_mirror
+Parent_mirror_security
+Parent_mirror_volatile
+Parent_mirror_backports
+
+Packages
+
+Local_repositories
+
+Bridge
+Mac
+
+# FIXME
+db_purge
+
+db_stop

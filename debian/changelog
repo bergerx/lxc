@@ -1,3 +1,19 @@
+lxc (0.7.5-10) unstable; urgency=low
+
+  * Removing not really working busybox template (Closes: #649193).
+  * Adding preseed examples for lxc-debconf.
+  * Adding support for customizable volatile mirrors in lxc-debconf.
+  * Adding debconf handling for pre-chroot stuff in lxc-debconf by using
+    private temporary debconf db.
+  * Adding support for preseeding local repositories in lxc-debconf.
+  * Use distribution and mode specific list of extra packages in lxc-
+    debconf.
+  * Refactor system upgrade mechanism in lxc-debconf.
+  * Upgrading cache before copying it in lxc-debconf.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Tue, 29 Nov 2011 20:13:20 +0100
+
 lxc (0.7.5-9~artax1) artax; urgency=low
 
   * Uploading to artax, remaining changes:
@@ -208,7 +224,7 @@ lxc (0.7.5-3~artax1) artax; urgency=low
 
 lxc (0.7.5-3) unstable; urgency=low
 
-  * Aborting early in initscript if lxc is not removed but not purged.
+  * Aborting early in initscript if lxc is removed but not purged.
   * Correcting typo in proc mount entry in the default config of the
     debian template, thanks to Sylvain Collilieux
     <Sylvain@Collilieux.net> (Closes: #643715).

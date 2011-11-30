@@ -11,12 +11,14 @@ override_dh_auto_install:
 
 	# replacing upstreams debian template
 	rm -f debian/tmp/usr/lib/lxc/templates/lxc-debian
-	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-debian
+	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-debian.d
 
 	# adding progress template symlink
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
+	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-progress.d
 
 	# removing useless files
+	rm -f debian/tmp/usr/lib/lxc/templates/lxc-busybox
 	rm -f debian/tmp/usr/lib/lxc/templates/lxc-lenny
 
 override_dh_builddeb:
