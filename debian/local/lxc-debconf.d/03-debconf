@@ -157,7 +157,7 @@ Mirror_volatile ()
 		debian)
 			case "${_DISTRIBUTION}" in
 				lenny)
-					db_set linux-container/mirror-volatile http://volatile.debian.org/
+					db_set linux-container/mirror-volatile http://volatile.debian.org/debian-volatile/
 					db_fset linux-container/mirror-volatile seen false
 					;;
 
