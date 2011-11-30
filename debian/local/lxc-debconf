@@ -67,11 +67,11 @@ Configure_system ()
 	if [ -e "${_PRESEED_FILE}" ]
 	then
 		cat "${_PRESEED_FILE}" > "${_ROOTFS}/preseed.cfg"
+
+		Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+
+		rm -f "${_ROOTFS}/preseed.cfg"
 	fi
-
-	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
-
-	rm -f "${_ROOTFS}/preseed.cfg"
 
 	Upgrade_system "${ROOTFS}"
 
