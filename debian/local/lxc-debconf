@@ -403,7 +403,7 @@ cat >> "${_PATH}/config" << EOF
 ## Container
 lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
-lxc.tty                                 = 4
+lxc.tty                                 = 6
 lxc.pts                                 = 1024
 #lxc.console                            = /var/log/lxc/${_NAME}.console
 
