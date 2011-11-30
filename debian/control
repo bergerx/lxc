@@ -1,12 +1,17 @@
 Source: lxc
 Section: admin
 Priority: optional
-Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.net>
-Uploaders: Jonas Genannt <jonas.genannt@capi2name.de>
+Maintainer: Progress Developers <progress-devel@lists.progress-linux.org>
+Uploaders: Daniel Baumann <daniel.baumann@progress-linux.org>
+XSBC-Original-Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.net>
+XSBC-Original-Uploaders: Jonas Genannt <jonas.genannt@capi2name.de>
+Bugs: mailto:progress-issues@lists.progress-linux.org
 Build-Depends:
  debhelper (>= 8), autotools-dev, docbook-utils, libcap-dev, linux-libc-dev
 Standards-Version: 3.9.2
 Homepage: http://lxc.sourceforge.net/
+Vcs-Browser: http://vcs.progress-linux.org/?p=packages/lxc.git
+Vcs-Git: git://vcs.progress-linux.org/packages/lxc.git
 
 Package: lxc
 Architecture: linux-any
