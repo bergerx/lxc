@@ -1,3 +1,13 @@
+lxc (0.7.5-10~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Updating vcs fields.
+    - Adding bugs field.
+  * Restoring accidentally dropped control modifications for progress.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Wed, 30 Nov 2011 06:42:03 +0100
+
 lxc (0.7.5-10) unstable; urgency=low
 
   * Removing not really working busybox template (Closes: #649193).
