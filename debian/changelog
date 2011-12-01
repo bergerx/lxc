@@ -1,3 +1,12 @@
+lxc (0.7.5-11~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Thu, 01 Dec 2011 06:55:18 +0100
+
 lxc (0.7.5-11) unstable; urgency=low
 
   * Adding /dev/tun in default lxc config in lxc-debconf in ubuntu mode.
