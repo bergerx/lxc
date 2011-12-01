@@ -197,8 +197,17 @@ EOF
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
 deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
+EOF
+
+	case "${_PARENT_DIST}" in
+		lenny|squeeze)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
 EOF
+
+			;;
+	esac
 
 	case "${_PARENT_DIST}" in
 		lenny)
