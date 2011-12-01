@@ -1,3 +1,24 @@
+lxc (0.7.5-11) unstable; urgency=low
+
+  * Adding /dev/tun in default lxc config in lxc-debconf in ubuntu mode.
+  * Adding updated Czech debconf translations from Michal Simunek
+    <michal.simunek@gmail.com> (Closes: #649121).
+  * Updating /dev/console in default config of lxc-debconf.
+  * Adjust intending in default config for lxc-debconf.
+  * Correcting default tty number in default config of lxc-debconf.
+  * Correct late preseeding in lxc-debconf.
+  * Correcting backports handling for debian in lxc-debconf.
+  * Upgrading priority for lxc directory question from low to high to
+    give it visibility by default (Closes: #650147).
+  * Adding missing symlink for debian of lxc-debconf.
+  * Removing double preseed file variable writing in lxc-debconf.
+  * Avoid wrapping of db_substs calls in lxc-debconf, apparently it
+    fails on some shell configurations.
+  * Correcting wrong volatile default url for lenny in lxc-debconf.
+  * Correcting typo when upgrading system in lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Thu, 01 Dec 2011 06:41:32 +0100
+
 lxc (0.7.5-10) unstable; urgency=low
 
   * Removing not really working busybox template (Closes: #649193).
