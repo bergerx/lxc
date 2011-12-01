@@ -162,7 +162,7 @@ Mirror_volatile ()
 					;;
 
 				*)
-					db_set linux-container/mirror-volatile http://ftp.debian.org/
+					db_set linux-container/mirror-volatile http://ftp.debian.org/debian/
 					db_fset linux-container/mirror-volatile seen false
 					;;
 			esac
