@@ -10,29 +10,15 @@ Distribution ()
 {
 	case "${_MODE}" in
 		debian)
-			db_subst linux-container/distribution CHOICES \
-				"Debian GNU/Linux 5.0 \"lenny\", \
-				 Debian GNU/Linux 6.0 \"squeeze\", \
-				 Debian GNU/Linux 7.0 \"wheezy\", \
-				 Debian GNU/Linux unstable/sid"
+			db_subst linux-container/distribution CHOICES "Debian GNU/Linux 5.0 \"lenny\", Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
 
-			db_subst linux-container/distribution CHOICES_C \
-				"lenny,
-				 squeeze,
-				 wheezy,
-				 sid"
+			db_subst linux-container/distribution CHOICES_C "lenny, squeeze, wheezy, sid"
 			;;
 
 		progress)
-			db_subst linux-container/distribution CHOICES \
-				"Progress Linux 1.0 (artax), \
-				 Progress Linux 1.9 (artax-backports), \
-				 Progress Linux 2.0 (baureo)"
+			db_subst linux-container/distribution CHOICES "Progress Linux 1.0 (artax), Progress Linux 1.9 (artax-backports), Progress Linux 2.0 (baureo)"
 
-			db_subst linux-container/distribution CHOICES_C \
-				"artax, \
-				 artax-backports, \
-				 baureo"
+			db_subst linux-container/distribution CHOICES_C "artax, artax-backports, baureo"
 			;;
 	esac
 
@@ -171,7 +157,7 @@ Mirror_volatile ()
 		debian)
 			case "${_DISTRIBUTION}" in
 				lenny)
-					db_set linux-container/mirror-volatile http://volatile.debian.org/
+					db_set linux-container/mirror-volatile http://volatile.debian.org/debian-volatile/
 					db_fset linux-container/mirror-volatile seen false
 					;;
 

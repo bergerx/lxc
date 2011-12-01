@@ -67,13 +67,13 @@ Configure_system ()
 	if [ -e "${_PRESEED_FILE}" ]
 	then
 		cat "${_PRESEED_FILE}" > "${_ROOTFS}/preseed.cfg"
+
+		Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+
+		rm -f "${_ROOTFS}/preseed.cfg"
 	fi
 
-	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
-
-	rm -f "${_ROOTFS}/preseed.cfg"
-
-	Upgrade_system "${ROOTFS}"
+	Upgrade_system "${_ROOTFS}"
 
 	# Install additional packages
 	if [ -n "${_PACKAGES}" ]
@@ -198,8 +198,31 @@ cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
 deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
 deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
+EOF
+
+	case "${_PARENT_DIST}" in
+		lenny)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
 EOF
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/debian.pref" << EOF
+Package: *
+Pin: release a=lenny-backports
+Pin-Priority: 200
+EOF
+
+			;;
+
+		squeeze)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
+deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
+EOF
+
+			;;
+	esac
 
 	case "${_MODE}" in
 		progress)
@@ -403,7 +426,7 @@ cat >> "${_PATH}/config" << EOF
 ## Container
 lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
-lxc.tty                                 = 4
+lxc.tty                                 = 6
 lxc.pts                                 = 1024
 #lxc.console                            = /var/log/lxc/${_NAME}.console
 
@@ -416,11 +439,11 @@ lxc.cap.drop                            = sys_admin sys_module mac_admin mac_ove
 # Deny all devices
 lxc.cgroup.devices.deny                 = a
 # Allow to mknod all devices (but not using them)
-lxc.cgroup.devices.allow = c *:* m
-lxc.cgroup.devices.allow = b *:* m
+lxc.cgroup.devices.allow                = c *:* m
+lxc.cgroup.devices.allow                = b *:* m
 
 # /dev/console
-lxc.cgroup.devices.allow                = c 136:* rwm
+lxc.cgroup.devices.allow                = c 5:1 rwm
 # /dev/fuse
 lxc.cgroup.devices.allow                = c 10:229 rwm
 # /dev/null
@@ -443,6 +466,19 @@ lxc.cgroup.devices.allow                = c 4:4 rwm
 lxc.cgroup.devices.allow                = c 4:5 rwm
 # /dev/tty6
 lxc.cgroup.devices.allow                = c 4:6 rwm
+EOF
+
+	if [ "${_MODE}" = "ubuntu" ]
+	then
+
+cat >> "${_PATH}/config" << EOF
+# /dev/tun
+lxc.cgroup.devices.allow                = c 10:200 rwm
+EOF
+
+	fi
+
+cat >> "${_PATH}/config" << EOF
 # /dev/urandom
 lxc.cgroup.devices.allow                = c 1:9 rwm
 # /dev/zero
