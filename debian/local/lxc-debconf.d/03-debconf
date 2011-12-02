@@ -162,7 +162,7 @@ Mirror_volatile ()
 					;;
 
 				*)
-					db_set linux-container/mirror-volatile http://ftp.debian.org/
+					db_set linux-container/mirror-volatile http://ftp.debian.org/debian/
 					db_fset linux-container/mirror-volatile seen false
 					;;
 			esac
@@ -258,18 +258,18 @@ Parent_mirror ()
 		progress)
 			db_set linux-container/parent-mirror http://ftp.debian.org/debian/
 			db_fset linux-container/parent-mirror seen false
+
+			db_settitle linux-container/title
+			db_input high linux-container/parent-mirror || true
+			db_go
 			;;
 
 		*)
 			db_set linux-container/parent-mirror ${_MIRROR}
-			db_fset linux-container/parent-mirror seen false
+			db_fset linux-container/parent-mirror seen true
 			;;
 
 	esac
-
-	db_settitle linux-container/title
-	db_input high linux-container/parent-mirror || true
-	db_go
 
 	db_get linux-container/parent-mirror
 	_PARENT_MIRROR="${RET}" # string (w/o empty)
@@ -301,18 +301,17 @@ Parent_mirror_security ()
 		progress)
 			db_set linux-container/parent-mirror-security http://security.debian.org/
 			db_fset linux-container/parent-mirror-security seen false
+
+			db_settitle linux-container/title
+			db_input high linux-container/parent-mirror-security || true
+			db_go
 			;;
 
 		*)
 			db_set linux-container/parent-mirror-security ${_MIRROR_SECURITY}
-			db_fset linux-container/parent-mirror-security seen false
+			db_fset linux-container/parent-mirror-security seen true
 			;;
-
 	esac
-
-	db_settitle linux-container/title
-	db_input high linux-container/parent-mirror-security || true
-	db_go
 
 	db_get linux-container/parent-mirror-security
 	_PARENT_MIRROR_SECURITY="${RET}" # string (w/o empty)
@@ -344,18 +343,17 @@ Parent_mirror_volatile ()
 		progress)
 			db_set linux-container/parent-mirror-volatile http://ftp.debian.org/debian/
 			db_fset linux-container/parent-mirror-volatile seen false
+
+			db_settitle linux-container/title
+			db_input high linux-container/parent-mirror-volatile || true
+			db_go
 			;;
 
 		*)
 			db_set linux-container/parent-mirror-volatile ${_MIRROR_VOLATILE}
-			db_fset linux-container/parent-mirror-volatile seen false
+			db_fset linux-container/parent-mirror-volatile seen true
 			;;
-
 	esac
-
-	db_settitle linux-container/title
-	db_input high linux-container/parent-mirror-volatile || true
-	db_go
 
 	db_get linux-container/parent-mirror-volatile
 	_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
@@ -387,18 +385,17 @@ Parent_mirror_backports ()
 		progress)
 			db_set linux-container/parent-mirror-backports http://backports.debian.org/debian-backports/
 			db_fset linux-container/parent-mirror-backports seen false
+
+			db_settitle linux-container/title
+			db_input high linux-container/parent-mirror-backports || true
+			db_go
 			;;
 
 		*)
 			db_set linux-container/parent-mirror-backports ${_MIRROR_BACKPORTS}
-			db_fset linux-container/parent-mirror-backports seen false
+			db_fset linux-container/parent-mirror-backports seen true
 			;;
-
 	esac
-
-	db_settitle linux-container/title
-	db_input high linux-container/parent-mirror-backports || true
-	db_go
 
 	db_get linux-container/parent-mirror-backports
 	_PARENT_MIRROR_BACKPORTS="${RET}" # string (w/o empty)

@@ -2,13 +2,39 @@
 
 set -e
 
-_CONTAINER="${1}"
+_OPTIONS="$(getopt -o n: -l name: -- "${@}")"
 
-if [ -n "${_CONTAINER}" ]
+if [ "${?}" -ne 0 ]
 then
-	shift
-else
-	echo "Usage: ${0} CONTAINER"
+	echo "Usage: $(basename ${0}) -n|--name CONTAINER" >&2
+	exit 1
+fi
+
+eval set -- "${_OPTIONS}"
+
+while true
+do
+	case "${1}" in
+		-n|--name)
+			_CONTAINER="${2}"
+			shift 2
+			;;
+
+		--)
+			shift
+			break
+			;;
+
+		*)
+			echo "E: $(basename ${0}): internal error ${0}" >&2
+			exit 1
+			;;
+	esac
+done
+
+if [ -z "${_CONTAINER}" ]
+then
+	echo "E: $(basename ${0}): missing container name, use --name option" >&2
 	exit 1
 fi
 
