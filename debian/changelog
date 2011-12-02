@@ -1,3 +1,18 @@
+lxc (0.7.5-12) unstable; urgency=low
+
+  * Updating preseeding examples for lxc-debconf.
+  * Using volatile only for lenny and squeeze in lxc-debconf.
+  * Avoid asking parent mirrors in debian mode of lxc-debconf.
+  * Allowing access to /dev/pts/* in lxc-debconf default config.
+  * Correcting yet another occurence of a wrong volatile default mirror
+    in lxc-debconf.
+  * If /dev/pts is granted, apparently, access to the tty devices nodes
+    is not longer necessary (Closes: #650399).
+  * Adding -n and --name option to lxc-halt to better integrate with the
+    rest of the lxc tools.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 02 Dec 2011 07:16:07 +0100
+
 lxc (0.7.5-11) unstable; urgency=low
 
   * Adding /dev/tun in default lxc config in lxc-debconf in ubuntu mode.
