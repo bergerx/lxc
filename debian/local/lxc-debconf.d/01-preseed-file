@@ -10,8 +10,8 @@ db_input high linux-container/preseed || true
 db_go
 
 db_get linux-container/preseed
-_PRESEED="${RET}" # string (w/ empty)
-echo "_PRESEED=\"${_PRESEED}\"" >> "${_TMPDIR}/debconf.default"
+_PRESEED_FILE="${RET}" # string (w/ empty)
+echo "_PRESEED_FILE=\"${_PRESEED_FILE}\"" >> "${_TMPDIR}/debconf.default"
 
 db_reset linux-container/preseed
 db_fset linux-container/preseed seen false

@@ -7,8 +7,8 @@ then
 	. "${_TMPDIR}/debconf.default"
 fi
 
-if [ -e "${_PRESEED}" ]
+if [ -e "${_PRESEED_FILE}" ]
 then
 	# Apply user specified preseed file
-	debconf-set-selections "${_PRESEED}"
+	debconf-set-selections "${_PRESEED_FILE}"
 fi
