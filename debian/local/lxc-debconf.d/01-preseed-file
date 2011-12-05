@@ -11,12 +11,7 @@ db_go
 
 db_get linux-container/preseed
 _PRESEED_FILE="${RET}" # string (w/ empty)
+
 echo "_PRESEED_FILE=\"${_PRESEED_FILE}\"" >> "${_TMPDIR}/debconf.default"
-
-db_reset linux-container/preseed
-db_fset linux-container/preseed seen false
-
-# FIXME
-db_purge
 
 db_stop

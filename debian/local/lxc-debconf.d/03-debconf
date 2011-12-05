@@ -16,13 +16,11 @@ Distribution ()
 		case "${_MODE}" in
 			debian)
 				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 5.0 \"lenny\", Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
-
 				db_subst linux-container/distribution CHOICES_C "lenny, squeeze, wheezy, sid"
 				;;
 
 			progress)
 				db_subst linux-container/distribution CHOICES "Progress Linux 1.0 (artax), Progress Linux 1.9 (artax-backports), Progress Linux 2.0 (baureo)"
-
 				db_subst linux-container/distribution CHOICES_C "artax, artax-backports, baureo"
 				;;
 		esac
@@ -34,12 +32,9 @@ Distribution ()
 
 	db_get linux-container/distribution
 	_DISTRIBUTION="${RET}" # select
-	export _DISTRIBUTION
 
 	echo "_DISTRIBUTION=\"${_DISTRIBUTION}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/distribution
-	db_fset linux-container/distribution seen false
+	export _DISTRIBUTION
 }
 
 Parent_distribution ()
@@ -68,9 +63,8 @@ Parent_distribution ()
 		esac
 	fi
 
-	export _PARENT_DISTRIBUTION
-
 	echo "_PARENT_DISTRIBUTION=\"${_PARENT_DISTRIBUTION}\"" >> "${_TMPDIR}/debconf.default"
+	export _PARENT_DISTRIBUTION
 }
 
 Mirror ()
@@ -115,12 +109,8 @@ Mirror ()
 		esac
 	fi
 
-	export _MIRROR
-
 	echo "_MIRROR=\"${_MIRROR}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/mirror
-	db_fset linux-container/mirror seen false
+	export _MIRROR
 }
 
 Mirror_security ()
@@ -163,12 +153,8 @@ Mirror_security ()
 		esac
 	fi
 
-	export _MIRROR_SECURITY
-
 	echo "_MIRROR_SECURITY=\"${_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/mirror-security
-	db_fset linux-container/mirror-security seen false
+	export _MIRROR_SECURITY
 }
 
 Mirror_volatile ()
@@ -228,12 +214,8 @@ Mirror_volatile ()
 		esac
 	fi
 
-	export _MIRROR_VOLATILE
-
 	echo "_MIRROR_VOLATILE=\"${_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/mirror-volatile
-	db_fset linux-container/mirror-volatile seen false
+	export _MIRROR_VOLATILE
 }
 
 Mirror_backports ()
@@ -275,12 +257,8 @@ Mirror_backports ()
 		esac
 	fi
 
-	export _MIRROR_BACKPORTS
-
 	echo "_MIRROR_BACKPORTS=\"${_MIRROR_BACKPORTS}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/mirror-backports
-	db_fset linux-container/mirror-backports seen false
+	export _MIRROR_BACKPORTS
 }
 
 Parent_mirror ()
@@ -324,12 +302,8 @@ Parent_mirror ()
 		esac
 	fi
 
-	export _PARENT_MIRROR
-
 	echo "_PARENT_MIRROR=\"${_PARENT_MIRROR}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/parent-mirror
-	db_fset linux-container/parent-mirror seen false
+	export _PARENT_MIRROR
 }
 
 Parent_mirror_security ()
@@ -372,12 +346,8 @@ Parent_mirror_security ()
 		esac
 	fi
 
-	export _PARENT_MIRROR_SECURITY
-
 	echo "_PARENT_MIRROR_SECURITY=\"${_PARENT_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/parent-mirror-security
-	db_fset linux-container/parent-mirror-security seen false
+	export _PARENT_MIRROR_SECURITY
 }
 
 Parent_mirror_volatile ()
@@ -420,12 +390,8 @@ Parent_mirror_volatile ()
 		esac
 	fi
 
-	export _PARENT_MIRROR_VOLATILE
-
 	echo "_PARENT_MIRROR_VOLATILE=\"${_PARENT_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/parent-mirror-volatile
-	db_fset linux-container/parent-mirror-volatile seen false
+	export _PARENT_MIRROR_VOLATILE
 }
 
 Parent_mirror_backports ()
@@ -468,12 +434,8 @@ Parent_mirror_backports ()
 		esac
 	fi
 
-	export _PARENT_MIRROR_BACKPORTS
-
 	echo "_PARENT_MIRROR_BACKPORTS=\"${_PARENT_MIRROR_BACKPORTS}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/parent-mirror-backports
-	db_fset linux-container/parent-mirror-backports seen false
+	export _PARENT_MIRROR_BACKPORTS
 }
 
 Packages ()
@@ -491,12 +453,8 @@ Packages ()
 	db_get linux-container/packages
 	_PACKAGES="${RET}" # string (w/ empty)
 
-	export _PACKAGES
-
 	echo "_PACKAGES=\"${_PACKAGES}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/packages
-	db_fset linux-container/packages seen false
+	export _PACKAGES
 }
 
 Local_repositories ()
@@ -561,12 +519,8 @@ Bridge ()
 	db_get linux-container/bridge
 	_BRIDGE="${RET:-br0}" # string (w/o empty)
 
-	export _BRIDGE
-
 	echo "_BRIDGE=\"${_BRIDGE}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/bridge
-	db_fset linux-container/bridge seen false
+	export _BRIDGE
 }
 
 Mac ()
@@ -588,12 +542,8 @@ Mac ()
 	db_get linux-container/mac
 	_MAC="${RET:-00:ff:00:00:02}" # string (w/o empty)
 
-	export _MAC
-
 	echo "_MAC=\"${_MAC}\"" >> "${_TMPDIR}/debconf.default"
-
-	db_reset linux-container/mac
-	db_fset linux-container/mac seen false
+	export _MAC
 }
 
 Distribution
@@ -615,8 +565,5 @@ Local_repositories
 
 Bridge
 Mac
-
-# FIXME
-db_purge
 
 db_stop
