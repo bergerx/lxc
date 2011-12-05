@@ -467,6 +467,8 @@ lxc.cgroup.devices.allow                = c 136:* rwm
 lxc.cgroup.devices.allow                = c 1:8 rwm
 # /dev/rtc
 lxc.cgroup.devices.allow                = c 254:0 rwm
+# /dev/tty
+lxc.cgroup.devices.allow                = c 5:0 rwm
 EOF
 
 	if [ "${_MODE}" = "ubuntu" ]
