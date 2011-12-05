@@ -508,8 +508,8 @@ cat >> "${_PATH}/config" << EOF
 ## Network
 lxc.network.type                        = veth
 lxc.network.flags                       = up
-lxc.network.hwaddr                      = 00:FF:33:44:55:66
-lxc.network.link                        = br0
+lxc.network.hwaddr                      = ${_MAC}
+lxc.network.link                        = ${_BRIDGE}
 lxc.network.mtu                         = 1500
 lxc.network.name                        = eth0
 lxc.network.veth.pair                   = veth-${_NAME}
