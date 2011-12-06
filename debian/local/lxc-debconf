@@ -556,7 +556,7 @@ Clean ()
 
 Usage ()
 {
-	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
+	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
 
 	return 0
 }
@@ -586,11 +586,6 @@ do
 
 		--debconf-priority)
 			_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY}"
-			shift 2
-			;;
-
-		-d|--distribution)
-			_DISTRIBUTION="${2}"
 			shift 2
 			;;
 
