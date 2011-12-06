@@ -546,6 +546,21 @@ Mac ()
 	export _MAC
 }
 
+Internal_options ()
+{
+	db_get linux-container/apt-recommends
+	_APT_RECOMMENDS="${RET}" # boolean (w/ empty)
+	echo "_APT_RECOMMENDS=\"${_APT_RECOMMENDS}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_get linux-container/debconf-frontend
+	_DEBCONF_FRONTEND="${RET:-Dialog}" # select
+	echo "_DEBCONF_FRONTEND=\"${_DEBCONF_FRONTEND}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_get linux-container/debconf-priority
+	_DEBCONF_PRIORITY="${RET:-high}" # select
+	echo "_DEBCONF_PRIORITY=\"${_DEBCONF_PRIORITY}\"" >> "${_TMPDIR}/debconf.default"
+}
+
 Distribution
 Parent_distribution
 
@@ -565,5 +580,7 @@ Local_repositories
 
 Bridge
 Mac
+
+Internal_options
 
 db_stop
