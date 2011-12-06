@@ -2,7 +2,7 @@ Template: linux-container/title
 Type: title
 Description: Linux Container (LXC)
 
-Template: linux-container/preseed
+Template: linux-container/preseed-file
 Type: string
 Default:
 Description: Enter (optional) preseed file to use:
