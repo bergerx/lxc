@@ -72,6 +72,12 @@ Default:
 Description: Packages
  Packages.
 
+Template: passwd/root-password
+Type: string
+Default:
+Description: Root password
+ Root password.
+
 Template: linux-container/bridge
 Type: string
 Default:
