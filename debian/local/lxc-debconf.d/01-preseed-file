@@ -4,13 +4,20 @@ set -e
 
 . /usr/share/debconf/confmodule
 
-# Preseed
-db_settitle linux-container/title
-db_input high linux-container/preseed || true
-db_go
+if [ -e "${_PRESEED_FILE}" ]
+then
+	# user specified preseed file through commandline option
+	db_set linux-container/preseed "${_PRESEED_FILE}"
+	db_fset linux-container/preseed seen true
+else
+	# ask user for a preseed file
+	db_settitle linux-container/title
+	db_input high linux-container/preseed || true
+	db_go
 
-db_get linux-container/preseed
-_PRESEED_FILE="${RET}" # string (w/ empty)
+	db_get linux-container/preseed
+	_PRESEED_FILE="${RET}" # string (w/ empty)
+fi
 
 echo "_PRESEED_FILE=\"${_PRESEED_FILE}\"" >> "${_TMPDIR}/debconf.default"
 
