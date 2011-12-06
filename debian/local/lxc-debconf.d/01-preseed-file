@@ -7,15 +7,15 @@ set -e
 if [ -e "${_PRESEED_FILE}" ]
 then
 	# user specified preseed file through commandline option
-	db_set linux-container/preseed "${_PRESEED_FILE}"
-	db_fset linux-container/preseed seen true
+	db_set linux-container/preseed-file "${_PRESEED_FILE}"
+	db_fset linux-container/preseed-file seen true
 else
 	# ask user for a preseed file
 	db_settitle linux-container/title
-	db_input high linux-container/preseed || true
+	db_input high linux-container/preseed-file || true
 	db_go
 
-	db_get linux-container/preseed
+	db_get linux-container/preseed-file
 	_PRESEED_FILE="${RET}" # string (w/ empty)
 fi
 
