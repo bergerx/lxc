@@ -500,6 +500,40 @@ Local_repositories ()
 	done
 }
 
+Root_password ()
+{
+	if db_get passwd/root-password
+	then
+		_ROOT_PASSWORD="${RET}" # string (w/o empty)
+	fi
+
+	if [ -z "${_ROOT_PASSWORD}" ]
+	then
+		# Create a random password as suggestion for the user
+		_RANDOM_PASSWORD="$(dd if=/dev/urandom bs=6 count=1 2> /dev/null | base64)"
+
+		db_set passwd/root-password ${_RANDOM_PASSWORD}
+		db_fset passwd/root-password seen false
+
+		db_settitle linux-container/title
+		db_input high passwd/root-password || true
+		db_go
+	fi
+
+	db_get passwd/root-password
+	_ROOT_PASSWORD="${RET}"
+
+	if [ -z "${_ROOT_PASSWORD}" ]
+	then
+		# User did set not set a password, falling back to random password
+		_ROOT_PASSWORD="${_RANDOM_PASSWORD}"
+
+		echo "_ROOT_RANDOM_PASSWORD=\"true\"" >> "${_TMPDIR}/debconf.default"
+	fi
+
+	echo "_ROOT_PASSWORD=\"${_ROOT_PASSWORD}\"" >> "${_TMPDIR}/debconf.default"
+}
+
 Bridge ()
 {
 	db_get linux-container/bridge
@@ -578,6 +612,7 @@ Packages
 
 Local_repositories
 
+Root_password
 Bridge
 Mac
 

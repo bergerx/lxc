@@ -103,13 +103,25 @@ EOF
 		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
 	fi
 
+	# Configure user-setup
+
+cat > "${_ROOTFS}/preseed.cfg" << EOF
+user-setup passwd/root-password string ${_ROOT_PASSWORD}
+user-setup passwd/root-password-again string ${_ROOT_PASSWORD}
+EOF
+
+	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+	Chroot "${_ROOTFS}" "/usr/lib/user-setup/user-setup-apply"
+
+	rm -f "${_ROOTFS}/preseed.cfg"
+
+	case "${_ROOT_RANDOM_PASSWORD}" in
+		true)
+			echo "P: Setting root password to ${_ROOT_PASSWORD}"
+			;;
+	esac
+
 	Cleanup_system "${_ROOTFS}"
-
-	# Set root password
-	_PASSWORD="$(dd if=/dev/urandom bs=6 count=1 2> /dev/null | base64)"
-
-	echo "root:${_PASSWORD}" | Chroot "${_ROOTFS}" "chpasswd"
-	echo "P: Setting root password to ${_PASSWORD}"
 
 	return 0
 }
@@ -123,17 +135,17 @@ Download_system ()
 		debian)
 			case "${_DISTRIBUTION}" in
 				lenny)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,openssh-server"
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,user-setup,openssh-server"
 					;;
 
 				*)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 					;;
 			esac
 			;;
 
 		progress)
-			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 	esac
 
