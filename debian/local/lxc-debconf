@@ -523,6 +523,7 @@ EOF
 		eval _COMMENT="$`echo LINUX_CONTAINER_ETH${_NUMBER}_COMMENT`"
 		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
 		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
+		eval _MTU="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MTU`"
 		eval _VETH="$`echo LINUX_CONTAINER_ETH${_NUMBER}_VETH`"
 
 		if [ -n "${_COMMENT}" ]
@@ -547,9 +548,14 @@ lxc.network.type                        = veth
 lxc.network.flags                       = up
 lxc.network.hwaddr                      = ${_MAC}
 lxc.network.link                        = ${_BRIDGE}
-lxc.network.mtu                         = 1500
-lxc.network.name                        = eth${_NUMBER}
 EOF
+
+		if [ -n "${_MTU}" ]
+		then
+			echo "lxc.network.mtu                         = ${_MTU}" >> "${_PATH}/config"
+		fi
+
+		echo "lxc.network.name                        = eth${_NUMBER}" >> "${_PATH}/config"
 
 		if [ -n "${_VETH}" ]
 		then
