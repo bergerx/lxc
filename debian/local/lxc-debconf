@@ -518,12 +518,11 @@ EOF
 
 	echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 
-	_VETH_NAME="veth-$(echo ${_NAME} | cut -b 1-12)"
-
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do
 		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
 		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
+		eval _VETH="$`echo LINUX_CONTAINER_ETH${_NUMBER}_VETH`"
 
 cat >> "${_PATH}/config" << EOF
 
@@ -534,8 +533,12 @@ lxc.network.hwaddr                      = ${_MAC}
 lxc.network.link                        = ${_BRIDGE}
 lxc.network.mtu                         = 1500
 lxc.network.name                        = eth${_NUMBER}
-lxc.network.veth.pair                   = ${_VETH_NAME}
 EOF
+
+		if [ -n "${_VETH}" ]
+		then
+			echo "lxc.network.veth.pair                   = ${_VETH}" >> "${_PATH}/config"
+		fi
 
 		_NUMBER="$((${_NUMBER} + 1))"
 	done
