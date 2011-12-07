@@ -551,6 +551,11 @@ Network ()
 			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="${RET}" # string (w/o empty)
 		fi
 
+		if db_get linux-container/eth${_NUMBER}/veth
+		then
+			eval LINUX_CONTAINER_ETH${_NUMBER}_VETH="${RET}" # string (w/ empty)
+		fi
+
 		_NUMBER="$((${_NUMBER} + 1))"
 	done
 
@@ -599,6 +604,9 @@ Network ()
 
 		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
 		echo "LINUX_CONTAINER_ETH${_NUMBER}_MAC=\"${_MAC}\"" >> "${_TMPDIR}/debconf.default"
+
+		eval _VETH="$`echo LINUX_CONTAINER_ETH${_NUMBER}_VETH`"
+		echo "LINUX_CONTAINER_ETH${_NUMBER}_VETH=\"${_VETH}\"" >> "${_TMPDIR}/debconf.default"
 	done
 }
 
