@@ -535,50 +535,71 @@ Root_password ()
 	echo "_ROOT_PASSWORD=\"${_ROOT_PASSWORD}\"" >> "${_TMPDIR}/debconf.default"
 }
 
-Bridge ()
+Network ()
 {
-	db_get linux-container/bridge
-	_BRIDGE="${RET:-br0}" # string (w/o empty)
+	_NUMBER="0"
 
-	if [ -z "${_BRIDGE}" ]
+	while db_get linux-container/eth${_NUMBER}/dhcp && [ "${RET}" ]
+	do
+		if db_get linux-container/eth${_NUMBER}/bridge
+		then
+			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="${RET}" # string (w/o empty)
+		fi
+
+		if db_get linux-container/eth${_NUMBER}/mac
+		then
+			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="${RET}" # string (w/o empty)
+		fi
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+
+	# FIXME: this is ugly
+	if [ "${_NUMBER}" -gt 0 ]
+	then
+		LINUX_CONTAINER_ETH_NUMBER="$((${_NUMBER} - 1))"
+	else
+		LINUX_CONTAINER_ETH_NUMBER="${_NUMBER}"
+	fi
+
+	if [ -z ${LINUX_CONTAINER_ETH0_BRIDGE} ]
 	then
 		# FIXME: do guess the default bridge device
-		db_set linux-container/bridge br0
-		db_fset linux-container/bridge seen false
+		db_set linux-container/eth0/bridge br0
+		db_fset linux-container/eth0/bridge seen false
 
 		db_settitle linux-container/title
-		db_input high linux-container/bridge || true
+		db_input high linux-container/eth0/bridge || true
 		db_go
 
-		db_get linux-container/bridge
-		_BRIDGE="${RET:-br0}" # string (w/o empty)
+		db_get linux-container/eth0/bridge
+		LINUX_CONTAINER_ETH0_BRIDGE="${RET:-br0}"
 	fi
 
-	echo "_BRIDGE=\"${_BRIDGE}\"" >> "${_TMPDIR}/debconf.default"
-	export _BRIDGE
-}
-
-Mac ()
-{
-	db_get linux-container/mac
-	_MAC="${RET:-00:ff:00:00:02}" # string (w/o empty)
-
-	if [ -z "${_MAC}" ]
+	if [ -z "${LINUX_CONTAINER_ETH0_MAC}" ]
 	then
-		# FIXME: do guess a suitable and unused mac address
-		db_set linux-container/mac 00:ff:00:00:02
-		db_fset linux-container/mac seen false
+		# FIXME: do guess the default mac address
+		db_set linux-container/eth0/mac br0
+		db_fset linux-container/eth0/mac seen false
 
 		db_settitle linux-container/title
-		db_input high linux-container/mac || true
+		db_input high linux-container/eth0/mac || true
 		db_go
 
-		db_get linux-container/mac
-		_MAC="${RET:-00:ff:00:00:02}" # string (w/o empty)
+		db_get linux-container/eth0/mac
+		LINUX_CONTAINER_ETH0_MAC="${RET:-00:FF:00:00:00:01}"
 	fi
 
-	echo "_MAC=\"${_MAC}\"" >> "${_TMPDIR}/debconf.default"
-	export _MAC
+	echo "LINUX_CONTAINER_ETH_NUMBER=\"${LINUX_CONTAINER_ETH_NUMBER}\"" >> "${_TMPDIR}/debconf.default"
+
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
+	do
+		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
+		echo "LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE=\"${_BRIDGE}\"" >> "${_TMPDIR}/debconf.default"
+
+		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
+		echo "LINUX_CONTAINER_ETH${_NUMBER}_MAC=\"${_MAC}\"" >> "${_TMPDIR}/debconf.default"
+	done
 }
 
 Internal_options ()
@@ -614,8 +635,7 @@ Packages
 Local_repositories
 
 Root_password
-Bridge
-Mac
+Network
 
 Internal_options
 

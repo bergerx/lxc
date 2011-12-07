@@ -78,13 +78,13 @@ Default:
 Description: Root password
  Root password.
 
-Template: linux-container/bridge
+Template: linux-container/eth0/bridge
 Type: string
 Default:
 Description: Bridge
  Bridge.
 
-Template: linux-container/mac
+Template: linux-container/eth0/mac
 Type: string
 Default:
 Description: MAC
