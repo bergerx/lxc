@@ -441,8 +441,6 @@ Copy_configuration()
 	_ROOTFS="${2}"
 	_NAME="${3}"
 
-	_VETH_NAME="veth-$(echo ${_NAME} | cut -b 1-12)"
-
 cat >> "${_PATH}/config" << EOF
 # ${_PATH}/config
 
@@ -518,18 +516,29 @@ EOF
 		echo "#lxc.mount.entry                        = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
 
-cat >> "${_PATH}/config" << EOF
-#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0
+	echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 
-## Network
+	_VETH_NAME="veth-$(echo ${_NAME} | cut -b 1-12)"
+
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
+	do
+		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
+		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
+
+cat >> "${_PATH}/config" << EOF
+
+## Network (eth${_NUMBER})
 lxc.network.type                        = veth
 lxc.network.flags                       = up
 lxc.network.hwaddr                      = ${_MAC}
 lxc.network.link                        = ${_BRIDGE}
 lxc.network.mtu                         = 1500
-lxc.network.name                        = eth0
+lxc.network.name                        = eth${_NUMBER}
 lxc.network.veth.pair                   = ${_VETH_NAME}
 EOF
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
 
 	if [ "${?}" -ne 0 ]
 	then
