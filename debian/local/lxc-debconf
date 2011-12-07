@@ -575,22 +575,26 @@ while true
 do
 	case "${1}" in
 		--apt-recommends)
-			_APT_RECOMMENDS="${_APT_RECOMMENDS}"
+			_APT_RECOMMENDS="${2}"
+			export _APT_RECOMMENDS
 			shift 2
 			;;
 
 		--debconf-frontend)
-			_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND}"
+			_DEBCONF_FRONTEND="${2}"
+			export _DEBCONF_FRONTEND
 			shift 2
 			;;
 
 		--debconf-priority)
-			_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY}"
+			_DEBCONF_PRIORITY="${2}"
+			export _DEBCONF_PRIORITY
 			shift 2
 			;;
 
 		--preseed-file)
 			_PRESEED_FILE="${2}"
+			export _PRESEED_FILE
 			shift 2
 			;;
 
