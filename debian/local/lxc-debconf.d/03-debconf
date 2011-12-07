@@ -541,6 +541,11 @@ Network ()
 
 	while db_get linux-container/eth${_NUMBER}/dhcp && [ "${RET}" ]
 	do
+		if db_get linux-container/eth${_NUMBER}/comment
+		then
+			eval LINUX_CONTAINER_ETH${_NUMBER}_COMMENT="${RET}" # string (w/)
+		fi
+
 		if db_get linux-container/eth${_NUMBER}/bridge
 		then
 			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="${RET}" # string (w/o empty)
@@ -599,6 +604,9 @@ Network ()
 
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_ETH${_NUMBER}_COMMENT`"
+		echo "LINUX_CONTAINER_ETH${_NUMBER}_COMMENT=\"${_COMMENT}\"" >> "${_TMPDIR}/debconf.default"
+
 		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
 		echo "LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE=\"${_BRIDGE}\"" >> "${_TMPDIR}/debconf.default"
 
