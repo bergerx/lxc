@@ -479,7 +479,7 @@ Local_repositories ()
 		then
 			_COMMENT="${RET}"
 
-			echo "## ${_COMMENT}" > "${_TMPDIR}/sources.list.d/${_LIST}"
+			echo "# ${_COMMENT}" > "${_TMPDIR}/sources.list.d/${_LIST}"
 		fi
 
 		echo "deb ${_REPOSITORY}" >> "${_TMPDIR}/sources.list.d/${_LIST}"
