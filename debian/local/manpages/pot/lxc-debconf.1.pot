@@ -46,10 +46,32 @@ msgstr ""
 msgid "NAME"
 msgstr ""
 
+#. type: Plain text
+#: en/lxc-debconf.1:13
+msgid ""
+"B<lxc-debconf> - LXC template to create Debian and Debian based containers"
+msgstr ""
+
 #. type: SH
 #: en/lxc-debconf.1:14 en/lxc-halt.1:14 en/lxc-list.1:14 en/lxc.1:14
 #, no-wrap
 msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc-debconf.1:16
+msgid ""
+"B<lxc-create> -t debian -n|--name I<CONTAINER> -- [--apt-recommends] [--"
+"debconf-frontend I<DEBCONF_FRONTEND>] [--debconf-priority "
+"I<DEBCONF_PRIORITY>] [--preseed-file I<PRESEED_FILE>]"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc-debconf.1:18
+msgid ""
+"B<lxc-create> -t progress -n|--name I<CONTAINER> -- [--apt-recommends] [--"
+"debconf-frontend I<DEBCONF_FRONTEND>] [--debconf-priority "
+"I<DEBCONF_PRIORITY>] [--preseed-file I<PRESEED_FILE>]"
 msgstr ""
 
 #. type: SH
@@ -58,16 +80,56 @@ msgstr ""
 msgid "DESCRIPTION"
 msgstr ""
 
+#. type: Plain text
+#: en/lxc-debconf.1:21
+msgid ""
+"LXC(7) uses so called templates to create Linux Container systems. B<lxc-"
+"debconf> is such a template script to create Debian and Debian based "
+"containers."
+msgstr ""
+
+#. type: Plain text
+#: en/lxc-debconf.1:23
+msgid ""
+"B<lxc-debconf> can be invoked through lxc-create(1) in three modes: debconf, "
+"debian, and progress. In debconf mode, it currently falls automatically back "
+"to debian mode. In debian mode, it will allow offer to choose to create "
+"Debian GNU/Linux containers. In progress mode, it will allow to choose to "
+"create Progress Linux containers."
+msgstr ""
+
 #. type: SH
 #: en/lxc-debconf.1:25 en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
 
+#. type: Plain text
+#: en/lxc-debconf.1:27 en/lxc-debconf.1:30 en/lxc-debconf.1:33
+msgid "B<FIXME>"
+msgstr ""
+
+#. type: SH
+#: en/lxc-debconf.1:28
+#, no-wrap
+msgid "EXAMPLES"
+msgstr ""
+
+#. type: SH
+#: en/lxc-debconf.1:31
+#, no-wrap
+msgid "FILES"
+msgstr ""
+
 #. type: SH
 #: en/lxc-debconf.1:34 en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: en/lxc-debconf.1:39
+msgid "I<lxc>(7), I<lxc>(1), I<lxc-halt>(1), I<lxc-list>(1)."
 msgstr ""
 
 #. type: SH
@@ -91,42 +153,8 @@ msgid "AUTHOR"
 msgstr ""
 
 #. type: Plain text
-#: en/lxc-halt.1:13
-msgid "B<lxc-halt> - shutdown Linux Containers by state"
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-halt.1:16
-msgid "B<lxc-halt> I<CONTAINER>"
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-halt.1:19
+#: en/lxc-debconf.1:44
 msgid ""
-"B<lxc-halt> shuts down a Linux Container by not killing all processes of it "
-"like lxc-stop does. It does an ordinary shutdown by issueing a switch to "
-"runlevel 0 within the container."
-msgstr ""
-
-#. type: IP
-#: en/lxc-halt.1:21 en/lxc.1:27
-#, no-wrap
-msgid "I<CONTAINER>"
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-halt.1:23 en/lxc.1:29
-msgid "specifies a Linux Container in the LXC path (default /var/lib/lxc)."
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-halt.1:29
-msgid "I<lxc>(7), I<lxc>(1), I<lxc-debconf>(1), I<lxc-list>(1)."
-msgstr ""
-
-#. type: Plain text
-#: en/lxc-halt.1:34
-msgid ""
-"lxc-halt was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
+"lxc-debconf was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt>."
 msgstr ""

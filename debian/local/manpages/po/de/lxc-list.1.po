@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: lxc\n"
-"POT-Creation-Date: 2011-11-06 07:28+0100\n"
+"POT-Creation-Date: 2011-12-08 12:31+0100\n"
 "PO-Revision-Date: 2010-05-24 09:59+0300\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -16,67 +16,67 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. type: TH
-#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
 msgid "LXC"
 msgstr "LXC"
 
 #. type: TH
-#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "2011-11-06"
-msgstr "06.11.2011"
+msgid "2011-12-08"
+msgstr "08.12.2011"
 
 #. type: TH
-#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "0.7.5-4"
-msgstr "0.7.5-4"
+msgid "0.7.5-12"
+msgstr "0.7.5-12"
 
 #. type: TH
-#: en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
+#: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
 msgid "Linux Containers"
 msgstr "Linux Containers"
 
 #. type: SH
-#: en/lxc-halt.1:11 en/lxc-list.1:11 en/lxc.1:11
+#: en/lxc-debconf.1:11 en/lxc-halt.1:11 en/lxc-list.1:11 en/lxc.1:11
 #, no-wrap
 msgid "NAME"
 msgstr "NAME"
 
 #. type: SH
-#: en/lxc-halt.1:14 en/lxc-list.1:14 en/lxc.1:14
+#: en/lxc-debconf.1:14 en/lxc-halt.1:14 en/lxc-list.1:14 en/lxc.1:14
 #, no-wrap
 msgid "SYNOPSIS"
 msgstr "SYNTAX"
 
 #. type: SH
-#: en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
+#: en/lxc-debconf.1:19 en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr "BESCHREIBUNG"
 
 #. type: SH
-#: en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
+#: en/lxc-debconf.1:25 en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr "OPTIONEN"
 
 #. type: SH
-#: en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
+#: en/lxc-debconf.1:34 en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
 msgstr "SIEHE AUCH"
 
 #. type: SH
-#: en/lxc-halt.1:29 en/lxc-list.1:28 en/lxc.1:35
+#: en/lxc-debconf.1:40 en/lxc-halt.1:30 en/lxc-list.1:29 en/lxc.1:36
 #, no-wrap
 msgid "BUGS"
 msgstr "FEHLER"
 
 #. type: Plain text
-#: en/lxc-halt.1:31 en/lxc-list.1:30 en/lxc.1:37
+#: en/lxc-debconf.1:42 en/lxc-halt.1:32 en/lxc-list.1:31 en/lxc.1:38
 msgid ""
 "Bugs can be reported by submitting a bugreport for the lxc package in the "
 "Debian Bug Tracking System at E<lt>I<http://bugs.debian.org/>E<gt> or by "
@@ -87,7 +87,7 @@ msgstr ""
 "durch Senden einer E-Mail an den Autor mitgeteilt werden."
 
 #. type: SH
-#: en/lxc-halt.1:32 en/lxc-list.1:31 en/lxc.1:38
+#: en/lxc-debconf.1:43 en/lxc-halt.1:33 en/lxc-list.1:32 en/lxc.1:39
 #, no-wrap
 msgid "AUTHOR"
 msgstr "AUTOR"
@@ -113,12 +113,12 @@ msgid "lxc-list has no options."
 msgstr "lxc-list hat keine Optionen."
 
 #. type: Plain text
-#: en/lxc-list.1:27
-msgid "I<lxc>(7), I<lxc>(1), I<lxc-halt>(1)."
-msgstr "I<lxc>(7), I<lxc>(1), I<lxc-halt>(1)."
+#: en/lxc-list.1:28
+msgid "I<lxc>(7), I<lxc>(1), I<lxc-debconf>(1), I<lxc-halt>(1)."
+msgstr "I<lxc>(7), I<lxc>(1), I<lxc-debconf>(1), I<lxc-halt>(1)."
 
 #. type: Plain text
-#: en/lxc-list.1:32
+#: en/lxc-list.1:33
 msgid ""
 "lxc-list was written by Daniel Baumann E<lt>I<daniel.baumann@progress-"
 "technologies.net>E<gt>."
