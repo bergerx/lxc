@@ -89,3 +89,9 @@ Type: string
 Default:
 Description: MAC
  MAC.
+
+Template: linux-container/auto
+Type: boolean
+Default: false
+Description: Auto start container?
+ Should the container be automatically configured to be started on boot?
