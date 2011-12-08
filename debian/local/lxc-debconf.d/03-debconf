@@ -626,6 +626,28 @@ Network ()
 	done
 }
 
+Auto ()
+{
+	db_get linux-container/auto
+	_AUTO="${RET}" # boolean
+
+	if [ -z "${_AUTO}" ]
+	then
+		db_set linux-container/auto false
+		db_fset linux-container/auto seen false
+
+		db_settitle linux-container/title
+		db_input high linux-container/auto || true
+		db_go
+
+		db_get linux-container/auto
+		LINUX_CONTAINER_AUTO="${RET}"
+	fi
+
+	echo "_AUTO=\"${_AUTO}\"" >> "${_TMPDIR}/debconf.default"
+	export _AUTO
+}
+
 Internal_options ()
 {
 	db_get linux-container/apt-recommends
@@ -660,6 +682,7 @@ Local_repositories
 
 Root_password
 Network
+Auto
 
 Internal_options
 

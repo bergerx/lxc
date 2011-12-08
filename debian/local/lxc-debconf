@@ -565,6 +565,15 @@ EOF
 		_NUMBER="$((${_NUMBER} + 1))"
 	done
 
+	# Remove configuration symlinks
+	rm -f /etc/lxc/auto/${_NAME} /etc/lxc/auto/${_NAME}.conf
+
+	case "${_AUTO}" in
+		true)
+			ln -s ${_PATH}/config /etc/lxc/auto/${_NAME}
+			;;
+	esac
+
 	if [ "${?}" -ne 0 ]
 	then
 		echo "Failed to add configuration"
