@@ -1,3 +1,45 @@
+lxc (0.7.5-13) unstable; urgency=low
+
+  [ Nik Lutz ]
+  * Correcting wrong variable for debconf preseed file in lxc-debconf.
+  * Reordering debconf handling to respect preseed files in lxc-debconf.
+  * Inserting preseeded bridge and mac in lxc config file for lxc-
+    debconf.
+  * Limiting network interface name to 12 characters in lxc-debconf.
+
+  [ Daniel Baumann ]
+  * Streamlining lxc-debconf a bit.
+  * Enabling access to /dev/tty, this is required for e.g. ssh-ing out
+    from the container in lxc-debconf.
+  * Prefering user specified preseed file from commandline option over
+    debconf question in lxc-debconf.
+  * Correcting typo in debconf field for the preseeding file in lxc-
+    debconf.
+  * Removing distribution switch from lxc-debconf, this can be either
+    preseeded or choosen through the debconf frontend.
+  * Adding preseed handling for internal options in lxc-debconf.
+  * Correcting option handling for internal options in lxc-debconf.
+  * Asking user for root password (with a random password as suggestion)
+    in lxc-debconf rather than unconditionally set the random one.
+  * Correct order for entirely non-interactive preseeding in lxc-
+    debconf.
+  * Adding debconf handling for mac and bridge when using multiple
+    interfaces in lxc-debconf.
+  * Adding preseed handling for veth name in lxc-debconf.
+  * Updating lxc-debconf example preseeding files.
+  * Using single hash for sources.list.d comments in lxc-debconf.
+  * Enabling comments for network devices in config for lxc-debconf.
+  * Adding support for mtu in in lxc-debconf.
+  * Adding updated Swedish debconf translations from Martin Bagge
+    <brother@bsnet.se> (Closes: #651346).
+  * Adding support for automatically adding symlinks to /etc/lxc/auto in
+    lxc-debconf.
+  * Adding stub manpage for lxc-debconf.
+  * Adding late command to supported preseeding options in lxc-debconf.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Thu, 08 Dec 2011 14:31:16 +0100
+
 lxc (0.7.5-12) unstable; urgency=low
 
   * Updating preseeding examples for lxc-debconf.
