@@ -1,0 +1,59 @@
+.\" lxc-debconf(1) - LXC template to create Debian and Debian based containers
+.\" Copyright (C) 2006-2011 Daniel Baumann <daniel.baumann@progress-technologies.net>
+.\"
+.\" lxc-debconf comes with ABSOLUTELY NO WARRANTY; for details see COPYING.
+.\" This is free software, and you are welcome to redistribute it
+.\" under certain conditions; see COPYING for details.
+.\"
+.\"
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.TH LXC 1 08.12.2011 0.7.5\-12 "Linux Containers"
+
+.SH NAME
+\fBlxc\-debconf\fP \- LXC template to create Debian and Debian based containers
+
+.SH SYNTAX
+\fBlxc\-create\fP \-t debian \-n|\-\-name \fICONTAINER\fP \-\- [\-\-apt\-recommends]
+[\-\-debconf\-frontend \fIDEBCONF_FRONTEND\fP] [\-\-debconf\-priority
+\fIDEBCONF_PRIORITY\fP] [\-\-preseed\-file \fIPRESEED_FILE\fP]
+.PP
+\fBlxc\-create\fP \-t progress \-n|\-\-name \fICONTAINER\fP \-\- [\-\-apt\-recommends]
+[\-\-debconf\-frontend \fIDEBCONF_FRONTEND\fP] [\-\-debconf\-priority
+\fIDEBCONF_PRIORITY\fP] [\-\-preseed\-file \fIPRESEED_FILE\fP]
+
+.SH BESCHREIBUNG
+LXC(7) uses so called templates to create Linux Container
+systems. \fBlxc\-debconf\fP is such a template script to create Debian and
+Debian based containers.
+.PP
+\fBlxc\-debconf\fP can be invoked through lxc\-create(1) in three modes: debconf,
+debian, and progress. In debconf mode, it currently falls automatically back
+to debian mode. In debian mode, it will allow offer to choose to create
+Debian GNU/Linux containers. In progress mode, it will allow to choose to
+create Progress Linux containers.
+.PP
+
+.SH OPTIONEN
+\fBFIXME\fP
+
+.SH EXAMPLES
+\fBFIXME\fP
+
+.SH FILES
+\fBFIXME\fP
+
+.SH "SIEHE AUCH"
+\fIlxc\fP(7), \fIlxc\fP(1), \fIlxc\-halt\fP(1), \fIlxc\-list\fP(1).
+
+.SH FEHLER
+Fehler können durch Einreichen eines Fehlerberichtes für das lxc Paket im
+Debian Bug Tracking System unter <\fIhttp://bugs.debian.org/\fP> oder
+durch Senden einer E\-Mail an den Autor mitgeteilt werden.
+
+.SH AUTOR
+lxc\-debconf wurde von Daniel Baumann
+<\fIdaniel.baumann@progress\-technologies.net\fP> geschrieben.

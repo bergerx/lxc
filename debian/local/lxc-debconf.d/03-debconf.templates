@@ -72,14 +72,26 @@ Default:
 Description: Packages
  Packages.
 
-Template: linux-container/bridge
+Template: passwd/root-password
+Type: string
+Default:
+Description: Root password
+ Root password.
+
+Template: linux-container/eth0/bridge
 Type: string
 Default:
 Description: Bridge
  Bridge.
 
-Template: linux-container/mac
+Template: linux-container/eth0/mac
 Type: string
 Default:
 Description: MAC
  MAC.
+
+Template: linux-container/auto
+Type: boolean
+Default: false
+Description: Auto start container?
+ Should the container be automatically configured to be started on boot?

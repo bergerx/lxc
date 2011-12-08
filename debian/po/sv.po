@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
 "POT-Creation-Date: 2011-11-15 22:07+0100\n"
-"PO-Revision-Date: 2011-11-01 10:07+0100\n"
+"PO-Revision-Date: 2011-12-06 21:02+0100\n"
 "Last-Translator: Martin Bagge / brother <brother@bsnet.se>\n"
 "Language-Team: Swedish <debian-l10n-swedish@lists.debian.org>\n"
 "Language: \n"
@@ -20,10 +20,9 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-#, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Containers: LXC setup"
-msgstr "Inställningar för Linux Containers (LXC)"
+msgstr " Linux Containers: Inställningar för LXC"
 
 #. Type: boolean
 #. Description
@@ -34,7 +33,6 @@ msgstr "Ska Linux Containers starta automatiskt vid systemets uppstart?"
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
-#, fuzzy
 #| msgid ""
 #| "Linux Containers can be automatically started during system boot and shut "
 #| "down on reboot or halt."
@@ -43,22 +41,22 @@ msgid ""
 "the /etc/lxc/auto directory can be automatically started during system boot, "
 "and shut down on reboot or halt."
 msgstr ""
-"Linux Containers kan startas automatiskt vid systemets uppstart och stängas "
-"av vid omstart eller nedstängning av systemet."
+"Linux Containers som har inställningsfilerna kopierade eller länkade till "
+"katalogen /etc/lxc/auto kan automatiskt startas vid systemets uppstart eller "
+"stängas av vid omstart eller nedstängning av systemet."
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "If unsure, choose yes (default)."
-msgstr ""
+msgstr "Om du är osäker välj ja (standard)"
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-#, fuzzy
 #| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Stop method"
-msgstr "Inställningar för Linux Containers (LXC)"
+msgstr " Linux Container: Metdo för avstängning"
 
 #. Type: select
 #. Description
@@ -69,28 +67,32 @@ msgid ""
 "takes longer and can have problems with containers that don't shutdown "
 "themselfs properly."
 msgstr ""
+"Linux Containers kan stängas av på olika sätt. Metoden avstäning kommer att "
+"döda alla processer inuti containern. Halt-metoden påbörjar en nedstängning, "
+"detta tar längre tid och kan innebära problem med containers som inte "
+"stänger av sig korrekt själva."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 msgid "If unsure, choose stop (default)."
-msgstr ""
+msgstr "Om du är osäker välj stopp (standard)"
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "LXC directory:"
-msgstr ""
+msgstr "Katalog för LXC:"
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid ""
 "Please specify the directory that will be used to store the Linux Containers."
-msgstr ""
+msgstr "Ange katalogen som ska användas för att lagra Linux Containers."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
-msgstr ""
+msgstr "Om du är osäker använd /var/lib/lxc (standard)."

@@ -103,13 +103,30 @@ EOF
 		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
 	fi
 
+	# Configure user-setup
+
+cat > "${_ROOTFS}/preseed.cfg" << EOF
+user-setup passwd/root-password string ${_ROOT_PASSWORD}
+user-setup passwd/root-password-again string ${_ROOT_PASSWORD}
+EOF
+
+	Chroot "${_ROOTFS}" "debconf-set-selections preseed.cfg"
+	Chroot "${_ROOTFS}" "/usr/lib/user-setup/user-setup-apply"
+
+	rm -f "${_ROOTFS}/preseed.cfg"
+
+	case "${_ROOT_RANDOM_PASSWORD}" in
+		true)
+			echo "P: Setting root password to ${_ROOT_PASSWORD}"
+			;;
+	esac
+
+	if [ -n "${_LATE_COMMAND}" ]
+	then
+		Chroot "${_ROOTFS}" "${_LATE_COMMAND}"
+	fi
+
 	Cleanup_system "${_ROOTFS}"
-
-	# Set root password
-	_PASSWORD="$(dd if=/dev/urandom bs=6 count=1 2> /dev/null | base64)"
-
-	echo "root:${_PASSWORD}" | Chroot "${_ROOTFS}" "chpasswd"
-	echo "P: Setting root password to ${_PASSWORD}"
 
 	return 0
 }
@@ -123,17 +140,17 @@ Download_system ()
 		debian)
 			case "${_DISTRIBUTION}" in
 				lenny)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,openssh-server"
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,user-setup,openssh-server"
 					;;
 
 				*)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 					;;
 			esac
 			;;
 
 		progress)
-			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,openssh-server"
+			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 	esac
 
@@ -465,6 +482,8 @@ lxc.cgroup.devices.allow                = c 136:* rwm
 lxc.cgroup.devices.allow                = c 1:8 rwm
 # /dev/rtc
 lxc.cgroup.devices.allow                = c 254:0 rwm
+# /dev/tty
+lxc.cgroup.devices.allow                = c 5:0 rwm
 EOF
 
 	if [ "${_MODE}" = "ubuntu" ]
@@ -502,18 +521,63 @@ EOF
 		echo "#lxc.mount.entry                        = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
 
+	echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
+	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_ETH${_NUMBER}_COMMENT`"
+		eval _BRIDGE="$`echo LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE`"
+		eval _MAC="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MAC`"
+		eval _MTU="$`echo LINUX_CONTAINER_ETH${_NUMBER}_MTU`"
+		eval _VETH="$`echo LINUX_CONTAINER_ETH${_NUMBER}_VETH`"
+
+		if [ -n "${_COMMENT}" ]
+		then
+
 cat >> "${_PATH}/config" << EOF
-#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0
+
+## Network: ${_COMMENT}
+EOF
+
+		else
+
+cat >> "${_PATH}/config" << EOF
 
 ## Network
+EOF
+
+		fi
+
+cat >> "${_PATH}/config" << EOF
 lxc.network.type                        = veth
 lxc.network.flags                       = up
-lxc.network.hwaddr                      = 00:FF:33:44:55:66
-lxc.network.link                        = br0
-lxc.network.mtu                         = 1500
-lxc.network.name                        = eth0
-lxc.network.veth.pair                   = veth-${_NAME}
+lxc.network.hwaddr                      = ${_MAC}
+lxc.network.link                        = ${_BRIDGE}
 EOF
+
+		if [ -n "${_MTU}" ]
+		then
+			echo "lxc.network.mtu                         = ${_MTU}" >> "${_PATH}/config"
+		fi
+
+		echo "lxc.network.name                        = eth${_NUMBER}" >> "${_PATH}/config"
+
+		if [ -n "${_VETH}" ]
+		then
+			echo "lxc.network.veth.pair                   = ${_VETH}" >> "${_PATH}/config"
+		fi
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+
+	# Remove configuration symlinks
+	rm -f /etc/lxc/auto/${_NAME} /etc/lxc/auto/${_NAME}.conf
+
+	case "${_AUTO}" in
+		true)
+			ln -s ${_PATH}/config /etc/lxc/auto/${_NAME}
+			;;
+	esac
 
 	if [ "${?}" -ne 0 ]
 	then
@@ -552,7 +616,7 @@ Clean ()
 
 Usage ()
 {
-	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|-d|--distribution=<distribution>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
+	echo "Usage: $(basename ${0}) --apt-recommends=<true,false>|--debconf-frontend=<debconf-frontend>|--debconf-priority=<debconf-priority>|--preseed-file=<preseed-file>|-h|--help -p|--path=<path> --clean"
 
 	return 0
 }
@@ -571,27 +635,26 @@ while true
 do
 	case "${1}" in
 		--apt-recommends)
-			_APT_RECOMMENDS="${_APT_RECOMMENDS}"
+			_APT_RECOMMENDS="${2}"
+			export _APT_RECOMMENDS
 			shift 2
 			;;
 
 		--debconf-frontend)
-			_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND}"
+			_DEBCONF_FRONTEND="${2}"
+			export _DEBCONF_FRONTEND
 			shift 2
 			;;
 
 		--debconf-priority)
-			_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY}"
-			shift 2
-			;;
-
-		-d|--distribution)
-			_DISTRIBUTION="${2}"
+			_DEBCONF_PRIORITY="${2}"
+			export _DEBCONF_PRIORITY
 			shift 2
 			;;
 
 		--preseed-file)
 			_PRESEED_FILE="${2}"
+			export _PRESEED_FILE
 			shift 2
 			;;
 
