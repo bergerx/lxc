@@ -121,6 +121,11 @@ EOF
 			;;
 	esac
 
+	if [ -n "${_LATE_COMMAND}" ]
+	then
+		Chroot "${_ROOTFS}" "${_LATE_COMMAND}"
+	fi
+
 	Cleanup_system "${_ROOTFS}"
 
 	return 0

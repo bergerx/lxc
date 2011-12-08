@@ -661,6 +661,10 @@ Internal_options ()
 	db_get linux-container/debconf-priority
 	_DEBCONF_PRIORITY="${RET:-high}" # select
 	echo "_DEBCONF_PRIORITY=\"${_DEBCONF_PRIORITY}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_get linux-container/late-command
+	_LATE_COMMAND="${RET}" # string (w/ empty)
+	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
 }
 
 Distribution
