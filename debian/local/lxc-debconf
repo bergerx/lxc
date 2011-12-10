@@ -6,7 +6,7 @@ Chroot ()
 	shift
 
 	chroot "${_CHROOT}" /usr/bin/env -i \
-		PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
+		LC_ALL="C" PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
 		DEBIAN_FRONTEND="${_DEBCONF_FRONTEND}" DEBIAN_PRIORITY="${_DEBCONF_PRIORITY}" \
 		${@}
 }
