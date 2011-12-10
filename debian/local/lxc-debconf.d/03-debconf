@@ -594,7 +594,7 @@ Network ()
 	if [ -z "${LINUX_CONTAINER_ETH0_MAC}" ]
 	then
 		# FIXME: do guess the default mac address
-		db_set linux-container/eth0/mac br0
+		db_set linux-container/eth0/mac 00:FF:00:00:00:01
 		db_fset linux-container/eth0/mac seen false
 
 		db_settitle linux-container/title
