@@ -1,3 +1,29 @@
+lxc (0.7.5-14) unstable; urgency=low
+
+  * Adding quotes in some eval calls in lxc-debconf to make sure values
+    with whitespaces are treated correctly.
+  * Using LC_ALL=C when executing calls in chroot of lxc-debconf.
+  * Also including ftp_proxy and http_proxy in lxc-debconfs chroot
+    environment (Closes: #651477).
+  * Correcting copy/paste error in lxc-debconf when setting empty
+    default mac address.
+  * Updating preseed examples for lxc-debconf.
+  * Adding bash completion for lxc from Gaé Lucas <gaetanlcs@gmail.com>.
+  * Streamlining bash-completion file a bit.
+  * Correcting wrong auto variable in lxc-debconf.
+  * Simplyfing architecture detection in lxc-debconf which is always
+    running on debian based systems anyway.
+  * Adding support for creating i386 containers on amd64 in lxc-debconf
+    (Closes: #651616).
+  * Reorder entries to drop capabilities in default config of lxc-
+    debconf.
+  * Updating guessing for shared directories in default config of lxc-
+    debconf.
+  * Reorder entry for console log in default config of lxc-debconf.
+  * Updating preseeding examples for lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 10 Dec 2011 23:20:40 +0100
+
 lxc (0.7.5-13) unstable; urgency=low
 
   [ Nik Lutz ]
