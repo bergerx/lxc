@@ -510,11 +510,15 @@ EOF
 	if [ -d "/srv/share/${_NAME}" ]
 	then
 		echo "lxc.mount.entry                         = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
-	else
+	elif [ -d "/srv/${_NAME}" ]
+	then
+		echo "lxc.mount.entry                         = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	elif [ -d "/srv/share" ]
+	then
 		echo "#lxc.mount.entry                        = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	else
+		echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
-
-	echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do
