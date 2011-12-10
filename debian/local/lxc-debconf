@@ -389,30 +389,7 @@ Install_system ()
 			return 1
 		fi
 
-		# Code taken from debootstrap
-		if type dpkg > /dev/null 2>&1 && dpkg --print-architecture > /dev/null 2>&1
-		then
-			_ARCHITECTURE="$(dpkg --print-architecture)"
-		elif type udpkg > /dev/null 2>&1 && udpkg --print-architecture > /dev/null 2>&1
-		then
-			_ARCHITECTURE="$(udpkg --print-architecture)"
-		else
-			_ARCHITECTURE="$(arch)"
-
-			case "${arch}" in
-				686)
-					_ARCHITECTURE="i386"
-					;;
-
-				x86_64)
-					_ARCHITECTURE="amd64"
-					;;
-
-				ppc)
-					_ARCHITECTURE="powerpc"
-					;;
-			esac
-		fi
+		_ARCHITECTURE="$(dpkg --print-architecture)"
 
 		echo "Checking cache download in ${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}... "
 
