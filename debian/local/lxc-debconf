@@ -447,7 +447,10 @@ lxc.pts                                 = 1024
 #lxc.console                            = /var/log/lxc/${_NAME}.console
 
 ## Capabilities
-lxc.cap.drop                            = sys_admin sys_module mac_admin mac_override
+lxc.cap.drop                            = mac_admin
+lxc.cap.drop                            = mac_override
+lxc.cap.drop                            = sys_admin
+lxc.cap.drop                            = sys_module
 
 ## Devices
 # Allow all devices
