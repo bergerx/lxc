@@ -442,9 +442,9 @@ EOF
 	esac
 
 cat >> "${_PATH}/config" << EOF
+#lxc.console                            = /var/log/lxc/${_NAME}.console
 lxc.tty                                 = 6
 lxc.pts                                 = 1024
-#lxc.console                            = /var/log/lxc/${_NAME}.console
 
 ## Capabilities
 lxc.cap.drop                            = mac_admin
