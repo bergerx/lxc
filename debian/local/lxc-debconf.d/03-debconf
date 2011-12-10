@@ -641,7 +641,7 @@ Auto ()
 		db_go
 
 		db_get linux-container/auto
-		LINUX_CONTAINER_AUTO="${RET}"
+		_AUTO="${RET}"
 	fi
 
 	echo "_AUTO=\"${_AUTO}\"" >> "${_TMPDIR}/debconf.default"
