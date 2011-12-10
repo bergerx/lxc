@@ -543,27 +543,27 @@ Network ()
 	do
 		if db_get linux-container/eth${_NUMBER}/comment
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_COMMENT="${RET}" # string (w/)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_COMMENT="\"${RET}\"" # string (w/)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/bridge
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="${RET}" # string (w/o empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="\"${RET}\"" # string (w/o empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/mac
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="${RET}" # string (w/o empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="\"${RET}\"" # string (w/o empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/mtu
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_MTU="${RET}" # string (w/ empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_MTU="\"${RET}\"" # string (w/ empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/veth
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_VETH="${RET}" # string (w/ empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_VETH="\"${RET}\"" # string (w/ empty)
 		fi
 
 		_NUMBER="$((${_NUMBER} + 1))"
