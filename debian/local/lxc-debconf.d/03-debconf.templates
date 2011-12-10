@@ -18,6 +18,14 @@ Choices: ${CHOICES}
 Description: for internal use; can be preseeded
  Parent Distribution.
 
+Template: linux-container/architecture
+Type: select
+Default:
+Choices-C: ${CHOICES_C}
+Choices: ${CHOICES}
+Description: Architecture
+ Architecture.
+
 Template: linux-container/mirror
 Type: string
 Default:

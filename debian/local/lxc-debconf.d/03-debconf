@@ -67,6 +67,31 @@ Parent_distribution ()
 	export _PARENT_DISTRIBUTION
 }
 
+Architecture ()
+{
+	_CHOICES="${1}"
+	_CHOICES_C="${2}"
+
+	db_get linux-container/architecture
+	_ARCHITECTURE="${RET}" # boolean
+
+	if [ -z "${_ARCHITECTURE}" ]
+	then
+		db_subst linux-container/architecture CHOICES ${_CHOICES}
+		db_subst linux-container/architecture CHOICES_C ${_CHOICES_C}
+
+		db_settitle linux-container/title
+		db_input high linux-container/architecture || true
+		db_go
+
+		db_get linux-container/architecture
+		_ARCHITECTURE="${RET}" # select
+	fi
+
+	echo "_ARCHITECTURE=\"${_ARCHITECTURE}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHITECTURE
+}
+
 Mirror ()
 {
 	db_get linux-container/mirror
@@ -669,6 +694,12 @@ Internal_options ()
 
 Distribution
 Parent_distribution
+
+case "$(dpkg --print-architecture)" in
+	amd64)
+		Architecture "64-bit PC (amd64), 32-bit PC (i386)" "amd64, i386"
+		;;
+esac
 
 Mirror
 Mirror_security

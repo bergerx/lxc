@@ -389,7 +389,7 @@ Install_system ()
 			return 1
 		fi
 
-		_ARCHITECTURE="$(dpkg --print-architecture)"
+		_ARCHITECTURE="${_ARCHITECTURE:-$(dpkg --print-architecture)}"
 
 		echo "Checking cache download in ${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}... "
 
@@ -430,6 +430,18 @@ cat >> "${_PATH}/config" << EOF
 ## Container
 lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
+EOF
+
+	case "$(dpkg --print-architecture)" in
+		amd64)
+			if [ "${_ARCHITECTURE}" = "i386" ]
+			then
+				echo "lxc.arch                                = i686" >> "${_PATH}/config"
+			fi
+			;;
+	esac
+
+cat >> "${_PATH}/config" << EOF
 lxc.tty                                 = 6
 lxc.pts                                 = 1024
 #lxc.console                            = /var/log/lxc/${_NAME}.console
