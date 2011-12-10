@@ -6,8 +6,9 @@ Chroot ()
 	shift
 
 	chroot "${_CHROOT}" /usr/bin/env -i \
-		PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
+		LC_ALL="C" PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
 		DEBIAN_FRONTEND="${_DEBCONF_FRONTEND}" DEBIAN_PRIORITY="${_DEBCONF_PRIORITY}" \
+		ftp_proxy="${ftp_proxy}" http_proxy="${http_proxy}" \
 		${@}
 }
 
@@ -388,30 +389,7 @@ Install_system ()
 			return 1
 		fi
 
-		# Code taken from debootstrap
-		if type dpkg > /dev/null 2>&1 && dpkg --print-architecture > /dev/null 2>&1
-		then
-			_ARCHITECTURE="$(dpkg --print-architecture)"
-		elif type udpkg > /dev/null 2>&1 && udpkg --print-architecture > /dev/null 2>&1
-		then
-			_ARCHITECTURE="$(udpkg --print-architecture)"
-		else
-			_ARCHITECTURE="$(arch)"
-
-			case "${arch}" in
-				686)
-					_ARCHITECTURE="i386"
-					;;
-
-				x86_64)
-					_ARCHITECTURE="amd64"
-					;;
-
-				ppc)
-					_ARCHITECTURE="powerpc"
-					;;
-			esac
-		fi
+		_ARCHITECTURE="${_ARCHITECTURE:-$(dpkg --print-architecture)}"
 
 		echo "Checking cache download in ${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}... "
 
@@ -452,12 +430,27 @@ cat >> "${_PATH}/config" << EOF
 ## Container
 lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
+EOF
+
+	case "$(dpkg --print-architecture)" in
+		amd64)
+			if [ "${_ARCHITECTURE}" = "i386" ]
+			then
+				echo "lxc.arch                                = i686" >> "${_PATH}/config"
+			fi
+			;;
+	esac
+
+cat >> "${_PATH}/config" << EOF
+#lxc.console                            = /var/log/lxc/${_NAME}.console
 lxc.tty                                 = 6
 lxc.pts                                 = 1024
-#lxc.console                            = /var/log/lxc/${_NAME}.console
 
 ## Capabilities
-lxc.cap.drop                            = sys_admin sys_module mac_admin mac_override
+lxc.cap.drop                            = mac_admin
+lxc.cap.drop                            = mac_override
+lxc.cap.drop                            = sys_admin
+lxc.cap.drop                            = sys_module
 
 ## Devices
 # Allow all devices
@@ -517,11 +510,15 @@ EOF
 	if [ -d "/srv/share/${_NAME}" ]
 	then
 		echo "lxc.mount.entry                         = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
-	else
+	elif [ -d "/srv/${_NAME}" ]
+	then
+		echo "lxc.mount.entry                         = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	elif [ -d "/srv/share" ]
+	then
 		echo "#lxc.mount.entry                        = /srv/share/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
+	else
+		echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
-
-	echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do

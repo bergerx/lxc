@@ -67,6 +67,31 @@ Parent_distribution ()
 	export _PARENT_DISTRIBUTION
 }
 
+Architecture ()
+{
+	_CHOICES="${1}"
+	_CHOICES_C="${2}"
+
+	db_get linux-container/architecture
+	_ARCHITECTURE="${RET}" # boolean
+
+	if [ -z "${_ARCHITECTURE}" ]
+	then
+		db_subst linux-container/architecture CHOICES ${_CHOICES}
+		db_subst linux-container/architecture CHOICES_C ${_CHOICES_C}
+
+		db_settitle linux-container/title
+		db_input high linux-container/architecture || true
+		db_go
+
+		db_get linux-container/architecture
+		_ARCHITECTURE="${RET}" # select
+	fi
+
+	echo "_ARCHITECTURE=\"${_ARCHITECTURE}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHITECTURE
+}
+
 Mirror ()
 {
 	db_get linux-container/mirror
@@ -543,27 +568,27 @@ Network ()
 	do
 		if db_get linux-container/eth${_NUMBER}/comment
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_COMMENT="${RET}" # string (w/)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_COMMENT="\"${RET}\"" # string (w/)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/bridge
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="${RET}" # string (w/o empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_BRIDGE="\"${RET}\"" # string (w/o empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/mac
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="${RET}" # string (w/o empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_MAC="\"${RET}\"" # string (w/o empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/mtu
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_MTU="${RET}" # string (w/ empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_MTU="\"${RET}\"" # string (w/ empty)
 		fi
 
 		if db_get linux-container/eth${_NUMBER}/veth
 		then
-			eval LINUX_CONTAINER_ETH${_NUMBER}_VETH="${RET}" # string (w/ empty)
+			eval LINUX_CONTAINER_ETH${_NUMBER}_VETH="\"${RET}\"" # string (w/ empty)
 		fi
 
 		_NUMBER="$((${_NUMBER} + 1))"
@@ -594,7 +619,7 @@ Network ()
 	if [ -z "${LINUX_CONTAINER_ETH0_MAC}" ]
 	then
 		# FIXME: do guess the default mac address
-		db_set linux-container/eth0/mac br0
+		db_set linux-container/eth0/mac 00:FF:00:00:00:01
 		db_fset linux-container/eth0/mac seen false
 
 		db_settitle linux-container/title
@@ -641,7 +666,7 @@ Auto ()
 		db_go
 
 		db_get linux-container/auto
-		LINUX_CONTAINER_AUTO="${RET}"
+		_AUTO="${RET}"
 	fi
 
 	echo "_AUTO=\"${_AUTO}\"" >> "${_TMPDIR}/debconf.default"
@@ -669,6 +694,12 @@ Internal_options ()
 
 Distribution
 Parent_distribution
+
+case "$(dpkg --print-architecture)" in
+	amd64)
+		Architecture "64-bit PC (amd64), 32-bit PC (i386)" "amd64, i386"
+		;;
+esac
 
 Mirror
 Mirror_security
