@@ -8,6 +8,7 @@ Chroot ()
 	chroot "${_CHROOT}" /usr/bin/env -i \
 		LC_ALL="C" PATH="/usr/sbin:/usr/bin:/sbin:/bin" TERM="${TERM}" \
 		DEBIAN_FRONTEND="${_DEBCONF_FRONTEND}" DEBIAN_PRIORITY="${_DEBCONF_PRIORITY}" \
+		ftp_proxy="${ftp_proxy}" http_proxy="${http_proxy}" \
 		${@}
 }
 
