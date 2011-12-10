@@ -1,3 +1,12 @@
+lxc (0.7.5-14~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Sat, 10 Dec 2011 23:26:47 +0100
+
 lxc (0.7.5-14) unstable; urgency=low
 
   * Adding quotes in some eval calls in lxc-debconf to make sure values
