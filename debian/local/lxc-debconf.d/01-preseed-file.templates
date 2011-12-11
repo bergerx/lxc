@@ -7,3 +7,9 @@ Type: string
 Default:
 Description: Enter (optional) preseed file to use:
  Preseed file anyone?
+
+Template: linux-container/preseed-files
+Type: select
+Default: custom
+Choices: ${CHOICES}
+Description: Choose an existing preseed config
