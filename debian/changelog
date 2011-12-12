@@ -1,3 +1,20 @@
+lxc (0.7.5-15) unstable; urgency=low
+
+  * Adding updated bash completion for lxc from Gaé Lucas
+    <gaetanlcs@gmail.com> which now includes completion for the lxc
+    convenience wrapper.
+  * Replacing tabs with one whitespace in preseed examples for lxc-
+    debconf as there seems to be some problems with it otherwise.
+  * Avoid compressing preseed example files.
+  * Stopping to support both container configs with and without .conf
+    suffix in /etc/lxc/auto, in order to have unique configs they should
+    be named exactely like the container with no artificial suffix.
+  * Letting user choose from existing preseed files from
+    /etc/lxc/decbonf in lxc-debconf.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 12 Dec 2011 12:14:28 +0100
+
 lxc (0.7.5-14) unstable; urgency=low
 
   * Adding quotes in some eval calls in lxc-debconf to make sure values
