@@ -1,3 +1,12 @@
+lxc (0.7.5-15~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Mon, 12 Dec 2011 13:42:49 +0100
+
 lxc (0.7.5-15) unstable; urgency=low
 
   * Adding updated bash completion for lxc from Gaé Lucas
