@@ -1,5 +1,14 @@
 #!bash
 
+# bash completion for lxc
+### v1.1 20111211
+#
+# CHANGE LOG:
+# v1.1:
+# added basic completion for 'lxc $command $container' next syntax
+# v1.0:
+# initial kork
+
 have lxc-start && {
 
 _lxc_names()
@@ -256,5 +265,27 @@ _lxc-checkpoint()
 	fi
 }
 complete -F _lxc-checkpoint lxc-checkpoint
+
+# next lxc command usage
+_lxc-cmd()
+{
+	local cur prev
+
+	COMPREPLY=()
+	_get_comp_words_by_ref cur prev
+
+	case $prev in
+		lxc)
+			COMPREPLY=( $( compgen -W 'attach cgroup checkconfig checkpoint clone console create destroy execute freeze info kill ls monitor netstat ps restart setcap setuid start start-ephemeral stop unfreeze unshare version wait' -- "$cur" ) )
+			return 0
+			;;
+
+		attach|cgroup|checkconfig|checkpoint|clone|console|create|destroy|execute|freeze|info|kill|monitor|netstat|ps|restart|start|start-ephemeral|stop|unfreeze|unshare|wait)
+			_lxc_names "$cur"
+			return 0
+			;;
+	esac
+}
+complete -F _lxc-cmd lxc
 
 }
