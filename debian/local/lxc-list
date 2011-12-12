@@ -18,8 +18,7 @@ do
 		then
 			echo -n "  ${_CONTAINER}"
 
-			if [ -e /etc/lxc/auto/${_CONTAINER} ] ||
-			   [ -e /etc/lxc/auto/${_CONTAINER}.conf ]
+			if [ -e /etc/lxc/auto/${_CONTAINER} ]
 			then
 				echo " (auto)"
 			else

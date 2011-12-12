@@ -47,7 +47,7 @@ Lxc ()
 
 	for _CONFIG in /etc/lxc/auto/*
 	do
-		_CONTAINER="$(basename ${_CONFIG} .conf)"
+		_CONTAINER="$(basename ${_CONFIG})"
 
 		case "${_PROGRAM}" in
 			start)
