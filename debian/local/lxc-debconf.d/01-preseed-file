@@ -9,7 +9,8 @@ then
 	# user specified preseed file through commandline option
 	db_set linux-container/preseed-file "${_PRESEED_FILE}"
 	db_fset linux-container/preseed-file seen true
-else
+elif ls /etc/lxc/debconf/* > /dev/null 2>&1
+then
 	_PRESEED_FILES="$(for _FILE in $(ls /etc/lxc/debconf/*); do echo -n "$(basename ${_FILE}), "; done)"
 
 	if [ -n "${_PRESEED_FILES}" ]
