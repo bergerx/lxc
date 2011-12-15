@@ -151,9 +151,9 @@ Mirror_security ()
 				db_fset linux-container/mirror-security seen false
 				;;
 
-			progress)
-				db_set linux-container/mirror-security http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-security seen false
+			*)
+				db_set linux-container/mirror-security ${_MIRROR}
+				db_fset linux-container/mirror-security seen true
 				;;
 		esac
 
@@ -195,9 +195,9 @@ Mirror_backports ()
 				db_fset linux-container/mirror-backports seen false
 				;;
 
-			progress)
-				db_set linux-container/mirror-backports http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-backports seen false
+			*)
+				db_set linux-container/mirror-backports ${_MIRROR}
+				db_fset linux-container/mirror-backports seen true
 				;;
 		esac
 
@@ -247,7 +247,6 @@ Parent_mirror ()
 				db_set linux-container/parent-mirror ${_MIRROR}
 				db_fset linux-container/parent-mirror seen true
 				;;
-
 		esac
 
 		db_get linux-container/parent-mirror
