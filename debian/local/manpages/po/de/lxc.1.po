@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: lxc\n"
-"POT-Creation-Date: 2011-12-08 12:31+0100\n"
+"POT-Creation-Date: 2011-12-15 21:04+0100\n"
 "PO-Revision-Date: 2010-05-24 09:59+0300\n"
 "Last-Translator: Daniel Baumann <daniel.baumann@progress-technologies.net>\n"
 "Language-Team: none\n"
@@ -24,14 +24,14 @@ msgstr "LXC"
 #. type: TH
 #: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "2011-12-08"
-msgstr "08.12.2011"
+msgid "2011-12-15"
+msgstr "12.12.2011"
 
 #. type: TH
 #: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
 #, no-wrap
-msgid "0.7.5-12"
-msgstr "0.7.5-12"
+msgid "0.7.5-15"
+msgstr "0.7.5-15"
 
 #. type: TH
 #: en/lxc-debconf.1:9 en/lxc-halt.1:9 en/lxc-list.1:9 en/lxc.1:9
@@ -52,31 +52,31 @@ msgid "SYNOPSIS"
 msgstr "SYNTAX"
 
 #. type: SH
-#: en/lxc-debconf.1:19 en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
+#: en/lxc-debconf.1:21 en/lxc-halt.1:17 en/lxc-list.1:17 en/lxc.1:17
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr "BESCHREIBUNG"
 
 #. type: SH
-#: en/lxc-debconf.1:25 en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
+#: en/lxc-debconf.1:27 en/lxc-halt.1:20 en/lxc-list.1:20 en/lxc.1:24
 #, no-wrap
 msgid "OPTIONS"
 msgstr "OPTIONEN"
 
 #. type: SH
-#: en/lxc-debconf.1:34 en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
+#: en/lxc-debconf.1:36 en/lxc-halt.1:24 en/lxc-list.1:23 en/lxc.1:30
 #, no-wrap
 msgid "SEE ALSO"
 msgstr "SIEHE AUCH"
 
 #. type: SH
-#: en/lxc-debconf.1:40 en/lxc-halt.1:30 en/lxc-list.1:29 en/lxc.1:36
+#: en/lxc-debconf.1:42 en/lxc-halt.1:30 en/lxc-list.1:29 en/lxc.1:36
 #, no-wrap
 msgid "BUGS"
 msgstr "FEHLER"
 
 #. type: Plain text
-#: en/lxc-debconf.1:42 en/lxc-halt.1:32 en/lxc-list.1:31 en/lxc.1:38
+#: en/lxc-debconf.1:44 en/lxc-halt.1:32 en/lxc-list.1:31 en/lxc.1:38
 msgid ""
 "Bugs can be reported by submitting a bugreport for the lxc package in the "
 "Debian Bug Tracking System at E<lt>I<http://bugs.debian.org/>E<gt> or by "
@@ -87,7 +87,7 @@ msgstr ""
 "durch Senden einer E-Mail an den Autor mitgeteilt werden."
 
 #. type: SH
-#: en/lxc-debconf.1:43 en/lxc-halt.1:33 en/lxc-list.1:32 en/lxc.1:39
+#: en/lxc-debconf.1:45 en/lxc-halt.1:33 en/lxc-list.1:32 en/lxc.1:39
 #, no-wrap
 msgid "AUTHOR"
 msgstr "AUTOR"

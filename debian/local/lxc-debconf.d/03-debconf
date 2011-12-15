@@ -23,6 +23,11 @@ Distribution ()
 				db_subst linux-container/distribution CHOICES "Progress Linux 1.0 (artax), Progress Linux 1.9 (artax-backports), Progress Linux 2.0 (baureo)"
 				db_subst linux-container/distribution CHOICES_C "artax, artax-backports, baureo"
 				;;
+
+			ubuntu)
+				db_subst linux-container/distribution CHOICES "Ubuntu 10.04 LTS (Lucid Lynx), Ubuntu 10.10 (Maverick Meerkat), Ubuntu 11.04 (Natty Narwhal), Ubuntu 11.10 (Oneiric Ocelot), Ubuntu 12.04 LTS (Precise Pangolin)"
+				db_subst linux-container/distribution CHOICES_C "lucid, maverick, natty, oneiric, precise"
+				;;
 		esac
 
 		db_settitle linux-container/title
@@ -111,6 +116,12 @@ Mirror ()
 				db_set linux-container/mirror http://archive.progress-linux.org/progress/
 				db_fset linux-container/mirror seen false
 				;;
+
+			ubuntu)
+
+				db_set linux-container/mirror http://archive.ubuntu.com/ubuntu/
+				db_fset linux-container/mirror seen false
+				;;
 		esac
 
 		db_settitle linux-container/title
@@ -129,6 +140,10 @@ Mirror ()
 
 				progress)
 					_MIRROR="http://archive.progress-linux.org/progress/"
+					;;
+
+				ubuntu)
+					_MIRROR="http://archive.ubuntu.com/ubuntu/"
 					;;
 			esac
 		fi

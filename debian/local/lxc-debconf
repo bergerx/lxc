@@ -63,6 +63,7 @@ Cleanup_system ()
 Configure_system ()
 {
 	_ROOTFS="${1}"
+	_NAME="${2}"
 
 	# Preseed system
 	if [ -e "${_PRESEED_FILE}" ]
@@ -104,6 +105,29 @@ EOF
 		Chroot "${_ROOTFS}" "apt-get install --yes linux-container"
 	fi
 
+	# Some ubuntu specifics
+	case "${_MODE}" in
+		ubuntu)
+			# Configure dhcp client
+			if [ -f "${_ROOTFS}/etc/dhcp/dhclient.conf" ]
+			then
+				# send hostname to dhcp server
+				sed -i -e "s|<hostname>|${_NAME}|" "${_ROOTFS}/etc/dhcp/dhclient.conf"
+			elif [ -f "${_ROOTFS}/etc/dhcp3/dhclient.conf" ]
+			then
+				# send hostname to dhcp server
+				sed -i -e "s|<hostname>|${_NAME}|" "${_ROOTFS}/etc/dhcp3/dhclient.conf"
+			fi
+
+			# Configure udev
+			if [ -e "${_ROOTFS}/etc/udev/udev.conf" ]
+			then
+				# suppress log level output for udev
+				sed -i -e "s|=\"err\"|=0|" "${_ROOTFS}/etc/udev/udev.conf"
+			fi
+			;;
+	esac
+
 	# Configure user-setup
 
 cat > "${_ROOTFS}/preseed.cfg" << EOF
@@ -139,11 +163,31 @@ Download_system ()
 
 	case "${_MODE}" in
 		debian)
-			_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
+			_INCLUDE="ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 
 		progress)
 			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup"
+			;;
+
+		ubuntu)
+			case "${_DISTRIBUTION}" in
+				lucid)
+					_INCLUDES="dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,dhcp3-client,ssh,lsb-release,gnupg"
+					;;
+
+				maverick)
+					_INCLUDES="dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,dhcp3-client,ssh,lsb-release,gnupg,netbase"
+					;;
+
+				natty)
+					_INCLUDES="dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,isc-dhcp-client,isc-dhcp-common,ssh,lsb-release,gnupg,netbase"
+					;;
+
+				*)
+					_INCLUDES="dialog,apt,apt-utils,iproute,inetutils-ping,vim,isc-dhcp-client,isc-dhcp-common,ssh,lsb-release,gnupg,netbase,ubuntu-keyring"
+					;;
+			esac
 			;;
 	esac
 
@@ -159,7 +203,7 @@ Download_system ()
 	# download a minimal system into a cache
 	echo "Downloading minimal system..."
 
-	if [ -x "$(which cdebootstrap 2>/dev/null)" ]
+	if [ "${_MODE}" != "ubuntu" ] && [ -x "$(which cdebootstrap 2>/dev/null)" ]
 	then
 		cdebootstrap --arch=${_ARCHITECTURE} \
 			--flavour=minimal --include=${_INCLUDE} \
@@ -168,8 +212,18 @@ Download_system ()
 		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "dpkg --purge cdebootstrap-helper-rc.d"
 	elif [ -x "$(which debootstrap 2>/dev/null)" ]
 	then
+		case "${_MODE}" in
+			ubuntu)
+				_DEBOOTSTRAP_OPTIONS="--components=main,universe"
+				;;
+
+			*)
+				_DEBOOTSTRAP_OPTIONS="--variant=minbase"
+				;;
+		esac
+
 		debootstrap --verbose --arch=${_ARCHITECTURE} \
-			--variant=minbase --include=${_INCLUDE} \
+			${_DEBOOTSTRAP_OPTIONS} --include=${_INCLUDE} \
 			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
 	fi
 
@@ -194,6 +248,19 @@ EOF
 
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
+	case "${_MODE}" in
+		ubuntu)
+
+cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/ubuntu.list" << EOF
+deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
+deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}-security main
+deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates main
+deb ${_PARENT_MIRROR} ${_PARENT_DIST}-backports main
+EOF
+
+			;;
+
+		*)
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
@@ -201,13 +268,11 @@ deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
 deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates main
 EOF
 
-	case "${_PARENT_DIST}" in
-		squeeze)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
-EOF
-
+			case "${_PARENT_DIST}" in
+				squeeze)
+					echo "deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
+					;;
+			esac
 			;;
 	esac
 

@@ -14,6 +14,11 @@ override_dh_auto_install:
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-debian
 	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-debian.d
 
+	# replacing upstreams ubuntu template
+	rm -f debian/tmp/usr/lib/lxc/templates/lxc-ubuntu
+	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-ubuntu
+	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-ubuntu.d
+
 	# adding progress template symlink
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
 	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-progress.d
