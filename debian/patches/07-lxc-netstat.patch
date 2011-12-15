@@ -1,0 +1,74 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Allow to use -- as seperator in lxc-netstat, otherwise -n from
+ lxc-netstat collides with netstats -n option (Closes: #641251).
+
+diff -Naurp lxc.orig/src/lxc/lxc-netstat.in lxc/src/lxc/lxc-netstat.in
+--- lxc.orig/src/lxc/lxc-netstat.in	2011-12-15 12:01:30.450940512 +0100
++++ lxc/src/lxc/lxc-netstat.in	2011-12-15 12:12:26.890189809 +0100
+@@ -2,7 +2,7 @@
+ # set -ex
+ 
+ usage() {
+-	echo "usage: $(basename $0) --name <name> [netstat options]"
++	echo "usage: $(basename $0) -n|--name <name> -- [netstat_options]"
+ }
+ 
+ help() {
+@@ -18,22 +18,43 @@ help() {
+ 	echo "to be executed as root."
+ }
+ 
+-exec=""
++shortoptions='hn:'
++longoptions='help,name:,exec:'
+ 
+-if [ $# -eq  0 ]; then
+-	usage
+-	exit 1
++getopt=$(getopt -o $shortoptions --longoptions  $longoptions -- "$@")
++if [ $? != 0 ]; then
++    usage
++    exit 1;
+ fi
+ 
+-for i in "$@"; do
+-	case $i in
+-		-h|--help)
+-			help; exit 1;;
+-		-n|--name)
+-			name=$2; shift 2;;
+-		--exec)
+-			exec="exec"; shift;;
+-	esac
++exec=""
++
++eval set -- "$getopt"
++
++while true; do
++        case "$1" in
++	    -h|--help)
++		help
++		exit 1
++		;;
++	    -n|--name)
++		shift
++		lxc_name=$1
++		shift
++		;;
++	    --exec)
++		shift
++		exec="exec"
++		;;
++            --)
++		shift
++		break;;
++            *)
++		echo $1
++		usage
++		exit 1
++		;;
++        esac
+ done
+ 
+ if [ -z "$exec" ]; then
