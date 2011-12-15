@@ -171,8 +171,8 @@ Mirror_security ()
 					_MIRROR_SECURITY="http://security.debian.org/"
 					;;
 
-				progress)
-					_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+				*)
+					_MIRROR_SECURITY="${_MIRROR}"
 					;;
 			esac
 		fi
@@ -215,8 +215,8 @@ Mirror_backports ()
 					_MIRROR_BACKPORTS="http://backports.debian.org/debian-backports/"
 					;;
 
-				progress)
-					_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+				*)
+					_MIRROR_BACKPORTS="${_MIRROR}"
 					;;
 			esac
 		fi
