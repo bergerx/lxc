@@ -139,15 +139,7 @@ Download_system ()
 
 	case "${_MODE}" in
 		debian)
-			case "${_DISTRIBUTION}" in
-				lenny)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,user-setup,openssh-server"
-					;;
-
-				*)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
-					;;
-			esac
+			_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 
 		progress)
@@ -202,46 +194,14 @@ EOF
 
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
-	case "${_PARENT_DIST}" in
-		lenny)
-			_PARENT_VOLATILE_DIST="lenny/volatile"
-			;;
-
-		*)
-			_PARENT_VOLATILE_DIST="${_PARENT_DIST}-updates"
-			;;
-	esac
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
 deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
 deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
+deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates main
 EOF
 
 	case "${_PARENT_DIST}" in
-		lenny|squeeze)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
-EOF
-
-			;;
-	esac
-
-	case "${_PARENT_DIST}" in
-		lenny)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
-EOF
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/debian.pref" << EOF
-Package: *
-Pin: release a=lenny-backports
-Pin-Priority: 200
-EOF
-
-			;;
-
 		squeeze)
 
 cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
@@ -258,7 +218,7 @@ EOF
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
 deb ${_MIRROR} ${_DIST} main
 deb ${_MIRROR_SECURITY} ${_DIST}-security main
-deb ${_MIRROR_VOLATILE} ${_DIST}-updates main
+deb ${_MIRROR} ${_DIST}-updates main
 deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
 EOF
 

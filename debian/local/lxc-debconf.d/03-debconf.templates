@@ -38,12 +38,6 @@ Default:
 Description: Mirror Security
  Mirror Security.
 
-Template: linux-container/mirror-volatile
-Type: string
-Default:
-Description: Mirror Volatile
- Mirror Volatile.
-
 Template: linux-container/mirror-backports
 Type: string
 Default:
@@ -61,12 +55,6 @@ Type: string
 Default:
 Description: Parent Mirror Security
  Parent Mirror Security.
-
-Template: linux-container/parent-mirror-volatile
-Type: string
-Default:
-Description: Parent Mirror Volatile
- Parent Mirror Volatile.
 
 Template: linux-container/parent-mirror-backports
 Type: string

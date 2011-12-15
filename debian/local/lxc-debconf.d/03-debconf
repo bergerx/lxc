@@ -15,8 +15,8 @@ Distribution ()
 	then
 		case "${_MODE}" in
 			debian)
-				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 5.0 \"lenny\", Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
-				db_subst linux-container/distribution CHOICES_C "lenny, squeeze, wheezy, sid"
+				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
+				db_subst linux-container/distribution CHOICES_C "squeeze, wheezy, sid"
 				;;
 
 			progress)
@@ -182,67 +182,6 @@ Mirror_security ()
 	export _MIRROR_SECURITY
 }
 
-Mirror_volatile ()
-{
-	db_get linux-container/mirror-volatile
-	_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-	if [ -z "${_MIRROR_VOLATILE}" ]
-	then
-		case "${_MODE}" in
-			debian)
-				case "${_DISTRIBUTION}" in
-					lenny)
-						db_set linux-container/mirror-volatile http://volatile.debian.org/debian-volatile/
-						db_fset linux-container/mirror-volatile seen false
-						;;
-
-					*)
-						db_set linux-container/mirror-volatile http://ftp.debian.org/debian/
-						db_fset linux-container/mirror-volatile seen false
-						;;
-				esac
-				;;
-
-			progress)
-				db_set linux-container/mirror-volatile http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-volatile seen false
-				;;
-		esac
-
-		db_settitle linux-container/title
-		db_input high linux-container/mirror-volatile || true
-		db_go
-
-		db_get linux-container/mirror-volatile
-		_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-		if [ -z "${_MIRROR_VOLATILE}" ]
-		then
-			case "${_MODE}" in
-				debian)
-					case "${_DISTRIBUTION}" in
-						lenny)
-							_MIRROR_VOLATILE="http://volatile.debian.org/debian-volatile/"
-							;;
-
-						*)
-							_MIRROR_VOLATILE="http://ftp.debian.org/debian/"
-							;;
-					esac
-					;;
-
-				progress)
-					_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
-					;;
-			esac
-		fi
-	fi
-
-	echo "_MIRROR_VOLATILE=\"${_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-	export _MIRROR_VOLATILE
-}
-
 Mirror_backports ()
 {
 	db_get linux-container/mirror-backports
@@ -374,50 +313,6 @@ Parent_mirror_security ()
 
 	echo "_PARENT_MIRROR_SECURITY=\"${_PARENT_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
 	export _PARENT_MIRROR_SECURITY
-}
-
-Parent_mirror_volatile ()
-{
-	db_get linux-container/parent-mirror-volatile
-	_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-	if [ -z "${_PARENT_MIRROR_VOLATILE}" ]
-	then
-		case "${_MODE}" in
-			progress)
-				db_set linux-container/parent-mirror-volatile http://ftp.debian.org/debian/
-				db_fset linux-container/parent-mirror-volatile seen false
-
-				db_settitle linux-container/title
-				db_input high linux-container/parent-mirror-volatile || true
-				db_go
-				;;
-
-			*)
-				db_set linux-container/parent-mirror-volatile ${_MIRROR_VOLATILE}
-				db_fset linux-container/parent-mirror-volatile seen true
-				;;
-		esac
-
-		db_get linux-container/parent-mirror-volatile
-		_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-		if [ -z "${_PARENT_MIRROR_VOLATILE}" ]
-		then
-			case "${_MODE}" in
-				progress)
-					_PARENT_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
-					;;
-
-				*)
-					_PARENT_MIRROR_VOLATILE="${_MIRROR_VOLATILE}"
-					;;
-			esac
-		fi
-	fi
-
-	echo "_PARENT_MIRROR_VOLATILE=\"${_PARENT_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-	export _PARENT_MIRROR_VOLATILE
 }
 
 Parent_mirror_backports ()
@@ -703,12 +598,10 @@ esac
 
 Mirror
 Mirror_security
-Mirror_volatile
 Mirror_backports
 
 Parent_mirror
 Parent_mirror_security
-Parent_mirror_volatile
 Parent_mirror_backports
 
 Packages
