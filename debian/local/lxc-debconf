@@ -151,7 +151,7 @@ Download_system ()
 			;;
 
 		progress)
-			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
+			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup"
 			;;
 	esac
 
