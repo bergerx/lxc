@@ -256,7 +256,7 @@ Parent_mirror ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR="http://ftp.debian.org/debian/"
 					;;
 
 				*)
@@ -300,7 +300,7 @@ Parent_mirror_security ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR_SECURITY="http://security.debian.org/"
 					;;
 
 				*)
@@ -344,7 +344,7 @@ Parent_mirror_backports ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR_BACKPORTS="http://backports.debian.org/debian-backports/"
 					;;
 
 				*)
