@@ -358,6 +358,96 @@ Parent_mirror_backports ()
 	export _PARENT_MIRROR_BACKPORTS
 }
 
+Archive_areas ()
+{
+	db_get linux-container/archive-areas
+	_ARCHIVE_AREAS="${RET}"
+
+	if [ -z "${_ARCHIVE_AREAS}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				db_subst linux-container/archive-areas CHOICES "main"
+				;;
+
+			progress)
+				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+				;;
+		esac
+
+		db_settitle linux-container/title
+		db_input high linux-container/archive-areas || true
+		db_go
+
+		db_get linux-container/archive-areas
+		_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_ARCHIVE_AREAS}" ]
+		then
+			case "${_MODE}" in
+				debian)
+					_ARCHIVE_AREAS="main"
+					;;
+
+				progress)
+					_ARCHIVE_AREAS="main, contrib, non-free"
+					;;
+			esac
+		fi
+	fi
+
+	_ARCHIVE_AREAS="$(echo ${_ARCHIVE_AREAS} | sed -e 's| ||g')"
+
+	echo "_ARCHIVE_AREAS=\"${_ARCHIVE_AREAS}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHIVE_AREAS
+}
+
+Parent_archive_areas ()
+{
+	db_get linux-container/parent-archive-areas
+	_PARENT_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+	if [ -z "${_PARENT_ARCHIVE_AREAS}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				db_subst linux-container/parent-archive-areas CHOICES "main, contrib, non-free"
+				db_fset linux-container/parent-archive-areas seen false
+
+				db_settitle linux-container/title
+				db_input high linux-container/parent-archive-areas || true
+				db_go
+				;;
+
+			*)
+				db_subst linux-container/parent-archive-areas CHOICES "${_ARCHIVE_AREAS}"
+				db_fset linux-container/parent-archive-areas seen true
+				;;
+		esac
+
+		db_get linux-container/parent-archive-areas
+		_PARENT_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_PARENT_ARCHIVE_AREAS}" ]
+		then
+			case "${_MODE}" in
+				progress)
+					_PARENT_ARCHIVE_AREAS="main, contrib, non-free"
+					;;
+
+				*)
+					_PARENT_ARCHIVE_AREAS="${_ARCHIVE_AREAS}"
+					;;
+			esac
+		fi
+	fi
+
+	_PARENT_ARCHIVE_AREAS="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's| ||g')"
+
+	echo "_PARENT_ARCHIVE_AREAS=\"${_PARENT_ARCHIVE_AREAS}\"" >> "${_TMPDIR}/debconf.default"
+	export _PARENT_ARCHIVE_AREAS
+}
+
 Packages ()
 {
 	db_get linux-container/packages
@@ -603,8 +693,10 @@ Parent_mirror
 Parent_mirror_security
 Parent_mirror_backports
 
-Packages
+Archive_areas
+Parent_archive_areas
 
+Packages
 Local_repositories
 
 Root_password

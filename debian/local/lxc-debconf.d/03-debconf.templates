@@ -62,6 +62,20 @@ Default:
 Description: Parent Mirror Backports
  Parent Mirror Backports.
 
+Template: linux-container/archive-areas
+Type: multiselect
+Default:
+Choices: ${CHOICES}
+Description: Archive Areas
+ Archive Areas.
+
+Template: linux-container/parent-archive-areas
+Type: multiselect
+Default:
+Choices: ${CHOICES}
+Description: Parent Archive Areas
+ Parent Archive Areas.
+
 Template: linux-container/packages
 Type: string
 Default:
