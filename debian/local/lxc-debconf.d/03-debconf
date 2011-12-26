@@ -674,6 +674,10 @@ Internal_options ()
 	db_get linux-container/late-command
 	_LATE_COMMAND="${RET}" # string (w/ empty)
 	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_get linux-container/capabilities
+	_CAPABILITIES="${RET}" # string (w/ empty)
+	echo "_CAPABILITIES=\"${_CAPABILITIES}\"" >> "${_TMPDIR}/debconf.default"
 }
 
 Distribution

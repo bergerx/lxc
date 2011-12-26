@@ -409,11 +409,16 @@ lxc.tty                                 = 6
 lxc.pts                                 = 1024
 
 ## Capabilities
-lxc.cap.drop                            = mac_admin
-lxc.cap.drop                            = mac_override
-lxc.cap.drop                            = sys_admin
-lxc.cap.drop                            = sys_module
+EOF
 
+	_CAPABILITIES="${_CAPABILITIES:-mac_admin mac_override sys_admin sys_module}"
+
+	for _CAPABILITY in ${_CAPABILITIES}
+	do
+		echo "lxc.cap.drop                            = ${_CAPABILITY}" >> "${_PATH}/config"
+	done
+
+cat >> "${_PATH}/config" << EOF
 ## Devices
 # Allow all devices
 #lxc.cgroup.devices.allow               = a
