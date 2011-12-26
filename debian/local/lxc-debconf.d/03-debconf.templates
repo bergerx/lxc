@@ -38,12 +38,6 @@ Default:
 Description: Mirror Security
  Mirror Security.
 
-Template: linux-container/mirror-volatile
-Type: string
-Default:
-Description: Mirror Volatile
- Mirror Volatile.
-
 Template: linux-container/mirror-backports
 Type: string
 Default:
@@ -62,17 +56,25 @@ Default:
 Description: Parent Mirror Security
  Parent Mirror Security.
 
-Template: linux-container/parent-mirror-volatile
-Type: string
-Default:
-Description: Parent Mirror Volatile
- Parent Mirror Volatile.
-
 Template: linux-container/parent-mirror-backports
 Type: string
 Default:
 Description: Parent Mirror Backports
  Parent Mirror Backports.
+
+Template: linux-container/archive-areas
+Type: multiselect
+Default:
+Choices: ${CHOICES}
+Description: Archive Areas
+ Archive Areas.
+
+Template: linux-container/parent-archive-areas
+Type: multiselect
+Default:
+Choices: ${CHOICES}
+Description: Parent Archive Areas
+ Parent Archive Areas.
 
 Template: linux-container/packages
 Type: string

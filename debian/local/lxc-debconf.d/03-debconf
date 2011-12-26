@@ -15,8 +15,8 @@ Distribution ()
 	then
 		case "${_MODE}" in
 			debian)
-				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 5.0 \"lenny\", Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
-				db_subst linux-container/distribution CHOICES_C "lenny, squeeze, wheezy, sid"
+				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
+				db_subst linux-container/distribution CHOICES_C "squeeze, wheezy, sid"
 				;;
 
 			progress)
@@ -151,9 +151,9 @@ Mirror_security ()
 				db_fset linux-container/mirror-security seen false
 				;;
 
-			progress)
-				db_set linux-container/mirror-security http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-security seen false
+			*)
+				db_set linux-container/mirror-security ${_MIRROR}
+				db_fset linux-container/mirror-security seen true
 				;;
 		esac
 
@@ -171,8 +171,8 @@ Mirror_security ()
 					_MIRROR_SECURITY="http://security.debian.org/"
 					;;
 
-				progress)
-					_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+				*)
+					_MIRROR_SECURITY="${_MIRROR}"
 					;;
 			esac
 		fi
@@ -180,67 +180,6 @@ Mirror_security ()
 
 	echo "_MIRROR_SECURITY=\"${_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
 	export _MIRROR_SECURITY
-}
-
-Mirror_volatile ()
-{
-	db_get linux-container/mirror-volatile
-	_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-	if [ -z "${_MIRROR_VOLATILE}" ]
-	then
-		case "${_MODE}" in
-			debian)
-				case "${_DISTRIBUTION}" in
-					lenny)
-						db_set linux-container/mirror-volatile http://volatile.debian.org/debian-volatile/
-						db_fset linux-container/mirror-volatile seen false
-						;;
-
-					*)
-						db_set linux-container/mirror-volatile http://ftp.debian.org/debian/
-						db_fset linux-container/mirror-volatile seen false
-						;;
-				esac
-				;;
-
-			progress)
-				db_set linux-container/mirror-volatile http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-volatile seen false
-				;;
-		esac
-
-		db_settitle linux-container/title
-		db_input high linux-container/mirror-volatile || true
-		db_go
-
-		db_get linux-container/mirror-volatile
-		_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-		if [ -z "${_MIRROR_VOLATILE}" ]
-		then
-			case "${_MODE}" in
-				debian)
-					case "${_DISTRIBUTION}" in
-						lenny)
-							_MIRROR_VOLATILE="http://volatile.debian.org/debian-volatile/"
-							;;
-
-						*)
-							_MIRROR_VOLATILE="http://ftp.debian.org/debian/"
-							;;
-					esac
-					;;
-
-				progress)
-					_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
-					;;
-			esac
-		fi
-	fi
-
-	echo "_MIRROR_VOLATILE=\"${_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-	export _MIRROR_VOLATILE
 }
 
 Mirror_backports ()
@@ -256,9 +195,9 @@ Mirror_backports ()
 				db_fset linux-container/mirror-backports seen false
 				;;
 
-			progress)
-				db_set linux-container/mirror-backports http://archive.progress-linux.org/progress/
-				db_fset linux-container/mirror-backports seen false
+			*)
+				db_set linux-container/mirror-backports ${_MIRROR}
+				db_fset linux-container/mirror-backports seen true
 				;;
 		esac
 
@@ -276,8 +215,8 @@ Mirror_backports ()
 					_MIRROR_BACKPORTS="http://backports.debian.org/debian-backports/"
 					;;
 
-				progress)
-					_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+				*)
+					_MIRROR_BACKPORTS="${_MIRROR}"
 					;;
 			esac
 		fi
@@ -308,7 +247,6 @@ Parent_mirror ()
 				db_set linux-container/parent-mirror ${_MIRROR}
 				db_fset linux-container/parent-mirror seen true
 				;;
-
 		esac
 
 		db_get linux-container/parent-mirror
@@ -318,7 +256,7 @@ Parent_mirror ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR="http://ftp.debian.org/debian/"
 					;;
 
 				*)
@@ -362,7 +300,7 @@ Parent_mirror_security ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR_SECURITY="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR_SECURITY="http://security.debian.org/"
 					;;
 
 				*)
@@ -374,50 +312,6 @@ Parent_mirror_security ()
 
 	echo "_PARENT_MIRROR_SECURITY=\"${_PARENT_MIRROR_SECURITY}\"" >> "${_TMPDIR}/debconf.default"
 	export _PARENT_MIRROR_SECURITY
-}
-
-Parent_mirror_volatile ()
-{
-	db_get linux-container/parent-mirror-volatile
-	_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-	if [ -z "${_PARENT_MIRROR_VOLATILE}" ]
-	then
-		case "${_MODE}" in
-			progress)
-				db_set linux-container/parent-mirror-volatile http://ftp.debian.org/debian/
-				db_fset linux-container/parent-mirror-volatile seen false
-
-				db_settitle linux-container/title
-				db_input high linux-container/parent-mirror-volatile || true
-				db_go
-				;;
-
-			*)
-				db_set linux-container/parent-mirror-volatile ${_MIRROR_VOLATILE}
-				db_fset linux-container/parent-mirror-volatile seen true
-				;;
-		esac
-
-		db_get linux-container/parent-mirror-volatile
-		_PARENT_MIRROR_VOLATILE="${RET}" # string (w/o empty)
-
-		if [ -z "${_PARENT_MIRROR_VOLATILE}" ]
-		then
-			case "${_MODE}" in
-				progress)
-					_PARENT_MIRROR_VOLATILE="http://archive.progress-linux.org/progress/"
-					;;
-
-				*)
-					_PARENT_MIRROR_VOLATILE="${_MIRROR_VOLATILE}"
-					;;
-			esac
-		fi
-	fi
-
-	echo "_PARENT_MIRROR_VOLATILE=\"${_PARENT_MIRROR_VOLATILE}\"" >> "${_TMPDIR}/debconf.default"
-	export _PARENT_MIRROR_VOLATILE
 }
 
 Parent_mirror_backports ()
@@ -450,7 +344,7 @@ Parent_mirror_backports ()
 		then
 			case "${_MODE}" in
 				progress)
-					_PARENT_MIRROR_BACKPORTS="http://archive.progress-linux.org/progress/"
+					_PARENT_MIRROR_BACKPORTS="http://backports.debian.org/debian-backports/"
 					;;
 
 				*)
@@ -462,6 +356,96 @@ Parent_mirror_backports ()
 
 	echo "_PARENT_MIRROR_BACKPORTS=\"${_PARENT_MIRROR_BACKPORTS}\"" >> "${_TMPDIR}/debconf.default"
 	export _PARENT_MIRROR_BACKPORTS
+}
+
+Archive_areas ()
+{
+	db_get linux-container/archive-areas
+	_ARCHIVE_AREAS="${RET}"
+
+	if [ -z "${_ARCHIVE_AREAS}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				db_subst linux-container/archive-areas CHOICES "main"
+				;;
+
+			progress)
+				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+				;;
+		esac
+
+		db_settitle linux-container/title
+		db_input high linux-container/archive-areas || true
+		db_go
+
+		db_get linux-container/archive-areas
+		_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_ARCHIVE_AREAS}" ]
+		then
+			case "${_MODE}" in
+				debian)
+					_ARCHIVE_AREAS="main"
+					;;
+
+				progress)
+					_ARCHIVE_AREAS="main, contrib, non-free"
+					;;
+			esac
+		fi
+	fi
+
+	_ARCHIVE_AREAS="$(echo ${_ARCHIVE_AREAS} | sed -e 's| ||g')"
+
+	echo "_ARCHIVE_AREAS=\"${_ARCHIVE_AREAS}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHIVE_AREAS
+}
+
+Parent_archive_areas ()
+{
+	db_get linux-container/parent-archive-areas
+	_PARENT_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+	if [ -z "${_PARENT_ARCHIVE_AREAS}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				db_subst linux-container/parent-archive-areas CHOICES "main, contrib, non-free"
+				db_fset linux-container/parent-archive-areas seen false
+
+				db_settitle linux-container/title
+				db_input high linux-container/parent-archive-areas || true
+				db_go
+				;;
+
+			*)
+				db_subst linux-container/parent-archive-areas CHOICES "${_ARCHIVE_AREAS}"
+				db_fset linux-container/parent-archive-areas seen true
+				;;
+		esac
+
+		db_get linux-container/parent-archive-areas
+		_PARENT_ARCHIVE_AREAS="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_PARENT_ARCHIVE_AREAS}" ]
+		then
+			case "${_MODE}" in
+				progress)
+					_PARENT_ARCHIVE_AREAS="main, contrib, non-free"
+					;;
+
+				*)
+					_PARENT_ARCHIVE_AREAS="${_ARCHIVE_AREAS}"
+					;;
+			esac
+		fi
+	fi
+
+	_PARENT_ARCHIVE_AREAS="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's| ||g')"
+
+	echo "_PARENT_ARCHIVE_AREAS=\"${_PARENT_ARCHIVE_AREAS}\"" >> "${_TMPDIR}/debconf.default"
+	export _PARENT_ARCHIVE_AREAS
 }
 
 Packages ()
@@ -690,6 +674,10 @@ Internal_options ()
 	db_get linux-container/late-command
 	_LATE_COMMAND="${RET}" # string (w/ empty)
 	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
+
+	db_get linux-container/capabilities
+	_CAPABILITIES="${RET}" # string (w/ empty)
+	echo "_CAPABILITIES=\"${_CAPABILITIES}\"" >> "${_TMPDIR}/debconf.default"
 }
 
 Distribution
@@ -703,16 +691,16 @@ esac
 
 Mirror
 Mirror_security
-Mirror_volatile
 Mirror_backports
 
 Parent_mirror
 Parent_mirror_security
-Parent_mirror_volatile
 Parent_mirror_backports
 
-Packages
+Archive_areas
+Parent_archive_areas
 
+Packages
 Local_repositories
 
 Root_password

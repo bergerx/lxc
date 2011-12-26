@@ -139,19 +139,11 @@ Download_system ()
 
 	case "${_MODE}" in
 		debian)
-			case "${_DISTRIBUTION}" in
-				lenny)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,dhcp3-client,netbase,net-tools,iproute,user-setup,openssh-server"
-					;;
-
-				*)
-					_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
-					;;
-			esac
+			_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 
 		progress)
-			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
+			_INCLUDE="apt-utils,ifupdown,locales-all,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup"
 			;;
 	esac
 
@@ -176,7 +168,7 @@ Download_system ()
 		Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "dpkg --purge cdebootstrap-helper-rc.d"
 	elif [ -x "$(which debootstrap 2>/dev/null)" ]
 	then
-		debootstrap --verbose --arch=${_ARCHITECTURE} \
+		debootstrap --verbose --arch=${_ARCHITECTURE} --components=${_PARENT_ARCHIVE_AREAS} \
 			--variant=minbase --include=${_INCLUDE} \
 			${_PARENT_DISTRIBUTION} "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" ${_PARENT_MIRROR}
 	fi
@@ -200,52 +192,21 @@ EOF
 
 	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list"
 
+	_PARENT_AREA="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
-	case "${_PARENT_DIST}" in
-		lenny)
-			_PARENT_VOLATILE_DIST="lenny/volatile"
-			;;
-
-		*)
-			_PARENT_VOLATILE_DIST="${_PARENT_DIST}-updates"
-			;;
-	esac
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR} ${_PARENT_DIST} main
-deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates main
+deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}
+deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates ${_PARENT_AREA}
+deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates ${_PARENT_AREA}
 EOF
 
 	case "${_PARENT_DIST}" in
-		lenny|squeeze)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_VOLATILE} ${_PARENT_VOLATILE_DIST} main
-EOF
-
-			;;
-	esac
-
-	case "${_PARENT_DIST}" in
-		lenny)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
-EOF
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/debian.pref" << EOF
-Package: *
-Pin: release a=lenny-backports
-Pin-Priority: 200
-EOF
-
-			;;
-
 		squeeze)
 
 cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports main
+deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports ${_PARENT_AREA}
 EOF
 
 			;;
@@ -253,13 +214,14 @@ EOF
 
 	case "${_MODE}" in
 		progress)
+			_AREA="$(echo ${_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 			_DIST="$(echo ${_DISTRIBUTION} | sed -e 's|-backports||')"
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
-deb ${_MIRROR} ${_DIST} main
-deb ${_MIRROR_SECURITY} ${_DIST}-security main
-deb ${_MIRROR_VOLATILE} ${_DIST}-updates main
-deb ${_MIRROR_BACKPORTS} ${_DIST}-backports main
+deb ${_MIRROR} ${_DIST} ${_AREA}
+deb ${_MIRROR_SECURITY} ${_DIST}-security ${_AREA}
+deb ${_MIRROR} ${_DIST}-updates ${_AREA}
+deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}
 EOF
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
@@ -447,11 +409,16 @@ lxc.tty                                 = 6
 lxc.pts                                 = 1024
 
 ## Capabilities
-lxc.cap.drop                            = mac_admin
-lxc.cap.drop                            = mac_override
-lxc.cap.drop                            = sys_admin
-lxc.cap.drop                            = sys_module
+EOF
 
+	_CAPABILITIES="${_CAPABILITIES:-mac_admin mac_override sys_admin sys_module}"
+
+	for _CAPABILITY in ${_CAPABILITIES}
+	do
+		echo "lxc.cap.drop                            = ${_CAPABILITY}" >> "${_PATH}/config"
+	done
+
+cat >> "${_PATH}/config" << EOF
 ## Devices
 # Allow all devices
 #lxc.cgroup.devices.allow               = a
@@ -477,19 +444,6 @@ lxc.cgroup.devices.allow                = c 1:8 rwm
 lxc.cgroup.devices.allow                = c 254:0 rwm
 # /dev/tty
 lxc.cgroup.devices.allow                = c 5:0 rwm
-EOF
-
-	if [ "${_MODE}" = "ubuntu" ]
-	then
-
-cat >> "${_PATH}/config" << EOF
-# /dev/tun
-lxc.cgroup.devices.allow                = c 10:200 rwm
-EOF
-
-	fi
-
-cat >> "${_PATH}/config" << EOF
 # /dev/urandom
 lxc.cgroup.devices.allow                = c 1:9 rwm
 # /dev/zero

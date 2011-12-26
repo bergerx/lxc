@@ -3,3 +3,7 @@
 03-lxc-configuration-path.patch
 04-lxc-create.patch
 05-doc-ip-address.patch
+06-bash.patch
+07-lxc-netstat.patch
+08-lxc-debconf.patch
+09-lxc-ls.patch

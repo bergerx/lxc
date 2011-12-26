@@ -20,7 +20,6 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Containers: LXC setup"
 msgstr " Linux Containers: Inställningar för LXC"
 
@@ -33,9 +32,6 @@ msgstr "Ska Linux Containers starta automatiskt vid systemets uppstart?"
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
-#| msgid ""
-#| "Linux Containers can be automatically started during system boot and shut "
-#| "down on reboot or halt."
 msgid ""
 "Linux Containers that have their configuration files copied or symlinked to "
 "the /etc/lxc/auto directory can be automatically started during system boot, "
@@ -54,7 +50,6 @@ msgstr "Om du är osäker välj ja (standard)"
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Stop method"
 msgstr " Linux Container: Metdo för avstängning"
 
