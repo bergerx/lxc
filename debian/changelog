@@ -1,3 +1,33 @@
+lxc (0.7.5-16) unstable; urgency=low
+
+  * Only looking in lxc-debconf for files in /etc/lxc/debconf if the
+    directory exists.
+  * Adding patch to avoid using bash in lxc commands.
+  * Adding patch to lxc-netstat to use -- as seperator, otherwise -n
+    from lxc-netstat collides with netstats -n option (Closes: #641251).
+  * Adding patch for lxc-create to not give vendor specific template
+    advice.
+  * Removing openssh-server from progress default package list in lxc-
+    debconf.
+  * Removing lenny support from lxc-debconf as lenny is going to be
+    unsupported really soon now.
+  * Avoid asking for security mirror and backports mirror for progress
+    and use normal mirror for it in lxc-debconf.
+  * Correcting wrong fallback defaults if user removes suggested value
+    in debconf question when asking parent mirrors in lxc-debconf.
+  * Simplyfing automatic fallback defaults for child security and child
+    backports mirror in lxc-debconf.
+  * Not including tap in lxc-debconf default config.
+  * Adding support for archive area selection in lxc-debconf.
+  * Adding updated Russian debconf templates from Yuri Kozlov
+    <yuray@komyakino.ru> (Closes: #652430).
+  * Adding patch to only list directories in lxc-ls (Closes: #629409).
+  * Regenerating debconf files.
+  * Adding preseed only option for capabilties dropping in lxc config
+    files of lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 26 Dec 2011 12:13:07 +0100
+
 lxc (0.7.5-15) unstable; urgency=low
 
   * Adding updated bash completion for lxc from Gaé Lucas
