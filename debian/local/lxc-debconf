@@ -474,6 +474,24 @@ EOF
 		echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
 
+	# Adding preseeded mount entries
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_MOUNT_NUMBER})
+	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT`"
+		eval _ENTRY="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY`"
+
+		if [ -n "${_COMMENT}" ]
+		then
+			echo "# ${_COMMENT}" >> "${_PATH}/config"
+		fi
+
+		if [ -n "${_ENTRY}" ]
+		then
+			echo "lxc.mount.entry                         = ${_ENTRY}" >> "${_PATH}/config"
+		fi
+	done
+
+	# Adding network configuration
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do
 		eval _COMMENT="$`echo LINUX_CONTAINER_ETH${_NUMBER}_COMMENT`"

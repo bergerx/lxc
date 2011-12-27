@@ -678,6 +678,39 @@ Internal_options ()
 	db_get linux-container/capabilities
 	_CAPABILITIES="${RET}" # string (w/ empty)
 	echo "_CAPABILITIES=\"${_CAPABILITIES}\"" >> "${_TMPDIR}/debconf.default"
+
+	_NUMBER="0"
+
+	while db_get linux-container/mount${_NUMBER}/entry && [ "${RET}" ]
+	do
+		if db_get linux-container/mount${_NUMBER}/comment
+		then
+			eval LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT="\"${RET}\"" # string (w/ empty)
+		fi
+
+		eval LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY="\"${RET}\"" # string (w/o empty)
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+
+	# FIXME: this is ugly
+	if [ "${_NUMBER}" -gt 0 ]
+	then
+		LINUX_CONTAINER_MOUNT_NUMBER="$((${_NUMBER} - 1))"
+	else
+		LINUX_CONTAINER_MOUNT_NUMBER="${_NUMBER}"
+	fi
+
+	echo "LINUX_CONTAINER_MOUNT_NUMBER=\"${LINUX_CONTAINER_MOUNT_NUMBER}\"" >> "${_TMPDIR}/debconf.default"
+
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_MOUNT_NUMBER})
+	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT`"
+		echo "LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT=\"${_COMMENT}\"" >> "${_TMPDIR}/debconf.default"
+
+		eval _ENTRY="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY`"
+		echo "LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY=\"${_ENTRY}\"" >> "${_TMPDIR}/debconf.default"
+	done
 }
 
 Distribution
