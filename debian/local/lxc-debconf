@@ -484,12 +484,13 @@ lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
 EOF
 
-	case "$(dpkg --print-architecture)" in
+	case "${_ARCHITECTURE}" in
 		amd64)
-			if [ "${_ARCHITECTURE}" = "i386" ]
-			then
-				echo "lxc.arch                                = i686" >> "${_PATH}/config"
-			fi
+			echo "lxc.arch                                = x86_64" >> "${_PATH}/config"
+			;;
+
+		i386)
+			echo "lxc.arch                                = x86" >> "${_PATH}/config"
 			;;
 	esac
 
