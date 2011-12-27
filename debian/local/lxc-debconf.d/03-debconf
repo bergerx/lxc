@@ -92,6 +92,88 @@ Architecture ()
 	export _ARCHITECTURE
 }
 
+Archives ()
+{
+	db_get linux-container/archives
+	_ARCHIVES="${RET}" # multiselect
+
+	if [ -z "${_ARCHIVES}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				db_subst linux-container/archives CHOICES "Debian Security, Debian Updates, Debian Backports, Debian Proposed Updates"
+				db_subst linux-container/archives CHOICES_C "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-proposed-updates"
+				;;
+
+			progress)
+				db_subst linux-container/archives CHOICES "Progress (staging), Progress Security, Progress Security (staging), Progress Updates, Progress Updates (staging), Progress Backports, Progress Backports (staging)"
+				db_subst linux-container/archives CHOICES_C "${_DISTRIBUTION}-staging, ${_DISTRIBUTION}-security, ${_DISTRIBUTION}-security-staging, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-updates-staging, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-backports-staging"
+				;;
+		esac
+
+		db_settitle linux-container/title
+		db_input high linux-container/archives || true
+		db_go
+
+		db_get linux-container/archives
+		_ARCHIVES="${RET}" # multiselect
+	fi
+
+	_ARCHIVES="$(echo ${_ARCHIVES} | sed -e 's|, | |g')"
+
+	echo "_ARCHIVES=\"${_ARCHIVES}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHIVES
+}
+
+Parent_archives ()
+{
+	db_get linux-container/parent-archives
+	_PARENT_ARCHIVES="${RET}" # multiselect (w/o empty)
+
+	if [ -z "${_PARENT_ARCHIVES}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				db_subst linux-container/parent-archives CHOICES "Debian Security, Debian Updates , Debian Backports, Debian Proposed Updates"
+				db_subst linux-container/parent-archives CHOICES_C "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-proposed-updates"
+				db_set linux-container/parent-archives "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+				db_fset linux-container/parent-archives seen false
+
+				db_settitle linux-container/title
+				db_input high linux-container/parent-archives || true
+				db_go
+				;;
+
+			*)
+				db_subst linux-container/parent-archives CHOICES_C "${_ARCHIVES}"
+				db_set linux-container/parent-archives "${_ARCHIVES}"
+				db_fset linux-container/parent-archives seen true
+				;;
+		esac
+
+		db_get linux-container/parent-archives
+		_PARENT_ARCHIVES="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_PARENT_ARCHIVES}" ]
+		then
+			case "${_MODE}" in
+				progress)
+					_PARENT_ARCHIVES="${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+					;;
+
+				*)
+					_PARENT_ARCHIVES="${_ARCHIVES}"
+					;;
+			esac
+		fi
+	fi
+
+	_PARENT_ARCHIVES="$(echo ${_PARENT_ARCHIVES} | sed -e 's|, | |g')"
+
+	echo "_PARENT_ARCHIVES=\"${_PARENT_ARCHIVES}\"" >> "${_TMPDIR}/debconf.default"
+	export _PARENT_ARCHIVES
+}
+
 Mirror ()
 {
 	db_get linux-container/mirror
@@ -727,13 +809,38 @@ case "$(dpkg --print-architecture)" in
 		;;
 esac
 
+Archives
+Parent_archives
+
 Mirror
-Mirror_security
-Mirror_backports
+
+for _ARCHIVE in ${_ARCHIVES}
+do
+	case "${_ARCHIVE}" in
+		*-security*)
+			Mirror_security
+			;;
+
+		*-backports*)
+			Mirror_backports
+			;;
+	esac
+done
 
 Parent_mirror
-Parent_mirror_security
-Parent_mirror_backports
+
+for _PARENT_ARCHIVE in ${_PARENT_ARCHIVES}
+do
+	case "${_PARENT_ARCHIVE}" in
+		*-security)
+			Parent_mirror_security
+			;;
+
+		*-backports)
+			Parent_mirror_backports
+			;;
+	esac
+done
 
 Archive_areas
 Parent_archive_areas

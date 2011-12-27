@@ -195,34 +195,67 @@ EOF
 	_PARENT_AREA="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
+	echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}" > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
 
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}
-deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates ${_PARENT_AREA}
-deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates ${_PARENT_AREA}
-EOF
+	for _PARENT_REPO in ${_PARENT_ARCHIVES}
+	do
+		case "${_PARENT_REPO}" in
+			${_PARENT_DIST}-security)
+				echo "deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates ${_PARENT_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
+				;;
 
-	case "${_PARENT_DIST}" in
-		squeeze)
+			${_PARENT_DIST}-updates)
+				echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates ${_PARENT_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
+				;;
 
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports ${_PARENT_AREA}
-EOF
+			${_PARENT_DIST}-backports)
+				echo "deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports ${_PARENT_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
+				;;
 
-			;;
-	esac
+			${_PARENT_DIST}-proposed-updates)
+				echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST}-proposed-updates ${_PARENT_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
+		esac
+	done
 
 	case "${_MODE}" in
 		progress)
 			_AREA="$(echo ${_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 			_DIST="$(echo ${_DISTRIBUTION} | sed -e 's|-backports||')"
 
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
-deb ${_MIRROR} ${_DIST} ${_AREA}
-deb ${_MIRROR_SECURITY} ${_DIST}-security ${_AREA}
-deb ${_MIRROR} ${_DIST}-updates ${_AREA}
-deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}
-EOF
+			echo "deb ${_MIRROR} ${_DIST} ${_AREA}" > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+
+			for _REPO in ${_ARCHIVES}
+			do
+				case "${_REPO}" in
+					${_DIST}-staging)
+						echo "deb ${_MIRROR} ${_DIST}-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-security)
+						echo "deb ${_MIRROR_SECURITY} ${_DIST}-security ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-security-staging)
+						echo "deb ${_MIRROR_SECURITY} ${_DIST}-security-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-updates)
+						echo "deb ${_MIRROR} ${_DIST}-updates ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-updates-staging)
+						echo "deb ${_MIRROR} ${_DIST}-updates-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-backports)
+						echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-backports-staging)
+						echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+				esac
+			done
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
 Acquire::PDiffs "false";
@@ -246,14 +279,6 @@ Package: *
 Pin: release n=${_DIST}-updates
 Pin-Priority: 999
 EOF
-			# Import archive keys
-			for _KEY in 1.0-artax-automatic 1.0-artax-stable
-			do
-				wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-				Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
-				rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-			done
-
 			case "${_DISTRIBUTION}" in
 				*-backports)
 
@@ -265,7 +290,26 @@ Pin-Priority: 999
 EOF
 
 					;;
+
+				*)
+
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
+
+#Package: *
+#Pin: release n=${_DIST}-backports
+#Pin-Priority: 999
+EOF
+
+					;;
 			esac
+
+			# Import archive keys
+			for _KEY in 1.0-artax-automatic 1.0-artax-stable
+			do
+				wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+				Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
+				rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+			done
 			;;
 
 		*)
