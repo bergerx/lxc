@@ -1,5 +1,4 @@
 lxc:
-  * add debconf support for archive areas
   * clear tty and enable them dynamically
   * enable console log by default and rotate them if necessary
   * add debconf multi-select for autostarts in /etc/lxc/auto
@@ -10,9 +9,13 @@ lxc:
   * integrate debian packages that contain /usr/share/lxc/templates/*
   * add debconf question to ask for level of mac conflict check
   * add debconf question to ask for putting linux-container local package in /u/s/l-c/
+  * support 'all' in lxc convenience wrapper
 
 lxc-debconf:
   * allow to have templates (that do not get modified) in /etc/lxc/debconf
+  * create /etc/lxc/{debian,progress} and respect it depending on mode
+  * add a warning when building squeeze but no linux-container in /usr/share/lxc
+  * allow using architecture=auto
   * write preseed file into /etc/lxc/debconf after lxc-debconf is done
   * if invoked as lxc-debconf, ask for mode (debian, progress, ubuntu, etc.)
   * save last used IP, use this +1 as default for next container
