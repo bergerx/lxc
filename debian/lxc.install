@@ -10,6 +10,7 @@ debian/local/lxc		/usr/bin
 debian/local/lxc-backup		/usr/bin
 debian/local/lxc-halt		/usr/bin
 debian/local/lxc-list		/usr/bin
+debian/local/lxc-ls		/usr/bin
 debian/local/lxc-restore	/usr/bin
 debian/local/lxc.sh		/etc/bash_completion.d
 

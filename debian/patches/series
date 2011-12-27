@@ -6,4 +6,3 @@
 06-bash.patch
 07-lxc-netstat.patch
 08-lxc-debconf.patch
-09-lxc-ls.patch
