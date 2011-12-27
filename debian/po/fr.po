@@ -1,5 +1,6 @@
 # French translation of lxc debconf templates.
 # Copyright (C) 2011 Julien Patriarca <patriarcaj@gmail.com>
+# Copyright (C) 2011 Christian Perrier <bubulle@debian.org>
 # This file is distributed under the same license as the lxc package.
 #
 msgid ""
@@ -7,56 +8,51 @@ msgstr ""
 "Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
 "POT-Creation-Date: 2011-11-15 22:07+0100\n"
-"PO-Revision-Date: 2011-10-23 16:54+0100\n"
-"Last-Translator: Julien Patriarca <patriarcaj@gmail.com>\n"
+"PO-Revision-Date: 2011-12-27 08:44+0100\n"
+"Last-Translator: Christian Perrier <bubulle@debian.org>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-#, fuzzy
-#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Containers: LXC setup"
-msgstr "Configuration de Linux Containers (LXC)"
+msgstr "Conteneurs Linux : configuration de LXC"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "Automatically start Linux Containers on boot?"
-msgstr "Faut-il lancer automatiquement Linux Containers à l'amorçage système ?"
+msgstr "Lancer automatiquement les conteneurs Linux à l'amorçage du système ?"
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
-#, fuzzy
-#| msgid ""
-#| "Linux Containers can be automatically started during system boot and shut "
-#| "down on reboot or halt."
 msgid ""
 "Linux Containers that have their configuration files copied or symlinked to "
 "the /etc/lxc/auto directory can be automatically started during system boot, "
 "and shut down on reboot or halt."
 msgstr ""
-"Linux Containers peut être automatiquement démarré durant l'amorçage du "
-"système, et éteint au moment du redémarrage ou de l'arrêt."
+"Les conteneurs Linux (« Linux  Containers ») dont les fichiers de "
+"configuration sont copiés ou liés dans /etc/lxc/auto peuvent être "
+"automatiquement démarrés durant l'amorçage du système et éteints au moment "
+"du redémarrage ou de l'arrêt."
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "If unsure, choose yes (default)."
-msgstr ""
+msgstr "Dans le doute, vous pouvez choisir cette option."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-#, fuzzy
-#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Container: Stop method"
-msgstr "Configuration de Linux Containers (LXC)"
+msgstr "Conteneurs Linux : méthode d'arrêt"
 
 #. Type: select
 #. Description
@@ -67,18 +63,22 @@ msgid ""
 "takes longer and can have problems with containers that don't shutdown "
 "themselfs properly."
 msgstr ""
+"Les conteneurs Linux peuvent être arrêtés de différents manières. La méthode "
+"« stop »  envoie un signal à tous les processus au sein du conteneur. La "
+"méthode « halt » initie une extinction, ce qui prend plus de temps et peut "
+"causer des problèmes si les conteneurs ne s'arrêtent pas correctement."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 msgid "If unsure, choose stop (default)."
-msgstr ""
+msgstr "Dans le doute, la méthode « stop » est recommandée."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "LXC directory:"
-msgstr ""
+msgstr "Répertoire de LXC :"
 
 #. Type: string
 #. Description
@@ -86,9 +86,10 @@ msgstr ""
 msgid ""
 "Please specify the directory that will be used to store the Linux Containers."
 msgstr ""
+"Veuillez indiquer le répertoire à utiliser pour stocker les conteneurs Linux."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
-msgstr ""
+msgstr "Il est recommandé de choisir /var/lib/lxc."
