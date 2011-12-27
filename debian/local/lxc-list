@@ -4,7 +4,7 @@ set -e
 
 if [ ! -x "$(which lxc-info 2>/dev/null)" ]
 then
-	echo "E: lxc-info - no such file"
+	echo "E: lxc-info - no such file" >&2
 	exit 1
 fi
 
