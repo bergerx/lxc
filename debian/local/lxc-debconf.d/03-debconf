@@ -366,12 +366,16 @@ Archive_areas ()
 	if [ -z "${_ARCHIVE_AREAS}" ]
 	then
 		case "${_MODE}" in
-			debian)
-				db_subst linux-container/archive-areas CHOICES "main"
-				;;
-
 			progress)
 				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+				db_set linux-container/archive-areas "main, contrib, non-free"
+				db_fset linux-container/archive-areas seen false
+				;;
+
+			*)
+				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+				db_set linux-container/archive-areas "main"
+				db_fset linux-container/archive-areas seen false
 				;;
 		esac
 
@@ -412,6 +416,7 @@ Parent_archive_areas ()
 		case "${_MODE}" in
 			progress)
 				db_subst linux-container/parent-archive-areas CHOICES "main, contrib, non-free"
+				db_set linux-container/parent-archive-areas "main, contrib, non-free"
 				db_fset linux-container/parent-archive-areas seen false
 
 				db_settitle linux-container/title
