@@ -14,19 +14,19 @@ fi
 
 if [ ! -x "$(which rsync 2>/dev/null)" ]
 then
-	echo "E: rsync - no such file"
+	echo "E: rsync - no such file" >&2
 	exit 1
 fi
 
 if [ ! -x "$(which lxc-info 2>/dev/null)" ]
 then
-	echo "E: lxc-info - no such file"
+	echo "E: lxc-info - no such file" >&2
 	exit 1
 fi
 
 if ! lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "STOPPED"
 then
-	echo "E: ${_CONTAINER} - not stopped"
+	echo "E: ${_CONTAINER} - not stopped" >&2
 	exit 1
 fi
 
@@ -49,6 +49,6 @@ then
 
 	rsync -aPHv --delete --progress /var/lib/lxc/${_CONTAINER}/rootfs.backup${_BACKUP}/ /var/lib/lxc/${_CONTAINER}/rootfs
 else
-	echo "E: /var/lib/lxc/${_CONTAINER}/rootfs.backup* - no such directories"
+	echo "E: /var/lib/lxc/${_CONTAINER}/rootfs.backup* - no such directories" >&2
 	exit 1
 fi
