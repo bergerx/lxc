@@ -167,6 +167,9 @@ EOF
 		cp "${_ROOTFS}/usr/share/base-files/${_FILE}" "${_ROOTFS}/etc"
 	done
 
+	# Removing hostname
+	rm -f "${_ROOTFS}"/etc/hostname
+
 	# Removing openssh-server host keys
 	rm -f "${_ROOTFS}"/etc/ssh/ssh_host_*_key
 	rm -f "${_ROOTFS}"/etc/ssh/ssh_host_*_key.pub
