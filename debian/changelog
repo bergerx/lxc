@@ -1,3 +1,12 @@
+lxc (0.7.5-16~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 28 Dec 2011 08:22:51 +0100
+
 lxc (0.7.5-16) unstable; urgency=low
 
   * Only looking in lxc-debconf for files in /etc/lxc/debconf if the
