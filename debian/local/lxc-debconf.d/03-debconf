@@ -17,11 +17,17 @@ Distribution ()
 			debian)
 				db_subst linux-container/distribution CHOICES "Debian GNU/Linux 6.0 \"squeeze\", Debian GNU/Linux 7.0 \"wheezy\", Debian GNU/Linux unstable/sid"
 				db_subst linux-container/distribution CHOICES_C "squeeze, wheezy, sid"
+
+				db_set linux-container/distribution squeeze
+				db_fset linux-container/distribution seen false
 				;;
 
 			progress)
 				db_subst linux-container/distribution CHOICES "Progress Linux 1.0 (artax), Progress Linux 1.9 (artax-backports), Progress Linux 2.0 (baureo)"
 				db_subst linux-container/distribution CHOICES_C "artax, artax-backports, baureo"
+
+				db_set linux-container/distribution artax
+				db_fset linux-container/distribution seen false
 				;;
 		esac
 
@@ -71,14 +77,18 @@ Architecture ()
 {
 	_CHOICES="${1}"
 	_CHOICES_C="${2}"
+	_DEFAULT="${3}"
 
 	db_get linux-container/architecture
-	_ARCHITECTURE="${RET}" # boolean
+	_ARCHITECTURE="${RET}" # select
 
 	if [ -z "${_ARCHITECTURE}" ]
 	then
 		db_subst linux-container/architecture CHOICES ${_CHOICES}
 		db_subst linux-container/architecture CHOICES_C ${_CHOICES_C}
+
+		db_set linux-container/architecture ${_DEFAULT}
+		db_fset linux-container/distribution seen false
 
 		db_settitle linux-container/title
 		db_input high linux-container/architecture || true
@@ -92,6 +102,97 @@ Architecture ()
 	export _ARCHITECTURE
 }
 
+Archives ()
+{
+	db_get linux-container/archives
+	_ARCHIVES="${RET}" # multiselect
+
+	if [ -z "${_ARCHIVES}" ]
+	then
+		case "${_MODE}" in
+			debian)
+				db_subst linux-container/archives CHOICES "Debian Security, Debian Updates, Debian Backports, Debian Proposed Updates"
+				db_subst linux-container/archives CHOICES_C "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-proposed-updates"
+
+				db_set linux-container/archives "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+				db_fset linux-container/archives seen false
+				;;
+
+			progress)
+				db_subst linux-container/archives CHOICES "Progress (staging), Progress Security, Progress Security (staging), Progress Updates, Progress Updates (staging), Progress Backports, Progress Backports (staging)"
+				db_subst linux-container/archives CHOICES_C "${_DISTRIBUTION}-staging, ${_DISTRIBUTION}-security, ${_DISTRIBUTION}-security-staging, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-updates-staging, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-backports-staging"
+
+				db_set linux-container/archives "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+				db_fset linux-container/archives seen false
+				;;
+		esac
+
+		db_settitle linux-container/title
+		db_input high linux-container/archives || true
+		db_go
+
+		db_get linux-container/archives
+		_ARCHIVES="${RET}" # multiselect
+	fi
+
+	_ARCHIVES="$(echo ${_ARCHIVES} | sed -e 's|, | |g')"
+
+	echo "_ARCHIVES=\"${_ARCHIVES}\"" >> "${_TMPDIR}/debconf.default"
+	export _ARCHIVES
+}
+
+Parent_archives ()
+{
+	db_get linux-container/parent-archives
+	_PARENT_ARCHIVES="${RET}" # multiselect (w/o empty)
+
+	if [ -z "${_PARENT_ARCHIVES}" ]
+	then
+		case "${_MODE}" in
+			progress)
+				db_subst linux-container/parent-archives CHOICES "Debian Security, Debian Updates , Debian Backports, Debian Proposed Updates"
+				db_subst linux-container/parent-archives CHOICES_C "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports, ${_DISTRIBUTION}-proposed-updates"
+
+				db_set linux-container/parent-archives "${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+				db_fset linux-container/parent-archives seen false
+
+				db_settitle linux-container/title
+				db_input high linux-container/parent-archives || true
+				db_go
+				;;
+
+			*)
+				db_subst linux-container/parent-archives CHOICES "Debian Security, Debian Updates , Debian Backports, Debian Proposed Updates"
+				db_subst linux-container/parent-archives CHOICES_C "${_ARCHIVES}"
+
+				db_set linux-container/parent-archives "${_ARCHIVES}"
+				db_fset linux-container/parent-archives seen true
+				;;
+		esac
+
+		db_get linux-container/parent-archives
+		_PARENT_ARCHIVES="${RET}" # multiselect (w/o empty)
+
+		if [ -z "${_PARENT_ARCHIVES}" ]
+		then
+			case "${_MODE}" in
+				progress)
+					_PARENT_ARCHIVES="${_DISTRIBUTION}-security, ${_DISTRIBUTION}-updates, ${_DISTRIBUTION}-backports"
+					;;
+
+				*)
+					_PARENT_ARCHIVES="${_ARCHIVES}"
+					;;
+			esac
+		fi
+	fi
+
+	_PARENT_ARCHIVES="$(echo ${_PARENT_ARCHIVES} | sed -e 's|, | |g')"
+
+	echo "_PARENT_ARCHIVES=\"${_PARENT_ARCHIVES}\"" >> "${_TMPDIR}/debconf.default"
+	export _PARENT_ARCHIVES
+}
+
 Mirror ()
 {
 	db_get linux-container/mirror
@@ -101,13 +202,11 @@ Mirror ()
 	then
 		case "${_MODE}" in
 			debian)
-
 				db_set linux-container/mirror http://ftp.debian.org/debian/
 				db_fset linux-container/mirror seen false
 				;;
 
 			progress)
-
 				db_set linux-container/mirror http://archive.progress-linux.org/progress/
 				db_fset linux-container/mirror seen false
 				;;
@@ -366,12 +465,18 @@ Archive_areas ()
 	if [ -z "${_ARCHIVE_AREAS}" ]
 	then
 		case "${_MODE}" in
-			debian)
-				db_subst linux-container/archive-areas CHOICES "main"
-				;;
-
 			progress)
 				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+
+				db_set linux-container/archive-areas "main, contrib, non-free"
+				db_fset linux-container/archive-areas seen false
+				;;
+
+			*)
+				db_subst linux-container/archive-areas CHOICES "main, contrib, non-free"
+
+				db_set linux-container/archive-areas "main"
+				db_fset linux-container/archive-areas seen false
 				;;
 		esac
 
@@ -412,6 +517,8 @@ Parent_archive_areas ()
 		case "${_MODE}" in
 			progress)
 				db_subst linux-container/parent-archive-areas CHOICES "main, contrib, non-free"
+
+				db_set linux-container/parent-archive-areas "main, contrib, non-free"
 				db_fset linux-container/parent-archive-areas seen false
 
 				db_settitle linux-container/title
@@ -421,6 +528,8 @@ Parent_archive_areas ()
 
 			*)
 				db_subst linux-container/parent-archive-areas CHOICES "${_ARCHIVE_AREAS}"
+
+				db_set linux-container/parent-archives-areas "${_ARCHIVE_AREAS}"
 				db_fset linux-container/parent-archive-areas seen true
 				;;
 		esac
@@ -659,25 +768,75 @@ Auto ()
 
 Internal_options ()
 {
-	db_get linux-container/apt-recommends
-	_APT_RECOMMENDS="${RET}" # boolean (w/ empty)
+	if db_get linux-container/apt-recommends
+	then
+		_APT_RECOMMENDS="${RET}" # boolean (w/ empty)
+	fi
+
 	echo "_APT_RECOMMENDS=\"${_APT_RECOMMENDS}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/debconf-frontend
-	_DEBCONF_FRONTEND="${RET:-Dialog}" # select
+	if db_get linux-container/debconf-frontend
+	then
+		_DEBCONF_FRONTEND="${RET}" # select
+	fi
+
+	_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-Dialog}"
 	echo "_DEBCONF_FRONTEND=\"${_DEBCONF_FRONTEND}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/debconf-priority
-	_DEBCONF_PRIORITY="${RET:-high}" # select
+	if db_get linux-container/debconf-priority
+	then
+		_DEBCONF_PRIORITY="${RET}" # select
+	fi
+
+	_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY:-high}"
 	echo "_DEBCONF_PRIORITY=\"${_DEBCONF_PRIORITY}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/late-command
-	_LATE_COMMAND="${RET}" # string (w/ empty)
+	if db_get linux-container/late-command
+	then
+		_LATE_COMMAND="${RET}" # string (w/ empty)
+	fi
+
 	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/capabilities
-	_CAPABILITIES="${RET}" # string (w/ empty)
+	if db_get linux-container/capabilities
+	then
+		_CAPABILITIES="${RET}" # string (w/ empty)
+	fi
+
 	echo "_CAPABILITIES=\"${_CAPABILITIES}\"" >> "${_TMPDIR}/debconf.default"
+
+	_NUMBER="0"
+
+	while db_get linux-container/mount${_NUMBER}/entry && [ "${RET}" ]
+	do
+		if db_get linux-container/mount${_NUMBER}/comment
+		then
+			eval LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT="\"${RET}\"" # string (w/ empty)
+		fi
+
+		eval LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY="\"${RET}\"" # string (w/o empty)
+
+		_NUMBER="$((${_NUMBER} + 1))"
+	done
+
+	# FIXME: this is ugly
+	if [ "${_NUMBER}" -gt 0 ]
+	then
+		LINUX_CONTAINER_MOUNT_NUMBER="$((${_NUMBER} - 1))"
+	else
+		LINUX_CONTAINER_MOUNT_NUMBER="${_NUMBER}"
+	fi
+
+	echo "LINUX_CONTAINER_MOUNT_NUMBER=\"${LINUX_CONTAINER_MOUNT_NUMBER}\"" >> "${_TMPDIR}/debconf.default"
+
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_MOUNT_NUMBER})
+	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT`"
+		echo "LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT=\"${_COMMENT}\"" >> "${_TMPDIR}/debconf.default"
+
+		eval _ENTRY="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY`"
+		echo "LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY=\"${_ENTRY}\"" >> "${_TMPDIR}/debconf.default"
+	done
 }
 
 Distribution
@@ -685,17 +844,43 @@ Parent_distribution
 
 case "$(dpkg --print-architecture)" in
 	amd64)
-		Architecture "64-bit PC (amd64), 32-bit PC (i386)" "amd64, i386"
+		# Usage: Architecture CHOICES CHOICES_C Default
+		Architecture "32-bit PC (i386), 64-bit PC (amd64)" "i386, amd64" "amd64"
 		;;
 esac
 
+Archives
+Parent_archives
+
 Mirror
-Mirror_security
-Mirror_backports
+
+for _ARCHIVE in ${_ARCHIVES}
+do
+	case "${_ARCHIVE}" in
+		*-security*)
+			Mirror_security
+			;;
+
+		*-backports*)
+			Mirror_backports
+			;;
+	esac
+done
 
 Parent_mirror
-Parent_mirror_security
-Parent_mirror_backports
+
+for _PARENT_ARCHIVE in ${_PARENT_ARCHIVES}
+do
+	case "${_PARENT_ARCHIVE}" in
+		*-security)
+			Parent_mirror_security
+			;;
+
+		*-backports)
+			Parent_mirror_backports
+			;;
+	esac
+done
 
 Archive_areas
 Parent_archive_areas

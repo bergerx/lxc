@@ -64,6 +64,116 @@ Configure_system ()
 {
 	_ROOTFS="${1}"
 
+	# Configure apt
+	rm -f "${_ROOTFS}/etc/apt/sources.list"
+
+	_PARENT_AREA="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's|,| |g')"
+	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
+
+	echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}" > "${_ROOTFS}/etc/apt/sources.list.d/debian.list"
+
+	for _PARENT_REPO in ${_PARENT_ARCHIVES}
+	do
+		case "${_PARENT_REPO}" in
+			${_PARENT_DIST}-security)
+				echo "deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates ${_PARENT_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/debian.list"
+				;;
+
+			${_PARENT_DIST}-updates)
+				echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates ${_PARENT_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/debian.list"
+				;;
+
+			${_PARENT_DIST}-backports)
+				echo "deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports ${_PARENT_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/debian.list"
+				;;
+
+			${_PARENT_DIST}-proposed-updates)
+				echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST}-proposed-updates ${_PARENT_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/debian.list"
+		esac
+	done
+
+	case "${_MODE}" in
+		progress)
+			_AREA="$(echo ${_ARCHIVE_AREAS} | sed -e 's|,| |g')"
+			_DIST="$(echo ${_DISTRIBUTION} | sed -e 's|-backports||')"
+
+			echo "deb ${_MIRROR} ${_DIST} ${_AREA}" > "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+
+			for _REPO in ${_ARCHIVES}
+			do
+				case "${_REPO}" in
+					${_DIST}-staging)
+						echo "deb ${_MIRROR} ${_DIST}-staging ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-security)
+						echo "deb ${_MIRROR_SECURITY} ${_DIST}-security ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-security-staging)
+						echo "deb ${_MIRROR_SECURITY} ${_DIST}-security-staging ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-updates)
+						echo "deb ${_MIRROR} ${_DIST}-updates ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-updates-staging)
+						echo "deb ${_MIRROR} ${_DIST}-updates-staging ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-backports)
+						echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+
+					${_DIST}-backports-staging)
+						echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports-staging ${_AREA}" >> "${_ROOTFS}/etc/apt/sources.list.d/progress.list"
+						;;
+				esac
+			done
+			;;
+
+		*)
+			if [ "${_APT_RECOMMENDS}" = "false" ]
+			then
+
+cat > "${_ROOTFS}/etc/apt/apt.conf.d/recommends.conf" << EOF
+APT::Install-Recommends "false";
+EOF
+
+			fi
+			;;
+	esac
+
+	# Configure fstab
+
+cat > "${_ROOTFS}/etc/fstab" << EOF
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+EOF
+
+	Upgrade_system "${_ROOTFS}"
+
+	# Temporary hack for base-files (FIXME)
+	for _FILE in motd profile
+	do
+		rm -f "${_ROOTFS}/etc/${_FILE}"
+		cp "${_ROOTFS}/usr/share/base-files/${_FILE}" "${_ROOTFS}/etc"
+	done
+
+	# Removing hostname
+	rm -f "${_ROOTFS}"/etc/hostname
+
+	# Removing openssh-server host keys
+	rm -f "${_ROOTFS}"/etc/ssh/ssh_host_*_key
+	rm -f "${_ROOTFS}"/etc/ssh/ssh_host_*_key.pub
+
 	# Preseed system
 	if [ -e "${_PRESEED_FILE}" ]
 	then
@@ -73,8 +183,6 @@ Configure_system ()
 
 		rm -f "${_ROOTFS}/preseed.cfg"
 	fi
-
-	Upgrade_system "${_ROOTFS}"
 
 	# Install additional packages
 	if [ -n "${_PACKAGES}" ]
@@ -139,7 +247,7 @@ Download_system ()
 
 	case "${_MODE}" in
 		debian)
-			_INCLUDE="apt-utils,ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
+			_INCLUDE="ifupdown,locales,libui-dialog-perl,dialog,isc-dhcp-client,netbase,net-tools,iproute,user-setup,openssh-server"
 			;;
 
 		progress)
@@ -179,50 +287,46 @@ Download_system ()
 		return 1
 	fi
 
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/fstab" << EOF
-# /etc/fstab: static file system information.
-#
-# Use 'blkid' to print the universally unique identifier for a
-# device; this may be used with UUID= as a more robust way to name devices
-# that works even if disks are added and removed. See fstab(5).
-#
-# <file system> <mount point>   <type>  <options>       <dump>  <pass>
-
-EOF
-
+	# Configure apt
 	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list"
 
 	_PARENT_AREA="$(echo ${_PARENT_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 	_PARENT_DIST="$(echo ${_PARENT_DISTRIBUTION} | sed -e 's|-backports||')"
 
-
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}
-deb ${_PARENT_MIRROR_SECURITY} ${_PARENT_DIST}/updates ${_PARENT_AREA}
-deb ${_PARENT_MIRROR} ${_PARENT_DIST}-updates ${_PARENT_AREA}
-EOF
-
-	case "${_PARENT_DIST}" in
-		squeeze)
-
-cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list" << EOF
-deb ${_PARENT_MIRROR_BACKPORTS} ${_PARENT_DIST}-backports ${_PARENT_AREA}
-EOF
-
-			;;
-	esac
+	echo "deb ${_PARENT_MIRROR} ${_PARENT_DIST} ${_PARENT_AREA}" > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/debian.list"
 
 	case "${_MODE}" in
 		progress)
 			_AREA="$(echo ${_ARCHIVE_AREAS} | sed -e 's|,| |g')"
 			_DIST="$(echo ${_DISTRIBUTION} | sed -e 's|-backports||')"
 
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list" << EOF
-deb ${_MIRROR} ${_DIST} ${_AREA}
-deb ${_MIRROR_SECURITY} ${_DIST}-security ${_AREA}
-deb ${_MIRROR} ${_DIST}-updates ${_AREA}
-deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}
-EOF
+			echo "deb ${_MIRROR} ${_DIST} ${_AREA}" > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+
+			for _REPO in ${_ARCHIVES}
+			do
+				case "${_REPO}" in
+					${_DIST}-staging)
+						echo "deb ${_MIRROR} ${_DIST}-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+						;;
+				esac
+			done
+
+			case "${_DISTRIBUTION}" in
+				*-backports)
+					for _REPO in ${_ARCHIVES}
+					do
+						case "${_REPO}" in
+							${_DIST}-backports)
+								echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+								;;
+
+							${_DIST}-backports-staging)
+								echo "deb ${_MIRROR_BACKPORTS} ${_DIST}-backports-staging ${_AREA}" >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/sources.list.d/progress.list"
+								;;
+						esac
+					done
+					;;
+			esac
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
 Acquire::PDiffs "false";
@@ -246,14 +350,6 @@ Package: *
 Pin: release n=${_DIST}-updates
 Pin-Priority: 999
 EOF
-			# Import archive keys
-			for _KEY in 1.0-artax-automatic 1.0-artax-stable
-			do
-				wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-				Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
-				rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
-			done
-
 			case "${_DISTRIBUTION}" in
 				*-backports)
 
@@ -265,34 +361,28 @@ Pin-Priority: 999
 EOF
 
 					;;
-			esac
-			;;
 
-		*)
-			if [ "${_APT_RECOMMENDS}" = "false" ]
-			then
+				*)
 
-cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/recommends.conf" << EOF
-APT::Install-Recommends "false";
+cat >> "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/preferences.d/progress.pref" << EOF
+
+#Package: *
+#Pin: release n=${_DIST}-backports
+#Pin-Priority: 999
 EOF
 
-			fi
+					;;
+			esac
+
+			# Import archive keys
+			for _KEY in 1.0-artax-automatic 1.0-artax-stable
+			do
+				wget "${_MIRROR}/project/keys/archive-key-${_KEY}.asc" -O "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+				Chroot "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "apt-key add key.asc"
+				rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/key.asc"
+			done
 			;;
 	esac
-
-	Upgrade_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
-	Cleanup_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"
-
-	# Temporary hack for base-files (FIXME)
-	for _FILE in motd profile
-	do
-		rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/${_FILE}"
-		cp "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/usr/share/base-files/${_FILE}" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc"
-	done
-
-	# Removing openssh-server host keys
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"/etc/ssh/ssh_host_*_key
-	rm -f "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial"/etc/ssh/ssh_host_*_key.pub
 
 	mv "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial" "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
 	echo "Download complete."
@@ -394,12 +484,13 @@ lxc.utsname                             = ${_NAME}
 lxc.rootfs                              = ${_ROOTFS}
 EOF
 
-	case "$(dpkg --print-architecture)" in
+	case "${_ARCHITECTURE}" in
 		amd64)
-			if [ "${_ARCHITECTURE}" = "i386" ]
-			then
-				echo "lxc.arch                                = i686" >> "${_PATH}/config"
-			fi
+			echo "lxc.arch                                = x86_64" >> "${_PATH}/config"
+			;;
+
+		i386)
+			echo "lxc.arch                                = x86" >> "${_PATH}/config"
 			;;
 	esac
 
@@ -474,6 +565,24 @@ EOF
 		echo "#lxc.mount.entry                        = /srv/${_NAME} ${_ROOTFS}/srv/${_NAME} none defaults,bind 0 0" >> "${_PATH}/config"
 	fi
 
+	# Adding preseeded mount entries
+	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_MOUNT_NUMBER})
+	do
+		eval _COMMENT="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT`"
+		eval _ENTRY="$`echo LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY`"
+
+		if [ -n "${_COMMENT}" ]
+		then
+			echo "# ${_COMMENT}" >> "${_PATH}/config"
+		fi
+
+		if [ -n "${_ENTRY}" ]
+		then
+			echo "lxc.mount.entry                         = ${_ENTRY}" >> "${_PATH}/config"
+		fi
+	done
+
+	# Adding network configuration
 	for _NUMBER in $(seq 0 ${LINUX_CONTAINER_ETH_NUMBER})
 	do
 		eval _COMMENT="$`echo LINUX_CONTAINER_ETH${_NUMBER}_COMMENT`"
@@ -649,7 +758,7 @@ fi
 if ! type debootstrap > /dev/null 2>&1 \
 && ! type cdebootstrap > /dev/null 2>&1
 then
-	echo "E: neither debootstrap nor cdebootstrap found."
+	echo "E: neither debootstrap nor cdebootstrap found." >&2
 	exit 1
 fi
 

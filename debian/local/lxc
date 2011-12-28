@@ -14,7 +14,7 @@ fi
 
 if [ ! -x "$(which lxc-${_PROGRAM} 2>/dev/null)" ]
 then
-	echo "E: lxc-${_PROGRAM} - no such program"
+	echo "E: lxc-${_PROGRAM} - no such program" >&2
 	exit 1
 fi
 
@@ -26,7 +26,7 @@ then
 
 	if ! lxc-ls | grep -qs ^${_CONTAINER}$
 	then
-		echo "E: ${_CONTAINER} - no such container"
+		echo "E: ${_CONTAINER} - no such container" >&2
 		exit 1
 	fi
 

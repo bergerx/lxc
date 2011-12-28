@@ -26,6 +26,22 @@ Choices: ${CHOICES}
 Description: Architecture
  Architecture.
 
+Template: linux-container/archives
+Type: multiselect
+Default:
+Choices-C: ${CHOICES_C}
+Choices: ${CHOICES}
+Description: Archives
+ Archives.
+
+Template: linux-container/parent-archives
+Type: multiselect
+Default:
+Choices-C: ${CHOICES_C}
+Choices: ${CHOICES}
+Description: Parent Archives
+ Parent Archives.
+
 Template: linux-container/mirror
 Type: string
 Default:

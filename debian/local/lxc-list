@@ -4,7 +4,7 @@ set -e
 
 if [ ! -x "$(which lxc-info 2>/dev/null)" ]
 then
-	echo "E: lxc-info - no such file"
+	echo "E: lxc-info - no such file" >&2
 	exit 1
 fi
 
@@ -12,7 +12,7 @@ for _STATUS in RUNNING STOPPED
 do
 	echo ${_STATUS}
 
-	for _CONTAINER in $(lxc-ls | sort -u)
+	for _CONTAINER in $(lxc-ls)
 	do
 		if lxc-info -n ${_CONTAINER} 2>&1 | grep -qs "${_STATUS}"
 		then
