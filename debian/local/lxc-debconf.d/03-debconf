@@ -768,24 +768,41 @@ Auto ()
 
 Internal_options ()
 {
-	db_get linux-container/apt-recommends
-	_APT_RECOMMENDS="${RET}" # boolean (w/ empty)
+	if db_get linux-container/apt-recommends
+	then
+		_APT_RECOMMENDS="${RET}" # boolean (w/ empty)
+	fi
+
 	echo "_APT_RECOMMENDS=\"${_APT_RECOMMENDS}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/debconf-frontend
-	_DEBCONF_FRONTEND="${RET:-Dialog}" # select
+	if db_get linux-container/debconf-frontend
+	then
+		_DEBCONF_FRONTEND="${RET}" # select
+	fi
+
+	_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-Dialog}"
 	echo "_DEBCONF_FRONTEND=\"${_DEBCONF_FRONTEND}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/debconf-priority
-	_DEBCONF_PRIORITY="${RET:-high}" # select
+	if db_get linux-container/debconf-priority
+	then
+		_DEBCONF_PRIORITY="${RET}" # select
+	fi
+
+	_DEBCONF_PRIORITY="${_DEBCONF_PRIORITY:-high}"
 	echo "_DEBCONF_PRIORITY=\"${_DEBCONF_PRIORITY}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/late-command
-	_LATE_COMMAND="${RET}" # string (w/ empty)
+	if db_get linux-container/late-command
+	then
+		_LATE_COMMAND="${RET}" # string (w/ empty)
+	fi
+
 	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
 
-	db_get linux-container/capabilities
-	_CAPABILITIES="${RET}" # string (w/ empty)
+	if db_get linux-container/capabilities
+	then
+		_CAPABILITIES="${RET}" # string (w/ empty)
+	fi
+
 	echo "_CAPABILITIES=\"${_CAPABILITIES}\"" >> "${_TMPDIR}/debconf.default"
 
 	_NUMBER="0"
