@@ -1,3 +1,35 @@
+lxc (0.7.5-17) unstable; urgency=low
+
+  * Adding updated French debconf templates from Christian Perrier
+    <bubulle@debian.org> (Closes: #653340).
+  * Replacing incomplete patch for fixing lxc-ls and ship an own and
+    simple lxc-ls instead.
+  * Removing sorting from lxc-list since lxc-ls now already provides
+    output sorted.
+  * Using stderr for error messages in local lxc commands.
+  * Adding support for preseedable mount entries in config for lxc-
+    debconf.
+  * Correcting incorrect defaults choices when asking for archive areas
+    in lxc-debconf.
+  * Adding support for fine graned archive control wrt/ security,
+    volatile, and backports in lxc-debconf.
+  * Shuffling stuff around to keep cache minimal and allow archive
+    selection to be effective for postconfig in lxc-debconf.
+  * Correcting some defaults in lxc-debconf.
+  * Removing /etc/hostname prior postconfig in order to actually set the
+    hostname in postconfig in lxc-debconf.
+  * Also setting architecture in config of lxc-debconf even if container
+    is i386 and host is i386 too, to ensures that i386 containers on
+    i386 hosts can be moved to amd64 without needing to touch the config
+    file.
+  * Creating empty /etc/lxc/debconf directory.
+  * Correcting handling of debconf defaults for internal options in lxc-
+    debconf.
+  * Updating preseed example files.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Wed, 28 Dec 2011 08:10:28 +0100
+
 lxc (0.7.5-16) unstable; urgency=low
 
   * Only looking in lxc-debconf for files in /etc/lxc/debconf if the
