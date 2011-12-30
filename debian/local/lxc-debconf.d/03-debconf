@@ -780,7 +780,7 @@ Internal_options ()
 		_DEBCONF_FRONTEND="${RET}" # select
 	fi
 
-	_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-Dialog}"
+	_DEBCONF_FRONTEND="${_DEBCONF_FRONTEND:-dialog}"
 	echo "_DEBCONF_FRONTEND=\"${_DEBCONF_FRONTEND}\"" >> "${_TMPDIR}/debconf.default"
 
 	if db_get linux-container/debconf-priority
