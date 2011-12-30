@@ -809,12 +809,12 @@ Internal_options ()
 
 	while db_get linux-container/mount${_NUMBER}/entry && [ "${RET}" ]
 	do
+		eval LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY="\"${RET}\"" # string (w/o empty)
+
 		if db_get linux-container/mount${_NUMBER}/comment
 		then
 			eval LINUX_CONTAINER_MOUNT${_NUMBER}_COMMENT="\"${RET}\"" # string (w/ empty)
 		fi
-
-		eval LINUX_CONTAINER_MOUNT${_NUMBER}_ENTRY="\"${RET}\"" # string (w/o empty)
 
 		_NUMBER="$((${_NUMBER} + 1))"
 	done
