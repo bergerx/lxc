@@ -184,6 +184,12 @@ EOF
 		rm -f "${_ROOTFS}/preseed.cfg"
 	fi
 
+	# Reconfigure tzdata
+	if grep -qs tzdata "${_ROOTFS}/preseed.cfg"
+	then
+		Chroot "${_ROOTFS}" "dpkg-reconfigure tzdata"
+	fi
+
 	# Install additional packages
 	if [ -n "${_PACKAGES}" ]
 	then
