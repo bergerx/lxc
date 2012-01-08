@@ -1,3 +1,17 @@
+lxc (0.7.5-18) unstable; urgency=low
+
+  * Updating lxc-debconf example preseed files.
+  * Updating lxc bash completion.
+  * Avoid using debconf frontend names with capital letter in lxc-
+    debconf.
+  * Adding 'automatic' mount entries for shared directories in lxc-
+    debconf only if no manual one has being preseeded.
+  * Correct wrong debconf handling for mount entries in lxc-debconf.
+  * Reconfigure tzdata when using preseeding in lxc-debconf.
+  * Updating year in copyright file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sun, 08 Jan 2012 13:30:37 +0100
+
 lxc (0.7.5-17) unstable; urgency=low
 
   * Adding updated French debconf templates from Christian Perrier
