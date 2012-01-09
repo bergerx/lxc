@@ -41,6 +41,7 @@ EOF
 	Chroot "${_ROOT}" "apt-get update"
 	Chroot "${_ROOT}" "apt-get --yes upgrade"
 	Chroot "${_ROOT}" "apt-get --yes dist-upgrade"
+	Chroot "${_ROOT}" "apt-get clean"
 }
 
 Cleanup_system ()
