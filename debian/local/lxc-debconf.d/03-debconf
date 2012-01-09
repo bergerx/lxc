@@ -529,7 +529,7 @@ Parent_archive_areas ()
 			*)
 				db_subst linux-container/parent-archive-areas CHOICES "${_ARCHIVE_AREAS}"
 
-				db_set linux-container/parent-archives-areas "${_ARCHIVE_AREAS}"
+				db_set linux-container/parent-archive-areas "${_ARCHIVE_AREAS}"
 				db_fset linux-container/parent-archive-areas seen true
 				;;
 		esac
