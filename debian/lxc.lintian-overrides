@@ -1,3 +1,5 @@
 # bugs.debian.org/204975 (debhelper)
 lxc: postinst-has-useless-call-to-ldconfig
 lxc: postrm-has-useless-call-to-ldconfig
+# false-positive for lxc-debconf
+lxc: debconf-is-not-a-registry

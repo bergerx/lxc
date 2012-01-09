@@ -21,6 +21,9 @@ Upgrade_system ()
 	mount -o bind /proc "${_ROOT}/proc"
 	mount -o bind /sys "${_ROOT}/sys"
 
+	# Bind mount systems apt cache
+	mount -o bind /var/cache/apt/archives "${_ROOT}/var/cache/apt/archives"
+
 	# Disable dpkg syncing
 
 cat > "${_ROOT}/etc/dpkg/dpkg.cfg.d/lxc-debconf" << EOF
@@ -41,6 +44,11 @@ EOF
 	Chroot "${_ROOT}" "apt-get update"
 	Chroot "${_ROOT}" "apt-get --yes upgrade"
 	Chroot "${_ROOT}" "apt-get --yes dist-upgrade"
+
+	# Unmount systems apt cache
+	umount "${_ROOT}/var/cache/apt/archives"
+
+	Chroot "${_ROOT}" "apt-get clean"
 }
 
 Cleanup_system ()
