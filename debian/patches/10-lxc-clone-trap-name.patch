@@ -1,0 +1,16 @@
+Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
+Description:
+ Adding patch to correct signal names in lxc-clone trap.
+
+diff -Naurp lxc.orig//src/lxc/lxc-clone.in lxc/src/lxc/lxc-clone.in
+--- lxc.orig//src/lxc/lxc-clone.in	2012-01-09 01:32:47.850745685 +0100
++++ lxc/src/lxc/lxc-clone.in	2012-01-09 16:07:44.703064780 +0100
+@@ -137,7 +137,7 @@ if [ -d "$lxc_path/$lxc_new" ]; then
+     exit 1
+ fi
+ 
+-trap "${bindir}/lxc-destroy -n $lxc_new; echo aborted; exit 1" SIGHUP SIGINT SIGTERM
++trap "${bindir}/lxc-destroy -n $lxc_new; echo aborted; exit 1" HUP INT TERM
+ 
+ mkdir -p $lxc_path/$lxc_new
+ 
