@@ -1,3 +1,12 @@
+lxc (0.7.5-19~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Mon, 09 Jan 2012 16:22:28 +0100
+
 lxc (0.7.5-19) unstable; urgency=low
 
   * Updating lintian overrides.
