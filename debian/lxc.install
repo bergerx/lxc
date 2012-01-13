@@ -1,3 +1,4 @@
+etc
 usr/bin
 usr/lib/lxc/*.so.*
 usr/lib/lxc/lxc-*

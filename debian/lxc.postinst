@@ -56,10 +56,9 @@ EOF
 		mv -f "${_CONFFILE}.tmp" "${_CONFFILE}"
 
 		# Create lxc directory
-		if [ ! -e "${LXC_DIRECTORY}" ]
-		then
-			mkdir -p "${LXC_DIRECTORY}"
-		fi
+		mkdir -p "${LXC_DIRECTORY}"
+		mkdir -p /etc/lxc/auto
+		mkdir -p /etc/lxc/debconf
 
 		if [ "${LXC_DIRECTORY}" != "/var/lib/lxc" ]
 		then
