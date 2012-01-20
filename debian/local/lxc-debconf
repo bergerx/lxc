@@ -410,13 +410,28 @@ Copy_system ()
 	_ARCHITECTURE="${2}"
 	_ROOTFS="${3}"
 
-	# Upgrade cache before copying it
-	Upgrade_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
-	Cleanup_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+	if ls "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}"* > /dev/null 2>&1
+	then
+		for _FORMAT in .tar.lz .tar.xz .tar.lzma .tar.bz2 .tar.gz .tar
+		do
+			if [ -e "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}${_FORMAT}" ]
+			then
+				echo -n "Extracting system cache to ${_ROOTFS}..."
 
-	# make a local copy of the minimal system
-	echo -n "Copying rootfs to ${_ROOTFS}..."
-	cp -a "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
+				mkdir -p "${_ROOTFS}"
+				tar xf "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}${_FORMAT}" -C "${_ROOTFS}" || return 1
+				break
+			fi
+		done
+	else
+		# Upgrade cache before copying it
+		Upgrade_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+		Cleanup_system "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}"
+
+		# make a local copy of the minimal system
+		echo -n "Copying local cache to ${_ROOTFS}..."
+		cp -a "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
+	fi
 
 	# Add local repositories configured from preseed file
 	if ls "${_TMPDIR}/sources.list.d"/*.list > /dev/null 2>&1
@@ -457,9 +472,8 @@ Install_system ()
 
 		_ARCHITECTURE="${_ARCHITECTURE:-$(dpkg --print-architecture)}"
 
-		echo "Checking cache download in ${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}... "
-
-		if [ ! -e "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
+		if ! ls "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}"* > /dev/null 2>&1 && \
+		   [ ! -e "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
 		then
 			Download_system "${_CACHE}" "${_ARCHITECTURE}"
 
