@@ -60,6 +60,9 @@ EOF
 		mkdir -p /etc/lxc/auto
 		mkdir -p /etc/lxc/debconf
 
+		mkdir -p /var/log/lxc
+		chmod 0700 /var/log/lxc
+
 		if [ "${LXC_DIRECTORY}" != "/var/lib/lxc" ]
 		then
 			if [ -h /var/lib/lxc ]
