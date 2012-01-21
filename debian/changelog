@@ -1,3 +1,19 @@
+lxc (0.7.5-20) unstable; urgency=low
+
+  * Correcting and simplyfing creation of lxc directories in /etc.
+  * Enabling console log file in default config of lxc-debconf.
+  * Allowing to use a global cache from /usr/lib/lxc/cache rather than
+    local ones only in /var/lib/cache.
+  * Updating bash.patch to cover lxc-checkconfig more extensively in
+    getting rid of bashisms, thanks to Philipp Matthias Hahn
+    <pmhahn@debian.org> (Closes: #655902).
+  * Allowing system cache to be an unpacked directory too, not just
+    tarballs only.
+  * Updating to debhelper version 9.
+  * Updating todo file.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 21 Jan 2012 17:32:18 +0100
+
 lxc (0.7.5-19) unstable; urgency=low
 
   * Updating lintian overrides.
