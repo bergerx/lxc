@@ -1,3 +1,12 @@
+lxc (0.7.5-20~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Sat, 21 Jan 2012 17:40:40 +0100
+
 lxc (0.7.5-20) unstable; urgency=low
 
   * Correcting and simplyfing creation of lxc directories in /etc.
