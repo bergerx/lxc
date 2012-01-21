@@ -9,11 +9,15 @@ override_dh_auto_configure:
 override_dh_auto_install:
 	dh_auto_install
 
+	# creating lxc directories
+	mkdir -p debian/tmp/etc/lxc/auto
+	mkdir -p debian/tmp/etc/lxc/debconf
+	mkdir -p debian/tmp/var/log/lxc
+
 	# replacing upstreams debian template
 	rm -f debian/tmp/usr/lib/lxc/templates/lxc-debian
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-debian
 	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-debian.d
-	mkdir -p debian/tmp/etc/lxc/debconf
 
 	# adding progress template symlink
 	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
@@ -28,6 +32,11 @@ override_dh_builddeb:
 
 override_dh_compress:
 	dh_compress -X.cfg
+
+override_dh_fixperms:
+	dh_fixperms
+
+	chmod 0700 debian/lxc/var/log/lxc
 
 override_dh_install:
 	dh_install --fail-missing

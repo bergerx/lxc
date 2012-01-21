@@ -1,3 +1,4 @@
+etc
 usr/bin
 usr/lib/lxc/*.so.*
 usr/lib/lxc/lxc-*
@@ -5,6 +6,7 @@ usr/lib/lxc/README
 usr/lib/lxc/templates
 usr/share/doc
 usr/share/man
+var
 
 debian/local/lxc		/usr/bin
 debian/local/lxc-backup		/usr/bin

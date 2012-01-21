@@ -7,7 +7,7 @@ XSBC-Original-Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.n
 XSBC-Original-Uploaders: Jonas Genannt <jonas.genannt@capi2name.de>
 Bugs: mailto:progress-issues@lists.progress-linux.org
 Build-Depends:
- debhelper (>= 8), autotools-dev, docbook-utils, libcap-dev, linux-libc-dev
+ debhelper (>= 9), autotools-dev, docbook-utils, libcap-dev, linux-libc-dev
 Standards-Version: 3.9.2
 Homepage: http://lxc.sourceforge.net/
 Vcs-Browser: http://vcs.progress-linux.org/?p=packages/lxc.git
