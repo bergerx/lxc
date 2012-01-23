@@ -1,3 +1,12 @@
+lxc (0.7.5-21) unstable; urgency=low
+
+  * Disabling console log by default in lxc-debconf again, might confuse
+    users too much.
+  * Automatically creating directories specified in mount entries in
+    lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Mon, 23 Jan 2012 11:19:56 +0100
+
 lxc (0.7.5-20) unstable; urgency=low
 
   * Correcting and simplyfing creation of lxc directories in /etc.
