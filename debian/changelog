@@ -1,3 +1,12 @@
+lxc (0.7.5-21~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Mon, 23 Jan 2012 11:21:55 +0100
+
 lxc (0.7.5-21) unstable; urgency=low
 
   * Disabling console log by default in lxc-debconf again, might confuse
