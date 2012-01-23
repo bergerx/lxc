@@ -531,7 +531,7 @@ EOF
 	esac
 
 cat >> "${_PATH}/config" << EOF
-lxc.console                            = /var/log/lxc/${_NAME}.console
+#lxc.console                            = /var/log/lxc/${_NAME}.console
 lxc.tty                                 = 6
 lxc.pts                                 = 1024
 
