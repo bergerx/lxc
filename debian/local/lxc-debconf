@@ -531,7 +531,7 @@ EOF
 	esac
 
 cat >> "${_PATH}/config" << EOF
-lxc.console                            = /var/log/lxc/${_NAME}.console
+#lxc.console                            = /var/log/lxc/${_NAME}.console
 lxc.tty                                 = 6
 lxc.pts                                 = 1024
 
@@ -601,6 +601,10 @@ EOF
 		if [ -n "${_ENTRY}" ]
 		then
 			echo "lxc.mount.entry                         = ${_ENTRY}" >> "${_PATH}/config"
+
+			# Create directories
+			_DIRECTORIES="$(echo ${_ENTRY} | awk '{ print $1, $2 }')"
+			mkdir -p ${_DIRECTORIES}
 		fi
 	done
 
