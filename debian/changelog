@@ -1,3 +1,12 @@
+lxc (0.7.5-22~artax1) artax; urgency=low
+
+  * Uploading to artax, remaining changes:
+    - Updating maintainer and uploader fields.
+    - Adding vcs fields.
+    - Adding bugs field.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Tue, 24 Jan 2012 12:19:24 +0100
+
 lxc (0.7.5-22) unstable; urgency=low
 
   * Handling dangling symlinks to config files in init script.
