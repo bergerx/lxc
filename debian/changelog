@@ -1,3 +1,13 @@
+lxc (0.7.5-22) unstable; urgency=low
+
+  * Handling dangling symlinks to config files in init script.
+  * Correcting wrong preseed file reference when checking for tzdata in
+    lxc-debconf.
+  * Using noninteractive frontend and critical priority for tzdata
+    reconfiguration in lxc-debconf.
+
+ -- Daniel Baumann <daniel.baumann@progress-linux.org>  Tue, 24 Jan 2012 12:17:31 +0100
+
 lxc (0.7.5-21) unstable; urgency=low
 
   * Disabling console log by default in lxc-debconf again, might confuse
