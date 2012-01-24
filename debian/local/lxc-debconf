@@ -193,7 +193,7 @@ EOF
 	fi
 
 	# Reconfigure tzdata
-	if grep -qs tzdata "${_ROOTFS}/preseed.cfg"
+	if grep -qs tzdata "${_PRESEED_FILE}"
 	then
 		Chroot "${_ROOTFS}" "dpkg-reconfigure tzdata"
 	fi
