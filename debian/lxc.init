@@ -49,6 +49,14 @@ Lxc ()
 	do
 		_CONTAINER="$(basename ${_CONFIG})"
 
+		if [ -L "${_CONFIG}" ] && [ ! -e "${_CONFIG}" ]
+		then
+			# dangling symlink
+			log_progress_msg "${_CONTAINER} (broken)"
+
+			continue
+		fi
+
 		case "${_PROGRAM}" in
 			start)
 				# initscript is disabled

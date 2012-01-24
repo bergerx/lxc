@@ -193,9 +193,9 @@ EOF
 	fi
 
 	# Reconfigure tzdata
-	if grep -qs tzdata "${_ROOTFS}/preseed.cfg"
+	if grep -qs tzdata "${_PRESEED_FILE}"
 	then
-		Chroot "${_ROOTFS}" "dpkg-reconfigure tzdata"
+		Chroot "${_ROOTFS}" "DEBIAN_FRONTEND=noninteractive DEBIAN_PRIORITY=criticial dpkg-reconfigure tzdata"
 	fi
 
 	# Install additional packages
