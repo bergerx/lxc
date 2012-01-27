@@ -344,6 +344,7 @@ Download_system ()
 
 cat > "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}.partial/etc/apt/apt.conf.d/progress.conf" << EOF
 Acquire::PDiffs "false";
+// Acquire::Language "none";
 APT::Clean-Installed "true";
 APT::Get:AutomaticRemove "true";
 APT::Get::HideAutoRemove "false";
