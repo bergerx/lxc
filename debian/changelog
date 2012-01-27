@@ -1,3 +1,13 @@
+lxc (0.7.5-23) unstable; urgency=low
+
+  * Also listing frozen containers in lxc-list.
+  * Adding example entry about translations in apt.conf of progress mode
+    in lxc-debconf.
+  * Not upgrading users /etc/default/lxc file and leave any unused cruft
+    in there to rot (Closes: #657654).
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 27 Jan 2012 21:38:14 +0100
+
 lxc (0.7.5-22) unstable; urgency=low
 
   * Handling dangling symlinks to config files in init script.
