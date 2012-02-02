@@ -207,7 +207,7 @@ Mirror ()
 				;;
 
 			progress)
-				db_set linux-container/mirror http://archive.progress-linux.org/progress/
+				db_set linux-container/mirror http://cdn.archive.progress-linux.org/progress/
 				db_fset linux-container/mirror seen false
 				;;
 		esac
@@ -227,7 +227,7 @@ Mirror ()
 					;;
 
 				progress)
-					_MIRROR="http://archive.progress-linux.org/progress/"
+					_MIRROR="http://cdn.archive.progress-linux.org/progress/"
 					;;
 			esac
 		fi
