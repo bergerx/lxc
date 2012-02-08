@@ -249,6 +249,11 @@ EOF
 		Chroot "${_ROOTFS}" "${_LATE_COMMAND}"
 	fi
 
+	if [ -n "${_LATE_HOST_COMMAND}" ]
+	then
+		${_LATE_HOST_COMMAND}
+	fi
+
 	Cleanup_system "${_ROOTFS}"
 
 	return 0
