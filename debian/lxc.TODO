@@ -9,6 +9,14 @@ lxc:
   * add debconf question to ask for level of mac conflict check
   * add debconf question to ask for putting linux-container local package in /u/s/l-c/
   * support 'all' in lxc convenience wrapper
+  * add a lxc-reboot command
+  * add a timeout to lxc-halt after which the container is forcefully stopped
+  * since the required kernel patches will not make it to wheezy,
+    add a watchdog so that containers are started again after a reboot/halt
+  * add lxc-console script as valid shell so that that unprivleged users can
+    access lxc containers on the host
+  * add lxc 'control' user with sudo magics so that unprivileged users can
+    start/stop/restart/create/destroy their containers
 
 lxc-debconf:
   * if invoked as lxc-debconf, ask for mode (debian, progress, ubuntu, etc.)
