@@ -68,6 +68,7 @@ _lxc-generic()
 }
 complete -F _lxc-generic lxc-stop
 complete -F _lxc-generic lxc-halt
+complete -F _lxc-generic lxc-shutdown
 complete -F _lxc-generic lxc-kill
 complete -F _lxc-generic lxc-monitor
 complete -F _lxc-generic lxc-cgroup
@@ -277,11 +278,11 @@ _lxc-cmd()
 
 	case $prev in
 		lxc)
-			COMPREPLY=( $( compgen -W 'attach cgroup checkconfig checkpoint clone console create destroy execute freeze halt info kill ls monitor netstat ps restart setcap setuid start stop unfreeze unshare version wait' -- "$cur" ) )
+			COMPREPLY=( $( compgen -W 'attach cgroup checkconfig checkpoint clone console create destroy execute freeze halt shutdown info kill ls monitor netstat ps restart setcap setuid start stop unfreeze unshare version wait' -- "$cur" ) )
 			return 0
 			;;
 
-		attach|cgroup|checkconfig|checkpoint|clone|console|create|destroy|execute|freeze|halt|info|kill|monitor|netstat|ps|restart|start|stop|unfreeze|unshare|wait)
+		attach|cgroup|checkconfig|checkpoint|clone|console|create|destroy|execute|freeze|halt|shutdown|info|kill|monitor|netstat|ps|restart|start|stop|unfreeze|unshare|wait)
 			_lxc_names "$cur"
 			return 0
 			;;
