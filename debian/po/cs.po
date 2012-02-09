@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-9\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-15 22:07+0100\n"
+"POT-Creation-Date: 2012-02-09 13:08+0100\n"
 "PO-Revision-Date: 2011-11-17 17:31+0100\n"
 "Last-Translator: Michal Simunek <michal.simunek@gmail.com>\n"
 "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
@@ -35,9 +35,9 @@ msgid ""
 "the /etc/lxc/auto directory can be automatically started during system boot, "
 "and shut down on reboot or halt."
 msgstr ""
-"Linuxové kontejnery, které mají své konfigurační soubory nakopírované, nebo mají "
-"symbolické odkazy na adresář /etc/lxc/auto, lze automaticky spouštět při zavádění "
-"systému a ukončovat při restartu či uspání."
+"Linuxové kontejnery, které mají své konfigurační soubory nakopírované, nebo "
+"mají symbolické odkazy na adresář /etc/lxc/auto, lze automaticky spouštět "
+"při zavádění systému a ukončovat při restartu či uspání."
 
 #. Type: boolean
 #. Description
@@ -48,28 +48,37 @@ msgstr "Nejste-li si jistí, zvolte ano (výchozí)."
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-msgid "Linux Container: Stop method"
+#, fuzzy
+#| msgid "Linux Container: Stop method"
+msgid "Linux Container: Shutdown method"
 msgstr "Linuxový kontejner: Způsob zastavení"
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be stopped in different ways. The stop method kills "
+#| "all processes inside the container. The halt method initiates a shutdown, "
+#| "which takes longer and can have problems with containers that don't "
+#| "shutdown themselfs properly."
 msgid ""
-"Linux Containers can be stopped in different ways. The stop method kills all "
-"processes inside the container. The halt method initiates a shutdown, which "
-"takes longer and can have problems with containers that don't shutdown "
-"themselfs properly."
+"Linux Containers can be shutdown in different ways. The stop method "
+"terminates all processes inside the container. The halt method initiates a "
+"shutdown, which takes longer and can have problems with containers that "
+"don't shutdown themselfs properly."
 msgstr ""
 "Linuxové kontejnery lze zastavit různými způsoby. Způsob stop zabije všechny "
-"procesy uvnitř kontejneru. Způsob halt zinicializuje vypnutí, které trvá delší "
-"dobu a může mít problémy s kontejnery, které se sami správně nevypnou."
-""
+"procesy uvnitř kontejneru. Způsob halt zinicializuje vypnutí, které trvá "
+"delší dobu a může mít problémy s kontejnery, které se sami správně nevypnou."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-msgid "If unsure, choose stop (default)."
-msgstr "Nejste-li si jistí, zvolte stop (výchozí)."
+msgid ""
+"Unless you know that your containers don't shutdown properly, choose halt "
+"(default)."
+msgstr ""
 
 #. Type: string
 #. Description
@@ -83,10 +92,14 @@ msgstr "Adresář pro LXC:"
 msgid ""
 "Please specify the directory that will be used to store the Linux Containers."
 msgstr ""
-"Zadejte prosím adresář, který se bude používat k ukládání Linuxových kontejnerů."
+"Zadejte prosím adresář, který se bude používat k ukládání Linuxových "
+"kontejnerů."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
 msgstr "Nejste-li si jistí, použijte /var/lib/lxc (výchozí)."
+
+#~ msgid "If unsure, choose stop (default)."
+#~ msgstr "Nejste-li si jistí, zvolte stop (výchozí)."

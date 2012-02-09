@@ -30,7 +30,7 @@ then
 fi
 
 LXC_AUTO="${LXC_AUTO:-true}"
-LXC_SHUTDOWN="${LXC_SHUTDOWN:-stop}"
+LXC_SHUTDOWN="${LXC_SHUTDOWN:-halt}"
 
 Lxc ()
 {
