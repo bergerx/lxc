@@ -8,7 +8,8 @@ if [ -n "${_CONTAINER}" ]
 then
 	shift
 else
-	echo "Usage: ${0} CONTAINER [BACKUP_NUMBER]"
+#	echo "Usage: ${0} CONTAINER [BACKUP_NUMBER]"
+	echo "Usage: ${0} CONTAINER"
 	exit 1
 fi
 
@@ -33,17 +34,17 @@ fi
 # FIXME: Assumption of /var/lib/lxc
 if [ -e /var/lib/lxc/${_CONTAINER}/rootfs ]
 then
-	if [ -n "${2}" ]
-	then
-		_BACKUP="${2}"
-	else
-		_BACKUP="1"
-
-		while [ -e "/var/lib/lxc/${_CONTAINER}/rootfs.backup${_BACKUP}" ]
-		do
-			_BACKUP="$((${_BACKUP} + 1))"
-		done
-	fi
+#	if [ -n "${2}" ]
+#	then
+#		_BACKUP="${2}"
+#	else
+#		_BACKUP="1"
+#
+#		while [ -e "/var/lib/lxc/${_CONTAINER}/rootfs.backup${_BACKUP}" ]
+#		do
+#			_BACKUP="$((${_BACKUP} + 1))"
+#		done
+#	fi
 
 	rsync -aPHv --delete --progress /var/lib/lxc/${_CONTAINER}/rootfs/ /var/lib/lxc/${_CONTAINER}/rootfs.backup${_BACKUP}
 else
