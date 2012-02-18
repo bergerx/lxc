@@ -1,0 +1,130 @@
+#!/bin/sh
+
+set -e
+
+if [ "${_EXT_MODE}" != "simple" ]
+then
+	exit
+fi
+
+# This file needs host system to have a bridge with name br1 and it must be
+# masqueraded.
+
+# Use the host system's timezone config, a bit hacky
+CHANGED_DEBCONF_SYSTEMRC=$DEBCONF_SYSTEMRC
+DEBCONF_SYSTEMRC=$ORIG_DEBCONF_SYSTEMRC
+. /usr/share/debconf/confmodule
+db_get tzdata/Areas
+_AREA="${RET}"
+db_get tzdata/Zones/${_AREA}
+_ZONE="${RET}"
+DEBCONF_SYSTEMRC=$CHANGED_DEBCONF_SYSTEMRC
+. /usr/share/debconf/confmodule
+
+# FIXME: Hard coded parameters, these should be in config file
+_NETWORK=192.168.173.0
+_BRIDGE=br1
+# FIXME: Assumption of a C Class IP
+_GATEWAY=$(echo ${_NETWORK} | cut -d. -f1,2,3).1
+_BROADCAST=$(echo ${_NETWORK} | cut -d. -f1,2,3).255
+_NETMASK=255.255.255.0
+_NAMESERVER=$(awk '/nameserver/ {print $2; exit}' /etc/resolv.conf)
+_AREA=Europe
+_ZONE=Istanbul
+_DIST=wheezy
+_ARCH="$(dpkg --print-architecture)"
+_MIRROR="ftp.debian.org"
+
+get_next_ip() {
+	local last_octet=$(echo $1 | cut -d. -f4)
+	local next_free_octet=$(( $last_octet + 1 ))
+	echo "$(echo $1 | cut -d. -f1,2,3).$next_free_octet"
+}
+
+get_next_suitible_ip() {
+	# TODO: assuming a /24 network is used
+	local grep_expr max_ip guessed_ip
+	grep_expr=$(echo $_NETWORK | cut -d. -f1,2,3)
+	max_ip=$(grep "address.*$grep_expr" /var/lib/lxc/*/rootfs/etc/network/interfaces 2>/dev/null | sort -t. -rnk4 | awk '{print $3; exit}')
+	if [ -z "$max_ip" ]
+	then
+		max_ip=$(echo $grep_expr.2)
+	fi
+	guessed_ip=$(get_next_ip $max_ip)
+
+	if [ -x /bin/ping ]
+	then
+		while /bin/ping -c 2 -w 3 "$guessed_ip" >/dev/null 2>/dev/null
+		do
+			guessed_ip=$(get_next_ip $guessed_ip)
+		done
+	fi
+	echo $guessed_ip
+}
+
+_IP=$(get_next_suitible_ip)
+_MAC=$(printf "02:00:%02x:%02x:%02x:%02x" $(echo ${_IP} | tr '.' ' '))
+
+cat >"${_PRESEED_FILE}" <<EOF
+# lxc-debconf
+linux-container linux-container/debconf-frontend select noninteractive
+linux-container linux-container/debconf-priority select critical
+
+linux-container linux-container/distribution string ${_DIST}
+linux-container linux-container/architecture select ${_ARCH}
+linux-container linux-container/packages string 
+
+linux-container linux-container/mirror string http://${_MIRROR}/debian/
+linux-container linux-container/mirror-security string http://${_MIRROR}/debian-security/
+linux-container linux-container/mirror-backports string http://${_MIRROR}/debian-backports/
+
+linux-container linux-container/archives multiselect squeeze-security, squeeze-updates, squeeze-backports
+linux-container linux-container/archive-areas multiselect main, contrib, non-free
+
+linux-container linux-container/auto boolean false
+linux-container linux-container/capabilities string mac_admin mac_override sys_admin sys_module
+linux-container linux-container/late-command string
+
+# linux-container
+linux-container linux-container/enable boolean true
+linux-container linux-container/consoles string 6
+linux-container linux-container/hostname string ${_NAME}
+
+linux-container linux-container/eth0/comment string The primary network interface
+linux-container linux-container/eth0/dhcp boolean false
+linux-container linux-container/eth0/mac string ${_MAC}
+linux-container linux-container/eth0/bridge string ${_BRIDGE}
+linux-container linux-container/eth0/veth string ${_NAME}
+
+linux-container linux-container/eth0/address string ${_IP}
+linux-container linux-container/eth0/broadcast string ${_BROADCAST}
+linux-container linux-container/eth0/gateway string ${_GATEWAY}
+linux-container linux-container/eth0/netmask string ${_NETMASK}
+linux-container linux-container/eth0/network string ${_NETWORK}
+linux-container linux-container/eth0/post-up string
+linux-container linux-container/eth0/mtu string 1500
+linux-container linux-container/nameservers string ${_NAMESERVER}
+
+## System
+
+# tzdata
+tzdata tzdata/Areas select ${_AREA}
+tzdata tzdata/Zones/${_AREA} select ${_ZONE}
+
+# user-setup
+user-setup passwd/make-user boolean true
+user-setup passwd/user-fullname string System Administration
+user-setup passwd/username string sysadmin
+user-setup passwd/user-password password debian
+user-setup passwd/user-password-again password debian
+user-setup passwd/user-uid string 1000
+user-setup passwd/user-default-groups string audio cdrom dip floppy video plugdev netdev powerdev scanner bluetooth
+# squeeze
+#user-setup passwd/user-default-groups string audio cdrom dip floppy video plugdev netdev powerdev scanner bluetooth debian-tor
+user-setup passwd/root-login boolean true
+user-setup passwd/root-password password root
+user-setup passwd/root-password-again password root
+user-setup passwd/shadow boolean true
+EOF
+db_set linux-container/preseed-file "${_PRESEED_FILE}"
+db_fset linux-container/preseed-file seen true

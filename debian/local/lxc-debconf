@@ -774,6 +774,7 @@ do
 
 		-n|--name)
 			_NAME="${2}"
+			export _NAME
 			shift 2
 			;;
 
@@ -819,10 +820,21 @@ then
 fi
 
 _ROOTFS="${_PATH}/rootfs"
+export _ROOTFS
 
 # Get distributor from template filename
-_MODE="$(basename ${0} | sed -e 's|^lxc-||' -e 's|debconf||')"
+_MODE="$(basename ${0} | sed -e 's|^lxc-||' -e 's|debconf||' -e 's|-simple$||')"
 export _MODE
+
+# Decide extended mode using template filename
+_EXT_MODE="normal"
+if [ "$(basename ${0})" == "lxc-debian-simple" ]
+then
+	_EXT_MODE="simple"
+	_PRESEED_FILE=$(mktemp -t $(basename ${0}).XXXXXXXX)
+	export _PRESEED_FILE
+fi
+export _EXT_MODE
 
 # Configure local debconf
 _TMPDIR="$(mktemp -d -t $(basename ${0}).XXXXXXXX)"
@@ -859,6 +871,8 @@ Mode: 644
 Filename: ${_TMPDIR}/debconf/templates.dat
 EOF
 
+ORIG_DEBCONF_SYSTEMRC=$DEBCONF_SYSTEMRC
+export $ORIG_DEBCONF_SYSTEMRC
 DEBCONF_SYSTEMRC="${_TMPDIR}/debconf.systemrc"
 export DEBCONF_SYSTEMRC
 
