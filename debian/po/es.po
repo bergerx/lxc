@@ -1,13 +1,13 @@
-# Spanish translation of lxc debconf templates.
+# lxc po-debconf translation to Spanish
 # Copyright (C) 2011 Camaleón <noelamac@gmail.com>
 # This file is distributed under the same license as the lxc package.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: lxc 0.7.5-3\n"
+"Project-Id-Version: lxc 0.7.5-17\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-15 22:07+0100\n"
-"PO-Revision-Date: 2011-11-04 22:19+0100\n"
+"POT-Creation-Date: 2012-02-09 13:08+0100\n"
+"PO-Revision-Date: 2012-01-16 13:53+0100\n"
 "Last-Translator: Camaleón <noelamac@gmail.com>\n"
 "Language-Team: Debian Spanish <debian-l10n-spanish@lists.debian.org>\n"
 "Language: \n"
@@ -18,10 +18,8 @@ msgstr ""
 #. Type: title
 #. Description
 #: ../lxc.templates:1001
-#, fuzzy
-#| msgid "Linux Containers (LXC) setup"
 msgid "Linux Containers: LXC setup"
-msgstr "Configuración de los Contenedores Linux (LXC)"
+msgstr "Contenedores Linux: Configuración de LXC"
 
 #. Type: boolean
 #. Description
@@ -32,53 +30,64 @@ msgstr "¿Desea iniciar los Contenedores Linux al arrancar?"
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
-#, fuzzy
-#| msgid ""
-#| "Linux Containers can be automatically started during system boot and shut "
-#| "down on reboot or halt."
 msgid ""
 "Linux Containers that have their configuration files copied or symlinked to "
 "the /etc/lxc/auto directory can be automatically started during system boot, "
 "and shut down on reboot or halt."
 msgstr ""
-"Los Contenedores Linux se pueden iniciar automáticamente al arrancar el "
-"sistema y se pueden cerrar al reiniciar o apagar el equipo."
+"Los Contenedores Linux cuyos archivos de configuración han sido copiados o "
+"vinculados mediante un enlace simbólico en el directorio «/etc/lxc/auto» se "
+"pueden iniciar automáticamente al arrancar el sistema y se pueden cerrar al "
+"reiniciar o apagar el equipo."
 
 #. Type: boolean
 #. Description
 #: ../lxc.templates:2001
 msgid "If unsure, choose yes (default)."
-msgstr ""
+msgstr "Si no está seguro, seleccione «sí» (opción predeterminada)."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 #, fuzzy
-#| msgid "Linux Containers (LXC) setup"
-msgid "Linux Container: Stop method"
-msgstr "Configuración de los Contenedores Linux (LXC)"
+#| msgid "Linux Container: Stop method"
+msgid "Linux Container: Shutdown method"
+msgstr "Contenedores Linux: Método de detención"
+
+#. Type: select
+#. Description
+#: ../lxc.templates:3001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be stopped in different ways. The stop method kills "
+#| "all processes inside the container. The halt method initiates a shutdown, "
+#| "which takes longer and can have problems with containers that don't "
+#| "shutdown themselfs properly."
+msgid ""
+"Linux Containers can be shutdown in different ways. The stop method "
+"terminates all processes inside the container. The halt method initiates a "
+"shutdown, which takes longer and can have problems with containers that "
+"don't shutdown themselfs properly."
+msgstr ""
+"Los Contenedores Linux se pueden detener de diferentes formas. El método "
+"«detener» mata todos los procesos dentro del contenedor. El método "
+"«interrupción» inicia una secuencia de cierre que lleva más tiempo y puede "
+"tener problemas con los contenedores que no se cierran correctamente por sí "
+"mismos."
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 msgid ""
-"Linux Containers can be stopped in different ways. The stop method kills all "
-"processes inside the container. The halt method initiates a shutdown, which "
-"takes longer and can have problems with containers that don't shutdown "
-"themselfs properly."
-msgstr ""
-
-#. Type: select
-#. Description
-#: ../lxc.templates:3001
-msgid "If unsure, choose stop (default)."
+"Unless you know that your containers don't shutdown properly, choose halt "
+"(default)."
 msgstr ""
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "LXC directory:"
-msgstr ""
+msgstr "Directorio de LXC:"
 
 #. Type: string
 #. Description
@@ -86,9 +95,14 @@ msgstr ""
 msgid ""
 "Please specify the directory that will be used to store the Linux Containers."
 msgstr ""
+"Por favor, especifique el directorio que se utilizará para almacenar los "
+"Contenedores Linux."
 
 #. Type: string
 #. Description
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
-msgstr ""
+msgstr "Si no está seguro, utilice «/var/lib/lxc» (opción predeterminada)."
+
+#~ msgid "If unsure, choose stop (default)."
+#~ msgstr "Si no está seguro, seleccione «detener» (opción predeterminada)."

@@ -26,7 +26,6 @@ cat > "${_CONFFILE}" << EOF
 # /etc/default/lxc
 
 LXC_AUTO="${LXC_AUTO}"
-LXC_SHUTDOWN="${LXC_SHUTDOWN}"
 LXC_DIRECTORY="${LXC_DIRECTORY}"
 EOF
 		fi
@@ -40,16 +39,11 @@ EOF
 		grep -Eq '^ *LXC_AUTO=' "${_CONFFILE}" || \
 		echo "LXC_AUTO=" >> "${_CONFFILE}"
 
-		test -z "${LXC_SHUTDOWN}" || \
-		grep -Eq '^ *LXC_SHUTDOWN=' "${_CONFFILE}" || \
-		echo "LXC_SHUTDOWN=" >> "${_CONFFILE}"
-
 		test -z "${LXC_DIRECTORY}" || \
 		grep -Eq '^ *LXC_DIRECTORY=' "${_CONFFILE}" || \
 		echo "LXC_DIRECTORY=" >> "${_CONFFILE}"
 
 		sed -e "s|^ *LXC_AUTO=.*|LXC_AUTO=\"${LXC_AUTO}\"|" \
-		    -e "s|^ *LXC_SHUTDOWN=.*|LXC_SHUTDOWN=\"${LXC_SHUTDOWN}\"|" \
 		    -e "s|^ *LXC_DIRECTORY=.*|LXC_DIRECTORY=\"${LXC_DIRECTORY}\"|" \
 		< "${_CONFFILE}" > "${_CONFFILE}.tmp"
 
@@ -77,6 +71,19 @@ EOF
 
 			ln -s "${LXC_DIRECTORY}" /var/lib/lxc
 		fi
+
+		# Handling lxc-shutdown alternative
+		update-alternatives --install \
+			/usr/bin/lxc-shutdown lxc-shutdown /usr/bin/lxc-stop 100 \
+			--slave /usr/share/man/man1/lxc-shutdown.1.gz lxc-shutdown.1.gz \
+				/usr/share/man/man1/lxc-stop.1.gz
+
+		update-alternatives --install \
+			/usr/bin/lxc-shutdown lxc-shutdown /usr/bin/lxc-halt 200 \
+			--slave /usr/share/man/man1/lxc-shutdown.1.gz lxc-shutdown.1.gz \
+				/usr/share/man/man1/lxc-halt.1.gz
+
+		update-alternatives --quiet --set lxc-shutdown ${LXC_SHUTDOWN}
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

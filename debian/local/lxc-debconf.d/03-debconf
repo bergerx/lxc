@@ -798,6 +798,13 @@ Internal_options ()
 
 	echo "_LATE_COMMAND=\"${_LATE_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
 
+	if db_get linux-container/late-host-command
+	then
+		_LATE_HOST_COMMAND="${RET}" # string (w/ empty)
+	fi
+
+	echo "_LATE_HOST_COMMAND=\"${_LATE_HOST_COMMAND}\"" >> "${_TMPDIR}/debconf.default"
+
 	if db_get linux-container/capabilities
 	then
 		_CAPABILITIES="${RET}" # string (w/ empty)

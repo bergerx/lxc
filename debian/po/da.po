@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-15 22:07+0100\n"
+"POT-Creation-Date: 2012-02-09 13:08+0100\n"
 "PO-Revision-Date: 2011-10-23 17:30+01:00\n"
 "Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
 "Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
@@ -55,23 +55,25 @@ msgstr ""
 #: ../lxc.templates:3001
 #, fuzzy
 #| msgid "Linux Containers (LXC) setup"
-msgid "Linux Container: Stop method"
+msgid "Linux Container: Shutdown method"
 msgstr "Opsætning af Linuxcontainere (LXC)"
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
 msgid ""
-"Linux Containers can be stopped in different ways. The stop method kills all "
-"processes inside the container. The halt method initiates a shutdown, which "
-"takes longer and can have problems with containers that don't shutdown "
-"themselfs properly."
+"Linux Containers can be shutdown in different ways. The stop method "
+"terminates all processes inside the container. The halt method initiates a "
+"shutdown, which takes longer and can have problems with containers that "
+"don't shutdown themselfs properly."
 msgstr ""
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-msgid "If unsure, choose stop (default)."
+msgid ""
+"Unless you know that your containers don't shutdown properly, choose halt "
+"(default)."
 msgstr ""
 
 #. Type: string

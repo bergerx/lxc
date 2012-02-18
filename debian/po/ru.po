@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lxc 0.7.5-15\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
-"POT-Creation-Date: 2011-11-15 22:07+0100\n"
+"POT-Creation-Date: 2012-02-09 13:08+0100\n"
 "PO-Revision-Date: 2011-12-17 09:36+0400\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
@@ -51,17 +51,25 @@ msgstr "Если не уверены, ответьте утвердительн�
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-msgid "Linux Container: Stop method"
+#, fuzzy
+#| msgid "Linux Container: Stop method"
+msgid "Linux Container: Shutdown method"
 msgstr "Linux Container: метод остановки"
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
+#, fuzzy
+#| msgid ""
+#| "Linux Containers can be stopped in different ways. The stop method kills "
+#| "all processes inside the container. The halt method initiates a shutdown, "
+#| "which takes longer and can have problems with containers that don't "
+#| "shutdown themselfs properly."
 msgid ""
-"Linux Containers can be stopped in different ways. The stop method kills all "
-"processes inside the container. The halt method initiates a shutdown, which "
-"takes longer and can have problems with containers that don't shutdown "
-"themselfs properly."
+"Linux Containers can be shutdown in different ways. The stop method "
+"terminates all processes inside the container. The halt method initiates a "
+"shutdown, which takes longer and can have problems with containers that "
+"don't shutdown themselfs properly."
 msgstr ""
 "Работу Linux Containers можно останавливать разными способами. Метод stop "
 "«убивает» все процессы внутри контейнера. Метод halt запускает процесс "
@@ -71,8 +79,10 @@ msgstr ""
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-msgid "If unsure, choose stop (default)."
-msgstr "Если не уверены, выберите stop (по умолчанию)."
+msgid ""
+"Unless you know that your containers don't shutdown properly, choose halt "
+"(default)."
+msgstr ""
 
 #. Type: string
 #. Description
@@ -93,3 +103,6 @@ msgstr ""
 #: ../lxc.templates:4001
 msgid "If unsure, use /var/lib/lxc (default)."
 msgstr "Если не уверены, используйте /var/lib/lxc (по умолчанию)."
+
+#~ msgid "If unsure, choose stop (default)."
+#~ msgstr "Если не уверены, выберите stop (по умолчанию)."

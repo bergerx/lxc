@@ -30,7 +30,6 @@ then
 fi
 
 LXC_AUTO="${LXC_AUTO:-true}"
-LXC_SHUTDOWN="${LXC_SHUTDOWN:-stop}"
 
 Lxc ()
 {
@@ -100,13 +99,13 @@ case "${1}" in
 	stop)
 		log_daemon_msg "Stopping Linux Containers"
 
-		Lxc ${LXC_SHUTDOWN}
+		Lxc shutdown
 		;;
 
 	restart|force-reload)
 		log_daemon_msg "Restarting Linux Containers"
 
-		Lxc ${LXC_SHUTDOWN}
+		Lxc shutdown
 		Lxc start
 		;;
 
