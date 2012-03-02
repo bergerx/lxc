@@ -21,7 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "../config.h"
+#include "config.h"
+
 #include <stdio.h>
 #undef _GNU_SOURCE
 #include <string.h>
@@ -32,7 +33,6 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <termios.h>
-#include <namespace.h>
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/mount.h>
@@ -125,24 +125,22 @@ int signalfd(int fd, const sigset_t *mask, int flags)
 #include "commands.h"
 #include "console.h"
 #include "sync.h"
+#include "namespace.h"
 
 lxc_log_define(lxc_start, lxc);
-
-LXC_TTY_HANDLER(SIGINT);
-LXC_TTY_HANDLER(SIGQUIT);
 
 static int match_fd(int fd)
 {
 	return (fd == 0 || fd == 1 || fd == 2);
 }
 
-int lxc_check_inherited(int fd_to_ignore)
+int lxc_check_inherited(struct lxc_conf *conf, int fd_to_ignore)
 {
 	struct dirent dirent, *direntp;
 	int fd, fddir;
 	DIR *dir;
-	int ret = 0;
 
+restart:
 	dir = opendir("/proc/self/fd");
 	if (!dir) {
 		WARN("failed to open directory: %m");
@@ -152,9 +150,6 @@ int lxc_check_inherited(int fd_to_ignore)
 	fddir = dirfd(dir);
 
 	while (!readdir_r(dir, &dirent, &direntp)) {
-		char procpath[64];
-		char path[PATH_MAX];
-
 		if (!direntp)
 			break;
 
@@ -171,22 +166,18 @@ int lxc_check_inherited(int fd_to_ignore)
 
 		if (match_fd(fd))
 			continue;
-		/*
-		 * found inherited fd
-		 */
-		ret = -1;
 
-		snprintf(procpath, sizeof(procpath), "/proc/self/fd/%d", fd);
-
-		if (readlink(procpath, path, sizeof(path)) == -1)
-			ERROR("readlink(%s) failed : %m", procpath);
-		else
-			ERROR("inherited fd %d on %s", fd, path);
+		if (conf->close_all_fds) {
+			close(fd);
+			closedir(dir);
+			INFO("closed inherited fd %d", fd);
+			goto restart;
+		}
+		WARN("inherited fd %d", fd);
 	}
 
-	if (closedir(dir))
-		ERROR("failed to close directory");
-	return ret;
+	closedir(dir); /* cannot fail */
+	return 0;
 }
 
 static int setup_signal_fd(sigset_t *oldmask)
@@ -319,9 +310,11 @@ int lxc_poll(const char *name, struct lxc_handler *handler)
 		goto out_mainloop_open;
 	}
 
-	if (lxc_utmp_mainloop_add(&descr, handler)) {
-		ERROR("failed to add utmp handler to mainloop");
-		goto out_mainloop_open;
+	if (handler->conf->need_utmp_watch) {
+		if (lxc_utmp_mainloop_add(&descr, handler)) {
+			ERROR("failed to add utmp handler to mainloop");
+			goto out_mainloop_open;
+		}
 	}
 
 	return lxc_mainloop(&descr);
@@ -333,9 +326,16 @@ out_sigfd:
 	return -1;
 }
 
+extern int lxc_caps_check(void);
+
 struct lxc_handler *lxc_init(const char *name, struct lxc_conf *conf)
 {
 	struct lxc_handler *handler;
+
+	if (!lxc_caps_check()) {
+		ERROR("Not running with sufficient privilege");
+		return NULL;
+	}
 
 	handler = malloc(sizeof(*handler));
 	if (!handler)
@@ -418,6 +418,63 @@ void lxc_abort(const char *name, struct lxc_handler *handler)
 		kill(handler->pid, SIGKILL);
 }
 
+#include <sys/reboot.h>
+#include <linux/reboot.h>
+
+/*
+ * reboot(LINUX_REBOOT_CMD_CAD_ON) will return -EINVAL
+ * in a child pid namespace if container reboot support exists.
+ * Otherwise, it will either succeed or return -EPERM.
+ */
+static int container_reboot_supported(void *arg)
+{
+        int *cmd = arg;
+	int ret;
+
+        ret = reboot(*cmd);
+	if (ret == -1 && errno == EINVAL)
+		return 1;
+	return 0;
+}
+
+static int must_drop_cap_sys_boot(void)
+{
+	FILE *f = fopen("/proc/sys/kernel/ctrl-alt-del", "r");
+	int ret, cmd, v;
+        long stack_size = 4096;
+        void *stack = alloca(stack_size) + stack_size;
+        int status;
+        pid_t pid;
+
+	if (!f) {
+		DEBUG("failed to open /proc/sys/kernel/ctrl-alt-del");
+		return 1;
+	}
+
+	ret = fscanf(f, "%d", &v);
+	fclose(f);
+	if (ret != 1) {
+		DEBUG("Failed to read /proc/sys/kernel/ctrl-alt-del");
+		return 1;
+	}
+	cmd = v ? LINUX_REBOOT_CMD_CAD_ON : LINUX_REBOOT_CMD_CAD_OFF;
+
+        pid = clone(container_reboot_supported, stack, CLONE_NEWPID | SIGCHLD, &cmd);
+        if (pid < 0) {
+                SYSERROR("failed to clone\n");
+                return -1;
+        }
+        if (wait(&status) < 0) {
+                SYSERROR("unexpected wait error: %m\n");
+                return -1;
+        }
+
+	if (WEXITSTATUS(status) != 1)
+		return 1;
+
+	return 0;
+}
+
 static int do_start(void *data)
 {
 	struct lxc_handler *handler = data;
@@ -446,15 +503,22 @@ static int do_start(void *data)
 	if (lxc_sync_barrier_parent(handler, LXC_SYNC_CONFIGURE))
 		return -1;
 
+	if (must_drop_cap_sys_boot()) {
+		if (prctl(PR_CAPBSET_DROP, CAP_SYS_BOOT, 0, 0, 0)) {
+			SYSERROR("failed to remove CAP_SYS_BOOT capability");
+			return -1;
+		}
+		handler->conf->need_utmp_watch = 1;
+		DEBUG("Dropped cap_sys_boot\n");
+	} else {
+		DEBUG("Not dropping cap_sys_boot or watching utmp\n");
+		handler->conf->need_utmp_watch = 0;
+	}
+
 	/* Setup the container, ip, names, utsname, ... */
 	if (lxc_setup(handler->name, handler->conf)) {
 		ERROR("failed to setup the container");
 		goto out_warn_father;
-	}
-
-	if (prctl(PR_CAPBSET_DROP, CAP_SYS_BOOT, 0, 0, 0)) {
-		SYSERROR("failed to remove CAP_SYS_BOOT capability");
-		return -1;
 	}
 
 	close(handler->sigfd);
@@ -483,6 +547,16 @@ int lxc_spawn(struct lxc_handler *handler)
 
 		clone_flags |= CLONE_NEWNET;
 
+		/* Find gateway addresses from the link device, which is
+		 * no longer accessible inside the container. Do this
+		 * before creating network interfaces, since goto
+		 * out_delete_net does not work before lxc_clone. */
+		if (lxc_find_gateway_addresses(handler)) {
+			ERROR("failed to find gateway addresses");
+			lxc_sync_fini(handler);
+			return -1;
+		}
+
 		/* that should be done before the clone because we will
 		 * fill the netdev index and use them in the child
 		 */
@@ -492,7 +566,6 @@ int lxc_spawn(struct lxc_handler *handler)
 			return -1;
 		}
 	}
-
 
 	/* Create a process in a new set of namespaces */
 	handler->pid = lxc_clone(do_start, handler, clone_flags);
@@ -568,10 +641,6 @@ int __lxc_start(const char *name, struct lxc_conf *conf,
 		goto out_fini;
 	}
 
-	/* Avoid signals from terminal */
-	LXC_TTY_ADD_HANDLER(SIGINT);
-	LXC_TTY_ADD_HANDLER(SIGQUIT);
-
 	err = lxc_poll(name, handler);
 	if (err) {
 		ERROR("mainloop exited with an error");
@@ -581,10 +650,29 @@ int __lxc_start(const char *name, struct lxc_conf *conf,
 	while (waitpid(handler->pid, &status, 0) < 0 && errno == EINTR)
 		continue;
 
+	/*
+	 * If the child process exited but was not signaled,
+	 * it didn't call reboot.  This should mean it was an
+	 * lxc-execute which simply exited.  In any case, treat
+	 * it as a 'halt'
+	 */
+        if (WIFSIGNALED(status)) {
+		switch(WTERMSIG(status)) {
+		case SIGINT: /* halt */
+			DEBUG("Container halting");
+			break;
+		case SIGHUP: /* reboot */
+			DEBUG("Container rebooting");
+			handler->conf->reboot = 1;
+			break;
+		default:
+			DEBUG("unknown exit status for init: %d\n", WTERMSIG(status));
+			break;
+		}
+        }
+
 	err =  lxc_error_set_and_log(handler->pid, status);
 out_fini:
-	LXC_TTY_DEL_HANDLER(SIGQUIT);
-	LXC_TTY_DEL_HANDLER(SIGINT);
 	lxc_cgroup_destroy(name);
 	lxc_fini(name, handler);
 	return err;
@@ -628,8 +716,9 @@ int lxc_start(const char *name, char *const argv[], struct lxc_conf *conf)
 		.argv = argv,
 	};
 
-	if (lxc_check_inherited(-1))
+	if (lxc_check_inherited(conf, -1))
 		return -1;
 
+	conf->need_utmp_watch = 1;
 	return __lxc_start(name, conf, &start_ops, &start_arg);
 }

@@ -131,10 +131,8 @@ pid_t get_init_pid(const char *name)
 	int ret, stopped = 0;
 
 	ret = lxc_command(name, &command, &stopped);
-	if (ret < 0 && stopped) {
-		ERROR("'%s' is not running", name);
+	if (ret < 0 && stopped)
 		return -1;
-	}
 
 	if (ret < 0) {
 		ERROR("failed to send command");
@@ -273,7 +271,12 @@ extern int lxc_command_mainloop_add(const char *name,
 
 	fd = lxc_af_unix_open(path, SOCK_STREAM, 0);
 	if (fd < 0) {
-		ERROR("failed to create the command service point");
+		ERROR("failed (%d) to create the command service point %s", errno, offset);
+		if (errno == EADDRINUSE) {
+			ERROR("##");
+			ERROR("# The container appears to be already running!");
+			ERROR("##");
+		}
 		return -1;
 	}
 

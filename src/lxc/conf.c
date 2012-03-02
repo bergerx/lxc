@@ -60,6 +60,7 @@
 #include "conf.h"
 #include "log.h"
 #include "lxc.h"	/* for lxc_cgroup_set() */
+#include "caps.h"       /* for lxc_caps_last_cap() */
 
 lxc_log_define(lxc_conf, lxc);
 
@@ -201,6 +202,12 @@ static struct caps_opt caps_opt[] = {
 	{ "setfcap",           CAP_SETFCAP           },
 	{ "mac_override",      CAP_MAC_OVERRIDE      },
 	{ "mac_admin",         CAP_MAC_ADMIN         },
+#ifdef CAP_SYSLOG
+	{ "syslog",            CAP_SYSLOG            },
+#endif
+#ifdef CAP_WAKE_ALARM
+	{ "wake_alarm",        CAP_WAKE_ALARM        },
+#endif
 };
 
 static int run_script(const char *name, const char *section,
@@ -505,10 +512,10 @@ static int setup_utsname(struct utsname *utsname)
 }
 
 static int setup_tty(const struct lxc_rootfs *rootfs,
-		     const struct lxc_tty_info *tty_info)
+		     const struct lxc_tty_info *tty_info, char *ttydir)
 {
-	char path[MAXPATHLEN];
-	int i;
+	char path[MAXPATHLEN], lxcpath[MAXPATHLEN];
+	int i, ret;
 
 	if (!rootfs->path)
 		return 0;
@@ -517,17 +524,50 @@ static int setup_tty(const struct lxc_rootfs *rootfs,
 
 		struct lxc_pty_info *pty_info = &tty_info->pty_info[i];
 
-		snprintf(path, sizeof(path), "%s/dev/tty%d",
+		ret = snprintf(path, sizeof(path), "%s/dev/tty%d",
 			 rootfs->mount, i + 1);
+		if (ret >= sizeof(path)) {
+			ERROR("pathname too long for ttys");
+			return -1;
+		}
+		if (ttydir) {
+			/* create dev/lxc/tty%d" */
+			snprintf(lxcpath, sizeof(lxcpath), "%s/dev/%s/tty%d",
+				 rootfs->mount, ttydir, i + 1);
+			if (ret >= sizeof(lxcpath)) {
+				ERROR("pathname too long for ttys");
+				return -1;
+			}
+			ret = creat(lxcpath, 0660);
+			if (ret==-1 && errno != EEXIST) {
+				SYSERROR("error creating %s\n", lxcpath);
+				return -1;
+			}
+			close(ret);
+			ret = unlink(path);
+			if (ret && errno != ENOENT) {
+				SYSERROR("error unlinking %s\n", path);
+				return -1;
+			}
 
-		/* At this point I can not use the "access" function
-		 * to check the file is present or not because it fails
-		 * with EACCES errno and I don't know why :( */
+			if (mount(pty_info->name, lxcpath, "none", MS_BIND, 0)) {
+				WARN("failed to mount '%s'->'%s'",
+				     pty_info->name, path);
+				continue;
+			}
 
-		if (mount(pty_info->name, path, "none", MS_BIND, 0)) {
-			WARN("failed to mount '%s'->'%s'",
-			     pty_info->name, path);
-			continue;
+			snprintf(lxcpath, sizeof(lxcpath), "%s/tty%d", ttydir, i+1);
+			ret = symlink(lxcpath, path);
+			if (ret) {
+				SYSERROR("failed to create symlink for tty %d\n", i+1);
+				return -1;
+			}
+		} else {
+			if (mount(pty_info->name, path, "none", MS_BIND, 0)) {
+				WARN("failed to mount '%s'->'%s'",
+						pty_info->name, path);
+				continue;
+			}
 		}
 	}
 
@@ -805,17 +845,18 @@ static int setup_personality(int persona)
 	return 0;
 }
 
-static int setup_console(const struct lxc_rootfs *rootfs,
+static int setup_dev_console(const struct lxc_rootfs *rootfs,
 			 const struct lxc_console *console)
 {
 	char path[MAXPATHLEN];
 	struct stat s;
+	int ret;
 
-	/* We don't have a rootfs, /dev/console will be shared */
-	if (!rootfs->path)
-		return 0;
-
-	snprintf(path, sizeof(path), "%s/dev/console", rootfs->mount);
+	ret = snprintf(path, sizeof(path), "%s/dev/console", rootfs->mount);
+	if (ret >= sizeof(path)) {
+		ERROR("console path too long\n");
+		return -1;
+	}
 
 	if (access(path, F_OK)) {
 		WARN("rootfs specified but no console found at '%s'", path);
@@ -844,8 +885,83 @@ static int setup_console(const struct lxc_rootfs *rootfs,
 	}
 
 	INFO("console has been setup");
+	return 0;
+}
+
+static int setup_ttydir_console(const struct lxc_rootfs *rootfs,
+			 const struct lxc_console *console,
+			 char *ttydir)
+{
+	char path[MAXPATHLEN], lxcpath[MAXPATHLEN];
+	int ret;
+
+	/* create rootfs/dev/<ttydir> directory */
+	ret = snprintf(path, sizeof(path), "%s/dev/%s", rootfs->mount,
+		       ttydir);
+	if (ret >= sizeof(path))
+		return -1;
+	ret = mkdir(path, 0755);
+	if (ret && errno != EEXIST) {
+		SYSERROR("failed with errno %d to create %s\n", errno, path);
+		return -1;
+	}
+	INFO("created %s\n", path);
+
+	ret = snprintf(lxcpath, sizeof(lxcpath), "%s/dev/%s/console",
+		       rootfs->mount, ttydir);
+	if (ret >= sizeof(lxcpath)) {
+		ERROR("console path too long\n");
+		return -1;
+	}
+
+	snprintf(path, sizeof(path), "%s/dev/console", rootfs->mount);
+	ret = unlink(path);
+	if (ret && errno != ENOENT) {
+		SYSERROR("error unlinking %s\n", path);
+		return -1;
+	}
+
+	ret = creat(lxcpath, 0660);
+	if (ret==-1 && errno != EEXIST) {
+		SYSERROR("error %d creating %s\n", errno, lxcpath);
+		return -1;
+	}
+	close(ret);
+
+	if (console->peer == -1) {
+		INFO("no console output required");
+		return 0;
+	}
+
+	if (mount(console->name, lxcpath, "none", MS_BIND, 0)) {
+		ERROR("failed to mount '%s' on '%s'", console->name, lxcpath);
+		return -1;
+	}
+
+	/* create symlink from rootfs/dev/console to 'lxc/console' */
+	snprintf(lxcpath, sizeof(lxcpath), "%s/console", ttydir);
+	ret = symlink(lxcpath, path);
+	if (ret) {
+		SYSERROR("failed to create symlink for console");
+		return -1;
+	}
+
+	INFO("console has been setup on %s", lxcpath);
 
 	return 0;
+}
+
+static int setup_console(const struct lxc_rootfs *rootfs,
+			 const struct lxc_console *console,
+			 char *ttydir)
+{
+	/* We don't have a rootfs, /dev/console will be shared */
+	if (!rootfs->path)
+		return 0;
+	if (!ttydir)
+		return setup_dev_console(rootfs, console);
+
+	return setup_ttydir_console(rootfs, console, ttydir);
 }
 
 static int setup_cgroup(const char *name, struct lxc_list *cgroups)
@@ -1117,6 +1233,7 @@ static int setup_caps(struct lxc_list *caps)
 {
 	struct lxc_list *iterator;
 	char *drop_entry;
+	char *ptr;
 	int i, capid;
 
 	lxc_list_for_each(iterator, caps) {
@@ -1132,6 +1249,21 @@ static int setup_caps(struct lxc_list *caps)
 
 			capid = caps_opt[i].value;
 			break;
+		}
+
+		if (capid < 0) {
+			/* try to see if it's numeric, so the user may specify
+			* capabilities  that the running kernel knows about but
+			* we don't */
+			capid = strtol(drop_entry, &ptr, 10);
+			if (!ptr || *ptr != '\0' ||
+			capid == LONG_MIN || capid == LONG_MAX)
+				/* not a valid number */
+				capid = -1;
+			else if (capid > lxc_caps_last_cap())
+				/* we have a number but it's not a valid
+				* capability */
+				capid = -1;
 		}
 
 	        if (capid < 0) {
@@ -1321,6 +1453,61 @@ static int setup_netdev(struct lxc_netdev *netdev)
 		}
 	}
 
+	/* We can only set up the default routes after bringing
+	 * up the interface, sine bringing up the interface adds
+	 * the link-local routes and we can't add a default
+	 * route if the gateway is not reachable. */
+
+	/* setup ipv4 gateway on the interface */
+	if (netdev->ipv4_gateway) {
+		if (!(netdev->flags & IFF_UP)) {
+			ERROR("Cannot add ipv4 gateway for %s when not bringing up the interface", ifname);
+			return -1;
+		}
+
+		if (lxc_list_empty(&netdev->ipv4)) {
+			ERROR("Cannot add ipv4 gateway for %s when not assigning an address", ifname);
+			return -1;
+		}
+
+		err = lxc_ipv4_gateway_add(netdev->ifindex, netdev->ipv4_gateway);
+		if (err) {
+			ERROR("failed to setup ipv4 gateway for '%s': %s",
+				      ifname, strerror(-err));
+			if (netdev->ipv4_gateway_auto) {
+				char buf[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, netdev->ipv4_gateway, buf, sizeof(buf));
+				ERROR("tried to set autodetected ipv4 gateway '%s'", buf);
+			}
+			return -1;
+		}
+	}
+
+	/* setup ipv6 gateway on the interface */
+	if (netdev->ipv6_gateway) {
+		if (!(netdev->flags & IFF_UP)) {
+			ERROR("Cannot add ipv6 gateway for %s when not bringing up the interface", ifname);
+			return -1;
+		}
+
+		if (lxc_list_empty(&netdev->ipv6) && !IN6_IS_ADDR_LINKLOCAL(netdev->ipv6_gateway)) {
+			ERROR("Cannot add ipv6 gateway for %s when not assigning an address", ifname);
+			return -1;
+		}
+
+		err = lxc_ipv6_gateway_add(netdev->ifindex, netdev->ipv6_gateway);
+		if (err) {
+			ERROR("failed to setup ipv6 gateway for '%s': %s",
+				      ifname, strerror(-err));
+			if (netdev->ipv6_gateway_auto) {
+				char buf[INET6_ADDRSTRLEN];
+				inet_ntop(AF_INET, netdev->ipv6_gateway, buf, sizeof(buf));
+				ERROR("tried to set autodetected ipv6 gateway '%s'", buf);
+			}
+			return -1;
+		}
+	}
+
 	DEBUG("'%s' has been setup", current_ifname);
 
 	return 0;
@@ -1343,6 +1530,41 @@ static int setup_network(struct lxc_list *network)
 
 	if (!lxc_list_empty(network))
 		INFO("network has been setup");
+
+	return 0;
+}
+
+static int setup_private_host_hw_addr(char *veth1)
+{
+	struct ifreq ifr;
+	int err;
+	int sockfd;
+
+	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sockfd < 0)
+		return -errno;
+
+	snprintf((char *)ifr.ifr_name, IFNAMSIZ, "%s", veth1);
+	err = ioctl(sockfd, SIOCGIFHWADDR, &ifr);
+	if (err < 0) {
+		close(sockfd);
+		return -errno;
+	}
+
+	ifr.ifr_hwaddr.sa_data[0] = 0xfe;
+	err = ioctl(sockfd, SIOCSIFHWADDR, &ifr);
+	close(sockfd);
+	if (err < 0)
+		return -errno;
+
+	DEBUG("mac address of host interface '%s' changed to private "
+	      "%02x:%02x:%02x:%02x:%02x:%02x", veth1,
+	      ifr.ifr_hwaddr.sa_data[0] & 0xff,
+	      ifr.ifr_hwaddr.sa_data[1] & 0xff,
+	      ifr.ifr_hwaddr.sa_data[2] & 0xff,
+	      ifr.ifr_hwaddr.sa_data[3] & 0xff,
+	      ifr.ifr_hwaddr.sa_data[4] & 0xff,
+	      ifr.ifr_hwaddr.sa_data[5] & 0xff);
 
 	return 0;
 }
@@ -1399,6 +1621,16 @@ static int instanciate_veth(struct lxc_handler *handler, struct lxc_netdev *netd
 		ERROR("failed to create %s-%s : %s", veth1, veth2,
 		      strerror(-err));
 		return -1;
+	}
+
+	/* changing the high byte of the mac address to 0xfe, the bridge interface
+	 * will always keep the host's mac address and not take the mac address
+	 * of a container */
+	err = setup_private_host_hw_addr(veth1);
+	if (err) {
+		ERROR("failed to change mac address of host interface '%s' : %s",
+			veth1, strerror(-err));
+		goto out_delete;
 	}
 
 	if (netdev->mtu) {
@@ -1602,13 +1834,19 @@ void lxc_delete_network(struct lxc_list *network)
 		if (netdev->ifindex == 0)
 			continue;
 
-		/* Recent kernels already delete the virtual devices */
-		if (netdev->type != LXC_NET_PHYS)
+		if (netdev->type == LXC_NET_PHYS) {
+			if (lxc_netdev_rename_by_index(netdev->ifindex, netdev->link))
+				WARN("failed to rename to the initial name the " \
+				     "netdev '%s'", netdev->link);
 			continue;
+		}
 
-		if (lxc_netdev_rename_by_index(netdev->ifindex, netdev->link))
-			WARN("failed to rename to the initial name the netdev '%s'",
-			     netdev->link);
+		/* Recent kernel remove the virtual interfaces when the network
+		 * namespace is destroyed but in case we did not moved the
+		 * interface to the network namespace, we have to destroy it
+		 */
+		if (lxc_netdev_delete_by_index(netdev->ifindex))
+			WARN("failed to remove interface '%s'", netdev->name);
 	}
 }
 
@@ -1634,6 +1872,54 @@ int lxc_assign_network(struct lxc_list *network, pid_t pid)
 		}
 
 		DEBUG("move '%s' to '%d'", netdev->name, pid);
+	}
+
+	return 0;
+}
+
+int lxc_find_gateway_addresses(struct lxc_handler *handler)
+{
+	struct lxc_list *network = &handler->conf->network;
+	struct lxc_list *iterator;
+	struct lxc_netdev *netdev;
+	int link_index;
+
+	lxc_list_for_each(iterator, network) {
+		netdev = iterator->elem;
+
+		if (!netdev->ipv4_gateway_auto && !netdev->ipv6_gateway_auto)
+			continue;
+
+		if (netdev->type != LXC_NET_VETH && netdev->type != LXC_NET_MACVLAN) {
+			ERROR("gateway = auto only supported for "
+			      "veth and macvlan");
+			return -1;
+		}
+
+		if (!netdev->link) {
+			ERROR("gateway = auto needs a link interface");
+			return -1;
+		}
+
+		link_index = if_nametoindex(netdev->link);
+		if (!link_index)
+			return -EINVAL;
+
+		if (netdev->ipv4_gateway_auto) {
+			if (lxc_ipv4_addr_get(link_index, &netdev->ipv4_gateway)) {
+				ERROR("failed to automatically find ipv4 gateway "
+				      "address from link interface '%s'", netdev->link);
+				return -1;
+			}
+		}
+
+		if (netdev->ipv6_gateway_auto) {
+			if (lxc_ipv6_addr_get(link_index, &netdev->ipv6_gateway)) {
+				ERROR("failed to automatically find ipv6 gateway "
+				      "address from link interface '%s'", netdev->link);
+				return -1;
+			}
+		}
 	}
 
 	return 0;
@@ -1731,12 +2017,12 @@ int lxc_setup(const char *name, struct lxc_conf *lxc_conf)
 		return -1;
 	}
 
-	if (setup_console(&lxc_conf->rootfs, &lxc_conf->console)) {
+	if (setup_console(&lxc_conf->rootfs, &lxc_conf->console, lxc_conf->ttydir)) {
 		ERROR("failed to setup the console for '%s'", name);
 		return -1;
 	}
 
-	if (setup_tty(&lxc_conf->rootfs, &lxc_conf->tty_info)) {
+	if (setup_tty(&lxc_conf->rootfs, &lxc_conf->tty_info, lxc_conf->ttydir)) {
 		ERROR("failed to setup the ttys for '%s'", name);
 		return -1;
 	}

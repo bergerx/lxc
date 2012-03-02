@@ -6,8 +6,6 @@
 # This script consolidates and extends the existing lxc ubuntu scripts
 #
 
-# XXX todo: add -lvm option
-
 # Copyright © 2011 Serge Hallyn <serge.hallyn@canonical.com>
 # Copyright © 2010 Wilhelm Meier
 # Author: Wilhelm Meier <wilhelm.meier@fh-kl.de>
@@ -34,6 +32,7 @@ configure_ubuntu()
 {
     rootfs=$1
     hostname=$2
+    release=$3
 
    # configure the network using the dhcp
     cat <<EOF > $rootfs/etc/network/interfaces
@@ -44,13 +43,6 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
-    # so you can 'ssh $hostname.' or 'ssh $hostname.local'
-    if [ -f $rootfs/etc/dhcp/dhclient.conf ]; then
-        sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp/dhclient.conf
-    elif [ -f $rootfs/etc/dhcp3/dhclient.conf ]; then
-        sed -i "s/<hostname>/$hostname/" $rootfs/etc/dhcp3/dhclient.conf
-    fi
-
     # set the hostname
     cat <<EOF > $rootfs/etc/hostname
 $hostname
@@ -60,17 +52,75 @@ EOF
 127.0.0.1 localhost $hostname
 EOF
 
-    # suppress log level output for udev
-    sed -i "s/=\"err\"/=0/" $rootfs/etc/udev/udev.conf
+    if [ "$release" = "precise" ]; then
+        group="sudo"
+    else
+        group="admin"
 
-    # remove jobs for consoles 5 and 6 since we only create 4 consoles in
-    # this template
-    rm -f $rootfs/etc/init/tty{5,6}.conf
+        # suppress log level output for udev
+        sed -i "s/=\"err\"/=0/" $rootfs/etc/udev/udev.conf
 
-    echo "Please change root-password !"
-    echo "root:root" | chroot $rootfs chpasswd
+        # remove jobs for consoles 5 and 6 since we only create 4 consoles in
+        # this template
+        rm -f $rootfs/etc/init/tty{5,6}.conf
+    fi
 
+    chroot $rootfs groupadd --system $group >/dev/null 2>&1 || true
+    chroot $rootfs useradd --create-home -s /bin/bash -G $group ubuntu
+    echo "ubuntu:ubuntu" | chroot $rootfs chpasswd
+    if [ -n "$auth_key" -a -f "$auth_key" ]; then
+	u_path="/home/ubuntu/.ssh"
+	root_u_path="$rootfs/$u_path"
+	mkdir -p $root_u_path
+	cp $auth_key "$root_u_path/authorized_keys"
+	chroot $rootfs chown -R ubuntu: "$u_path"
+
+	echo "Inserted SSH public key from $auth_key into /home/ubuntu/.ssh/authorized_keys"
+    fi
     return 0
+}
+
+write_sourceslist()
+{
+    # $1 => path to the rootfs
+    # $2 => architecture we want to add
+    # $3 => whether to use the multi-arch syntax or not
+
+    case $2 in
+      amd64|i386)
+            MIRROR=${MIRROR:-http://archive.ubuntu.com/ubuntu}
+            SECURITY_MIRROR=${SECURITY_MIRROR:-http://security.ubuntu.com/ubuntu}
+            ;;
+      sparc)
+            case $SUITE in
+              gutsy)
+            MIRROR=${MIRROR:-http://archive.ubuntu.com/ubuntu}
+            SECURITY_MIRROR=${SECURITY_MIRRORMIRROR:-http://security.ubuntu.com/ubuntu}
+            ;;
+              *)
+            MIRROR=${MIRROR:-http://ports.ubuntu.com/ubuntu-ports}
+            SECURITY_MIRROR=${SECURITY_MIRROR:-http://ports.ubuntu.com/ubuntu-ports}
+            ;;
+            esac
+            ;;
+      *)
+            MIRROR=${MIRROR:-http://ports.ubuntu.com/ubuntu-ports}
+            SECURITY_MIRROR=${SECURITY_MIRROR:-http://ports.ubuntu.com/ubuntu-ports}
+            ;;
+    esac
+    if [ -n "$3" ]; then
+        cat >> "$1/etc/apt/sources.list" << EOF
+deb [arch=$2] $MIRROR ${release} main restricted universe multiverse
+deb [arch=$2] $MIRROR ${release}-updates main restricted universe multiverse
+deb [arch=$2] $SECURITY_MIRROR ${release}-security main restricted universe multiverse
+EOF
+    else
+        cat >> "$1/etc/apt/sources.list" << EOF
+deb $MIRROR ${release} main restricted universe multiverse
+deb $MIRROR ${release}-updates main restricted universe multiverse
+deb $SECURITY_MIRROR ${release}-security main restricted universe multiverse
+EOF
+    fi
 }
 
 download_ubuntu()
@@ -86,7 +136,7 @@ download_ubuntu()
     elif [ $release = "natty" ]; then
         packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,isc-dhcp-client,isc-dhcp-common,ssh,lsb-release,gnupg,netbase
     else
-        packages=dialog,apt,apt-utils,resolvconf,iproute,inetutils-ping,vim,isc-dhcp-client,isc-dhcp-common,ssh,lsb-release,gnupg,netbase,ubuntu-keyring
+        packages=dialog,apt,apt-utils,iproute,inetutils-ping,vim,isc-dhcp-client,isc-dhcp-common,ssh,lsb-release,gnupg,netbase,ubuntu-keyring
     fi
     echo "installing packages: $packages"
 
@@ -99,15 +149,73 @@ download_ubuntu()
 
     # download a mini ubuntu into a cache
     echo "Downloading ubuntu $release minimal ..."
-    debootstrap --verbose --variant=minbase --components=main,universe --arch=$arch --include=$packages $release $cache/partial-$arch $MIRROR
+    if [ -n "$(which qemu-debootstrap)" ]; then
+        qemu-debootstrap --verbose --components=main,universe --arch=$arch --include=$packages $release $cache/partial-$arch $MIRROR
+    else
+        debootstrap --verbose --components=main,universe --arch=$arch --include=$packages $release $cache/partial-$arch $MIRROR
+    fi
+
     if [ $? -ne 0 ]; then
         echo "Failed to download the rootfs, aborting."
             return 1
     fi
 
-    mv "$1/partial-$arch" "$1/rootfs-$arch"
-    echo "Download complete."
+    echo "Installing updates"
+    if [ -z "$MIRROR" ]; then
+        MIRROR="http://archive.ubuntu.com/ubuntu"
+    fi
+    cat >> "$1/partial-${arch}/etc/apt/sources.list" << EOF
+deb $MIRROR ${release}-updates main universe
+deb http://security.ubuntu.com/ubuntu ${release}-security main universe
+EOF
+    chroot "$1/partial-${arch}" apt-get update
+    if [ $? -ne 0 ]; then
+        echo "Failed to update the apt cache"
+        return 1
+    fi
+    cat > "$1/partial-${arch}"/usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+exit 101
+EOF
+    chmod +x "$1/partial-${arch}"/usr/sbin/policy-rc.d
 
+    chroot "$1/partial-${arch}" apt-get dist-upgrade -y
+    ret=$?
+
+    rm -f "$1/partial-${arch}"/usr/sbin/policy-rc.d
+    if [ $ret -ne 0 ]; then
+        echo "Failed to upgrade the cache"
+        return 1
+    fi
+
+    # Serge isn't sure whether we should avoid doing this when
+    # $release == `distro-info -d`
+    echo "Installing updates"
+    > $cache/partial-$arch/etc/apt/sources.list
+    write_sourceslist $cache/partial-$arch/ $arch
+
+    chroot "$1/partial-${arch}" apt-get update
+    if [ $? -ne 0 ]; then
+        echo "Failed to update the apt cache"
+        return 1
+    fi
+    cat > "$1/partial-${arch}"/usr/sbin/policy-rc.d << EOF
+#!/bin/sh
+exit 101
+EOF
+    chmod +x "$1/partial-${arch}"/usr/sbin/policy-rc.d
+
+    lxc-unshare -s MOUNT -- chroot "$1/partial-${arch}" apt-get dist-upgrade -y
+    ret=$?
+    rm -f "$1/partial-${arch}"/usr/sbin/policy-rc.d
+
+    if [ $ret -ne 0 ]; then
+        echo "Failed to upgrade the cache"
+        return 1
+    fi
+
+    mv "$1/partial-$arch" "$1/rootfs-$arch"
+    echo "Download complete"
     return 0
 }
 
@@ -118,8 +226,9 @@ copy_ubuntu()
     rootfs=$3
 
     # make a local copy of the miniubuntu
-    echo -n "Copying rootfs to $rootfs ..."
-    cp -a $cache/rootfs-$arch $rootfs || return 1
+    echo "Copying rootfs to $rootfs ..."
+    mkdir -p $rootfs
+    rsync -a $cache/rootfs-$arch/ $rootfs/ || return 1
     return 0
 }
 
@@ -127,6 +236,7 @@ install_ubuntu()
 {
     rootfs=$1
     release=$2
+    flushcache=$3
     cache="/var/cache/lxc/$release"
     mkdir -p /var/lock/subsys/
     (
@@ -136,6 +246,12 @@ install_ubuntu()
 	    return 1
 	fi
 
+
+    if [ $flushcache -eq 1 ]; then
+        echo "Flushing cache..."
+        rm -rf "$cache/partial-$arch"
+        rm -rf "$cache/rootfs-$arch"
+    fi
 
 	echo "Checking cache download in $cache/rootfs-$arch ... "
 	if [ ! -e "$cache/rootfs-$arch" ]; then
@@ -166,21 +282,41 @@ copy_configuration()
     rootfs=$2
     name=$3
     arch=$4
+    release=$5
 
     if [ $arch = "i386" ]; then
         arch="i686"
     fi
 
+    ttydir=""
+    if [ $release = "precise" ]; then
+        ttydir=" lxc"
+    fi
+
+    # if there is exactly one veth network entry, make sure it has an
+    # associated hwaddr.
+    nics=`grep -e '^lxc\.network\.type[ \t]*=[ \t]*veth' $path/config | wc -l`
+    if [ $nics -eq 1 ]; then
+        grep -q "^lxc.network.hwaddr" $path/config || cat <<EOF >> $path/config
+lxc.network.hwaddr= 00:16:3e:$(openssl rand -hex 3| sed 's/\(..\)/\1:/g; s/.$//')
+EOF
+    fi
+
     cat <<EOF >> $path/config
 lxc.utsname = $name
 
+lxc.devttydir = $ttydir
 lxc.tty = 4
 lxc.pts = 1024
 lxc.rootfs = $rootfs
 lxc.mount  = $path/fstab
 lxc.arch = $arch
+lxc.cap.drop = sys_module mac_admin mac_override
 
 lxc.cgroup.devices.deny = a
+# Allow any mknod (but not using the node)
+lxc.cgroup.devices.allow = c *:* m
+lxc.cgroup.devices.allow = b *:* m
 # /dev/null and zero
 lxc.cgroup.devices.allow = c 1:3 rwm
 lxc.cgroup.devices.allow = c 1:5 rwm
@@ -198,6 +334,14 @@ lxc.cgroup.devices.allow = c 5:2 rwm
 lxc.cgroup.devices.allow = c 254:0 rwm
 #fuse
 lxc.cgroup.devices.allow = c 10:229 rwm
+#tun
+lxc.cgroup.devices.allow = c 10:200 rwm
+#full
+lxc.cgroup.devices.allow = c 1:7 rwm
+#hpet
+lxc.cgroup.devices.allow = c 10:228 rwm
+#kvm
+lxc.cgroup.devices.allow = c 10:232 rwm
 EOF
 
     cat <<EOF > $path/fstab
@@ -314,15 +458,39 @@ post_process()
 
     if [ $trim_container -eq 1 ]; then
         trim $rootfs $release
-    else
+    elif [ $release = "lucid" -o $release = "maverick" -o $release = "natty" \
+               -o $release = "oneiric" ]; then
         # for lucid and maverick, if not trimming, then add the ubuntu-virt
         # ppa and install lxcguest
         if [ $release = "lucid" -o $release = "maverick" ]; then
             chroot $rootfs apt-get install --force-yes -y python-software-properties
             chroot $rootfs add-apt-repository ppa:ubuntu-virt/ppa
-            chroot $rootfs apt-get update
         fi
+        cp /etc/resolv.conf "${rootfs}/etc"
+        chroot $rootfs apt-get update
         chroot $rootfs apt-get install --force-yes -y lxcguest
+    fi
+
+    # If the container isn't running a native architecture, setup multiarch
+    if [ -x "$(ls -1 ${rootfs}/usr/bin/qemu-*-static 2>/dev/null)" ]; then
+        mkdir -p ${rootfs}/etc/dpkg/dpkg.cfg.d
+        echo "foreign-architecture ${hostarch}" > ${rootfs}/etc/dpkg/dpkg.cfg.d/lxc-multiarch
+
+        # Save existing value of MIRROR and SECURITY_MIRROR
+        DEFAULT_MIRROR=$MIRROR
+        DEFAULT_SECURITY_MIRROR=$SECURITY_MIRROR
+
+        # Write a new sources.list containing both native and multiarch entries
+        > ${rootfs}/etc/apt/sources.list
+        write_sourceslist $rootfs $arch "native"
+
+        MIRROR=$DEFAULT_MIRROR
+        SECURITY_MIRROR=$DEFAULT_SECURITY_MIRROR
+        write_sourceslist $rootfs $hostarch "multiarch"
+
+        # Finally update the lists and install upstart using the host architecture
+        chroot $rootfs apt-get update
+        chroot $rootfs apt-get install --force-yes -y --no-install-recommends upstart:${hostarch} mountall:amd64 iproute:amd64 isc-dhcp-client:amd64
     fi
 }
 
@@ -331,59 +499,38 @@ do_bindhome()
     rootfs=$1
     user=$2
 
-    # bind-mount the user's path into the container's /home
-    h=`getent passwd $user | cut -d: -f 6`
-    mkdir -p $rootfs/$h
-    echo "$h $rootfs/$h none bind 0 0" >> $path/fstab
-
     # copy /etc/passwd, /etc/shadow, and /etc/group entries into container
     pwd=`getent passwd $user`
     if [ $? -ne 0 ]; then
         echo 'Warning: failed to copy password entry for $user'
+	return
     else
         echo $pwd >> $rootfs/etc/passwd
     fi
     shad=`getent shadow $user`
     echo $shad >> $rootfs/etc/shadow
-}
 
-clean()
-{
-    release=$1
-    cache="/var/cache/lxc/$release"
-
-    if [ ! -e $cache ]; then
-	exit 0
-    fi
-
-    # lock, so we won't purge while someone is creating a repository
-    (
-	flock -n -x 200
-	if [ $? != 0 ]; then
-	    echo "Cache repository is busy."
-	    exit 1
-	fi
-
-	echo -n "Purging the download cache..."
-	rm --preserve-root --one-file-system -rf $cache && echo "Done." || exit 1
-	exit 0
-
-    ) 200>/var/lock/subsys/lxc
+    # bind-mount the user's path into the container's /home
+    h=`getent passwd $user | cut -d: -f 6`
+    mkdir -p $rootfs/$h
+    echo "$h $rootfs/$h none bind 0 0" >> $path/fstab
 }
 
 usage()
 {
     cat <<EOF
-$1 -h|--help -p|--path=<path> --clean [-a|--arch] [-b|--bindhome <user>] [--trim] [-r|--release]
-release: lucid | maverick | natty | oneiric
+$1 -h|--help [-a|--arch] [-b|--bindhome <user>] [--trim]
+   [-F | --flush-cache] [-r|--release <release>] [ -S | --auth_key <keyfile>]
+release: lucid | maverick | natty | oneiric | precise
 trim: make a minimal (faster, but not upgrade-safe) container
 bindhome: bind <user>'s home into the container
 arch: amd64 or i386: defaults to host arch
+auth_key: SSH Public key file to inject into container
 EOF
     return 0
 }
 
-options=$(getopt -o a:b:hp:r:xn:c -l arch:,bindhome:,help,path:,release:,trim,name:,clean -- "$@")
+options=$(getopt -o a:b:hp:r:xn:FS: -l arch:,bindhome:,help,path:,release:,trim,name:,flush-cache,auth-key: -- "$@")
 if [ $? -ne 0 ]; then
     usage $(basename $0)
     exit 1
@@ -394,7 +541,7 @@ release=lucid
 if [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
     case "$DISTRIB_CODENAME" in
-        lucid|maverick|natty|oneiric)
+        lucid|maverick|natty|oneiric|precise)
             release=$DISTRIB_CODENAME
         ;;
     esac
@@ -421,29 +568,33 @@ fi
 
 trim_container=0
 hostarch=$arch
+flushcache=0
 while true
 do
     case "$1" in
     -h|--help)      usage $0 && exit 0;;
     -p|--path)      path=$2; shift 2;;
     -n|--name)      name=$2; shift 2;;
-    -c|--clean)     clean=$2; shift 2;;
+    -F|--flush-cache) flushcache=1; shift 1;;
     -r|--release)   release=$2; shift 2;;
     -b|--bindhome)  bindhome=$2; shift 2;;
     -a|--arch)      arch=$2; shift 2;;
     -x|--trim)      trim_container=1; shift 1;;
+    -S|--auth_key)  auth_key=$2; shift 2;;
     --)             shift 1; break ;;
         *)              break ;;
     esac
 done
 
-if [ "$arch" == "i686" ]; then
-    arch=i386
+pwd=`getent passwd $bindhome`
+if [ $? -ne 0 ]; then
+    echo "Error: no password entry found for $bindhome"
+    exit 1
 fi
 
-if [ ! -z "$clean" -a -z "$path" ]; then
-    clean || exit 1
-    exit 0
+
+if [ "$arch" == "i686" ]; then
+    arch=i386
 fi
 
 if [ $hostarch = "i386" -a $arch = "amd64" ]; then
@@ -469,19 +620,19 @@ fi
 
 rootfs=$path/rootfs
 
-install_ubuntu $rootfs $release
+install_ubuntu $rootfs $release $flushcache
 if [ $? -ne 0 ]; then
     echo "failed to install ubuntu $release"
     exit 1
 fi
 
-configure_ubuntu $rootfs $name
+configure_ubuntu $rootfs $name $release
 if [ $? -ne 0 ]; then
     echo "failed to configure ubuntu $release for a container"
     exit 1
 fi
 
-copy_configuration $path $rootfs $name $arch
+copy_configuration $path $rootfs $name $arch $release
 if [ $? -ne 0 ]; then
     echo "failed write configuration file"
     exit 1
@@ -492,7 +643,9 @@ if [ ! -z $bindhome ]; then
 	do_bindhome $rootfs $bindhome
 fi
 
-if [ ! -z $clean ]; then
-    clean $release || exit 1
-    exit 0
-fi
+echo ""
+echo "##"
+echo "# The default user is 'ubuntu' with password 'ubuntu'!"
+echo "# Use the 'sudo' command to run tasks as root in the container."
+echo "##"
+echo ""

@@ -36,6 +36,10 @@ lxc_network_link=virbr0
 # is this fedora?
 [ -f /etc/fedora-release ] && is_fedora=true
 
+if [ "$arch" = "i686" ]; then
+    arch=i386
+fi
+
 configure_fedora()
 {
 
@@ -111,8 +115,30 @@ download_fedora()
     echo "Downloading fedora minimal ..."
     YUM="yum --installroot $INSTALL_ROOT -y --nogpgcheck"
     PKG_LIST="yum initscripts passwd rsyslog vim-minimal dhclient chkconfig rootfiles policycoreutils"
-    RELEASE_URL="http://ftp.funet.fi/pub/mirrors/fedora.redhat.com/pub/fedora/linux/releases/$release/Everything/$arch/os/Packages/fedora-release-$release-1.noarch.rpm"
-    curl $RELEASE_URL > $INSTALL_ROOT/fedora-release-$release.noarch.rpm
+    MIRRORLIST_URL="http://mirrors.fedoraproject.org/mirrorlist?repo=fedora-$release&arch=$arch"
+
+    DOWNLOAD_OK=no
+    for trynumber in 1 2 3; do
+        [ $trynumber != 1 ] && echo "Trying again..."
+        MIRROR_URL=$(curl -s -S -f "$MIRRORLIST_URL" | head -n2 | tail -n1)
+        if [ $? -ne 0 ] || [ -z "$MIRROR_URL" ]; then
+            echo "Failed to get a mirror"
+            continue
+        fi
+        RELEASE_URL="$MIRROR_URL/Packages/fedora-release-$release-1.noarch.rpm"
+        echo "Fetching from $RELEASE_URL"
+        curl -f "$RELEASE_URL" > $INSTALL_ROOT/fedora-release-$release.noarch.rpm
+        if [ $? -ne 0 ]; then
+            echo "Failed to download fedora release rpm"
+            continue
+        fi
+        DOWNLOAD_OK=yes
+        break
+    done
+    if [ $DOWNLOAD_OK != yes ]; then
+        echo "Aborting"
+        return 1
+    fi
 
     mkdir -p $INSTALL_ROOT/var/lib/rpm
     rpm --root $INSTALL_ROOT  --initdb
@@ -224,10 +250,10 @@ lxc.cgroup.devices.allow = c 254:0 rwm
 EOF
 
     cat <<EOF > $config_path/fstab
-+proc            $rootfs_path/proc         proc    nodev,noexec,nosuid 0 0
-+devpts          $rootfs_path/dev/pts      devpts defaults 0 0
-+sysfs           $rootfs_path/sys          sysfs defaults  0 0
-
+proc            $rootfs_path/proc         proc    nodev,noexec,nosuid 0 0
+devpts          $rootfs_path/dev/pts      devpts defaults 0 0
+sysfs           $rootfs_path/sys          sysfs defaults  0 0
+EOF
     if [ $? -ne 0 ]; then
 	echo "Failed to add configuration"
 	return 1
@@ -268,7 +294,7 @@ usage:
 Mandatory args:
   -n,--name         container name, used to as an identifier for that container from now on
 Optional args:
-  -p,--path         path to where the container rootfs will be created, defaults to /var/lib/lxc. The container config will go under /var/lib/lxc in and case
+  -p,--path         path to where the container rootfs will be created, defaults to /var/lib/lxc. The container config will go under /var/lib/lxc in that case
   -c,--clean        clean the cache
   -R,--release      Fedora release for the new container. if the host is Fedora, then it will defaultto the host's release.
   -A,--arch         NOT USED YET. Define what arch the container will be [i686,x86_64]
@@ -316,8 +342,8 @@ if [ -z "$release" ]; then
     if [ "$is_fedora" ]; then
         release=$(cat /etc/fedora-release |awk '/^Fedora/ {print $3}')
     else
-        echo "This is not a fedora host and release missing, use -R|--release to specify release"
-        exit 1
+        echo "This is not a fedora host and release missing, defaulting to 14. use -R|--release to specify release"
+        release=14
     fi
 fi
 
@@ -326,12 +352,27 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 
+
 rootfs_path=$path/$name/rootfs
 config_path=$default_path/$name
 cache=$cache_base/$release
 
-if [ -f $config_path/config ]; then
-    echo "A container with that name exists, chose a different name"
+revert()
+{
+    echo "Interrupted, so cleaning up"
+    lxc-destroy -n $name
+    # maybe was interrupted before copy config
+    rm -rf $path/$name
+    rm -rf $default_path/$name
+    echo "exiting..."
+    exit 1
+}
+
+trap revert SIGHUP SIGINT SIGTERM
+
+copy_configuration
+if [ $? -ne 0 ]; then
+    echo "failed write configuration file"
     exit 1
 fi
 
@@ -347,11 +388,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-copy_configuration
-if [ $? -ne 0 ]; then
-    echo "failed write configuration file"
-    exit 1
-fi
 
 if [ ! -z $clean ]; then
     clean || exit 1

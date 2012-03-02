@@ -35,16 +35,17 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = doc
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/common_options.sgml.in $(srcdir)/lxc-cgroup.sgml.in \
-	$(srcdir)/lxc-checkpoint.sgml.in $(srcdir)/lxc-console.sgml.in \
-	$(srcdir)/lxc-create.sgml.in $(srcdir)/lxc-destroy.sgml.in \
-	$(srcdir)/lxc-execute.sgml.in $(srcdir)/lxc-freeze.sgml.in \
-	$(srcdir)/lxc-kill.sgml.in $(srcdir)/lxc-ls.sgml.in \
-	$(srcdir)/lxc-monitor.sgml.in $(srcdir)/lxc-ps.sgml.in \
-	$(srcdir)/lxc-restart.sgml.in $(srcdir)/lxc-start.sgml.in \
-	$(srcdir)/lxc-stop.sgml.in $(srcdir)/lxc-unfreeze.sgml.in \
-	$(srcdir)/lxc-wait.sgml.in $(srcdir)/lxc.conf.sgml.in \
-	$(srcdir)/lxc.sgml.in $(srcdir)/see_also.sgml.in
+	$(srcdir)/common_options.sgml.in $(srcdir)/lxc-attach.sgml.in \
+	$(srcdir)/lxc-cgroup.sgml.in $(srcdir)/lxc-checkpoint.sgml.in \
+	$(srcdir)/lxc-console.sgml.in $(srcdir)/lxc-create.sgml.in \
+	$(srcdir)/lxc-destroy.sgml.in $(srcdir)/lxc-execute.sgml.in \
+	$(srcdir)/lxc-freeze.sgml.in $(srcdir)/lxc-kill.sgml.in \
+	$(srcdir)/lxc-ls.sgml.in $(srcdir)/lxc-monitor.sgml.in \
+	$(srcdir)/lxc-ps.sgml.in $(srcdir)/lxc-restart.sgml.in \
+	$(srcdir)/lxc-start.sgml.in $(srcdir)/lxc-stop.sgml.in \
+	$(srcdir)/lxc-unfreeze.sgml.in $(srcdir)/lxc-wait.sgml.in \
+	$(srcdir)/lxc.conf.sgml.in $(srcdir)/lxc.sgml.in \
+	$(srcdir)/see_also.sgml.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/config/acinclude.m4 \
 	$(top_srcdir)/config/linux.m4 $(top_srcdir)/configure.ac
@@ -56,8 +57,8 @@ CONFIG_CLEAN_FILES = lxc-create.sgml lxc-destroy.sgml lxc-execute.sgml \
 	lxc-start.sgml lxc-checkpoint.sgml lxc-restart.sgml \
 	lxc-stop.sgml lxc-console.sgml lxc-freeze.sgml \
 	lxc-unfreeze.sgml lxc-monitor.sgml lxc-wait.sgml lxc-ls.sgml \
-	lxc-ps.sgml lxc-cgroup.sgml lxc-kill.sgml lxc.conf.sgml \
-	lxc.sgml common_options.sgml see_also.sgml
+	lxc-ps.sgml lxc-cgroup.sgml lxc-kill.sgml lxc-attach.sgml \
+	lxc.conf.sgml lxc.sgml common_options.sgml see_also.sgml
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
 DIST_SOURCES =
@@ -264,6 +265,7 @@ EXTRA_DIST = \
 @ENABLE_DOCBOOK_TRUE@	lxc-ps.1 \
 @ENABLE_DOCBOOK_TRUE@	lxc-cgroup.1 \
 @ENABLE_DOCBOOK_TRUE@	lxc-kill.1 \
+@ENABLE_DOCBOOK_TRUE@	lxc-attach.1 \
 @ENABLE_DOCBOOK_TRUE@	\
 @ENABLE_DOCBOOK_TRUE@	lxc.conf.5 \
 @ENABLE_DOCBOOK_TRUE@	\
@@ -333,6 +335,8 @@ lxc-ps.sgml: $(top_builddir)/config.status $(srcdir)/lxc-ps.sgml.in
 lxc-cgroup.sgml: $(top_builddir)/config.status $(srcdir)/lxc-cgroup.sgml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 lxc-kill.sgml: $(top_builddir)/config.status $(srcdir)/lxc-kill.sgml.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+lxc-attach.sgml: $(top_builddir)/config.status $(srcdir)/lxc-attach.sgml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 lxc.conf.sgml: $(top_builddir)/config.status $(srcdir)/lxc.conf.sgml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

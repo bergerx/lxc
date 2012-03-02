@@ -1,4 +1,5 @@
 pkginclude_HEADERS = \
+		arguments.h \
 		start.h \
 		console.h \
 		error.h \
@@ -11,7 +12,8 @@ pkginclude_HEADERS = \
 		conf.h \
 		list.h \
 		log.h \
-		state.h
+		state.h \
+		attach.h
 
 sodir=$(libdir)
 # use PROGRAMS to avoid complains from automake
@@ -22,6 +24,7 @@ liblxc_so_SOURCES = \
 	commands.c commands.h \
 	start.c start.h \
 	stop.c \
+	execute.c \
 	monitor.c monitor.h \
 	console.c \
 	freezer.c \
@@ -39,6 +42,7 @@ liblxc_so_SOURCES = \
 	list.h \
 	state.c state.h \
 	log.c log.h \
+	attach.c attach.h \
 	\
 	network.c network.h \
         nl.c nl.h \
@@ -51,7 +55,10 @@ liblxc_so_SOURCES = \
 	\
 	utmp.c utmp.h
 
-AM_CFLAGS=-I$(top_srcdir)/src
+AM_CFLAGS=-I$(top_srcdir)/src \
+	-DLXCROOTFSMOUNT=\"$(LXCROOTFSMOUNT)\" \
+	-DLXCPATH=\"$(LXCPATH)\" \
+	-DLXCINITDIR=\"$(LXCINITDIR)\"
 
 liblxc_so_CFLAGS = -fPIC -DPIC $(AM_CFLAGS)
 
@@ -90,10 +97,13 @@ bin_PROGRAMS = \
 	lxc-restart \
 	lxc-kill
 
-pkglib_PROGRAMS = \
+pkglibexec_PROGRAMS = \
 	lxc-init
 
-AM_LDFLAGS=-Wl,-E -Wl,-rpath -Wl,$(libdir)
+AM_LDFLAGS = -Wl,-E
+if ENABLE_RPATH
+AM_LDFLAGS += -Wl,-rpath -Wl,$(libdir)
+endif
 LDADD=liblxc.so @CAP_LIBS@
 
 lxc_attach_SOURCES = lxc_attach.c
