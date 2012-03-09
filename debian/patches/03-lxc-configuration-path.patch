@@ -2,17 +2,17 @@ Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description: Removing double check for configuration path in lxc-create (Closes: #633996).
 
 diff -Naurp lxc.orig/src/lxc/lxc-create.in lxc/src/lxc/lxc-create.in
---- lxc.orig/src/lxc/lxc-create.in	2011-07-15 21:02:53.537046871 +0200
-+++ lxc/src/lxc/lxc-create.in	2011-07-15 21:03:47.241046873 +0200
-@@ -102,11 +102,6 @@ if [ "$(id -u)" != "0" ]; then
-    exit 1
+--- lxc.orig/src/lxc/lxc-create.in	2012-03-02 13:20:15.859239022 +0100
++++ lxc/src/lxc/lxc-create.in	2012-03-09 12:38:50.401955584 +0100
+@@ -145,11 +145,6 @@ if [ -z "$lxc_path" ]; then
+     exit 1
  fi
  
 -if [ ! -r $lxc_path ]; then
--    echo "no configuration path defined !"
+-    echo "configuration path '$lxc_path' not found"
 -    exit 1
 -fi
 -
- if [ -d "$lxc_path/$lxc_name" ]; then
-     echo "'$lxc_name' already exists"
-     exit 1
+ if [ -z "$lxc_name" ]; then
+     echo "no container name specified"
+     usage
