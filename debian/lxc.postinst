@@ -83,6 +83,12 @@ EOF
 			--slave /usr/share/man/man1/lxc-shutdown.1.gz lxc-shutdown.1.gz \
 				/usr/share/man/man1/lxc-halt.1.gz
 
+		# Migrate 0.7.5 to 0.8.0
+		if [ ! -e "${LXC_SHUTDOWN}" ] && [ -e "/usr/bin/lxc-${LXC_SHUTDOWN}" ]
+		then
+			LXC_SHUTDOWN="/usr/bin/lxc-${LXC_SHUTDOWN}"
+		fi
+
 		update-alternatives --quiet --set lxc-shutdown ${LXC_SHUTDOWN}
 		;;
 
