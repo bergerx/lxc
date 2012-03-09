@@ -1,10 +1,24 @@
 #!/usr/bin/make -f
 
+SHELL := sh -e
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 %:
 	dh ${@} --with autotools_dev
 
+override_dh_auto_clean:
+	dh_auto_clean
+
+	for _FILE in debian/*.install.in; \
+	do \
+		rm -f debian/$$(basename $${_FILE} .in); \
+		sed -e 's|@DEB_HOST_MULTIARCH@|$(DEB_HOST_MULTIARCH)|g' \
+		$${_FILE} > debian/$$(basename $${_FILE} .in); \
+	done
+
 override_dh_auto_configure:
-	dh_auto_configure -- --libdir=\$${prefix}/lib/lxc --with-rootfs-path=\$${prefix}/lib/lxc --enable-doc
+	dh_auto_configure -- --libdir=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/lxc --with-rootfs-path=\$${prefix}/lib/$(DEB_HOST_MULTIARCH)/lxc --enable-doc
 
 override_dh_auto_install:
 	dh_auto_install
@@ -15,20 +29,20 @@ override_dh_auto_install:
 	mkdir -p debian/tmp/var/log/lxc
 
 	# replacing upstreams debian template
-	rm -f debian/tmp/usr/lib/lxc/templates/lxc-debian
-	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-debian
-	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-debian.d
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian
+	ln -s lxc-debconf debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian
+	ln -s lxc-debconf.d debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian.d
 
 	# adding progress template symlink
-	ln -s lxc-debconf debian/tmp/usr/lib/lxc/templates/lxc-progress
-	ln -s lxc-debconf.d debian/tmp/usr/lib/lxc/templates/lxc-progress.d
+	ln -s lxc-debconf debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-progress
+	ln -s lxc-debconf.d debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-progress.d
 
 	# removing currently unsupported lxc-ubuntu until lxc-debconf also supports ubuntu
-	rm -f debian/tmp/usr/lib/lxc/templates/lxc-ubuntu
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-ubuntu
 
 	# removing useless files
-	rm -f debian/tmp/usr/lib/lxc/templates/lxc-busybox
-	rm -f debian/tmp/usr/lib/lxc/templates/lxc-lenny
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-busybox
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-lenny
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip -z9
