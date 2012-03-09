@@ -5,7 +5,7 @@ Maintainer: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Uploaders: Jonas Genannt <jonas.genannt@capi2name.de>
 Build-Depends:
  debhelper (>= 9), autotools-dev, docbook-utils, libcap-dev, linux-libc-dev
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 Homepage: http://lxc.sourceforge.net/
 
 Package: lxc
