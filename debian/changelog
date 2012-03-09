@@ -1,3 +1,36 @@
+lxc (0.8.0~rc1-1) unstable; urgency=low
+
+  * Adding updated Spanish debconf translations from Camaleón
+    <noelamac@gmail.com> (Closes: #658362).
+  * Adding patch from Ivan Vilata i Balaguer <ivan@selidor.net> to allow
+    the escape prefix to escape itself in lxc-console (Closes: #659011).
+  * Adding late host command in addition to late command in lxc-debconf.
+  * Setting default action for lxc shutdown to halt as it's almost
+    always safe and better for data integrity (e.g. some database
+    servers need a regular sysvinit shutdown).
+  * Replacing configuration variable in /etc/default/lxc for default
+    shutdown method with a alternative /usr/bin/lxc-shutdown, pointing
+    to either /usr/bin/lxc-halt or /usr/bin/lxc-stop.
+  * Updating todo file.
+  * Disabling numbered backups for the time being in lxc-backup and lxc-
+    restore, they are for simple prototyping only anyway.
+  * Adding Dutch debconf translations from Jeroen Schot <schot@a-
+    eskwadraat.nl> (Closes: #659694).
+  * Merging upstream version 0.8.0~rc1.
+  * Rediffing lxc-libdir.patch.
+  * Rediffing lxc-configuration-path.patch.
+  * Rediffing bash.patch.
+  * Rediffing lxc-debconf.patch.
+  * Rediffing lxc-create-trap-name.patch.
+  * Rediffing lxc-clone-trap-name.patch.
+  * Removing currently unsupported lxc-ubuntu until lxc-debconf also
+    supports ubuntu (Closes: #660764).
+  * Updating packaging for multiarch.
+  * Updating to standards version 3.9.3.
+  * Updating copyright file machine-readable format version 1.0.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Fri, 09 Mar 2012 13:05:03 +0100
+
 lxc (0.7.5-24) unstable; urgency=low
 
   * Switching to cdn.archive.progress-linux.org in lxc-debconf as
