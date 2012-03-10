@@ -1,3 +1,10 @@
+lxc (0.8.0~rc1-3) unstable; urgency=low
+
+  * Adding pre-depends to multiarch-support (Closes: #663274).
+  * Updating lintian overrides.
+
+ -- Daniel Baumann <daniel.baumann@progress-technologies.net>  Sat, 10 Mar 2012 09:51:28 +0100
+
 lxc (0.8.0~rc1-2) unstable; urgency=low
 
   * Helping to migrate lxc-shutdown debconf setting for alternative on
