@@ -10,6 +10,7 @@ Homepage: http://lxc.sourceforge.net/
 
 Package: lxc
 Architecture: linux-any
+Pre-Depends: ${multiarch:Pre-Depends}
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: debootstrap | cdebootstrap, libcap2-bin
 Conflicts: cgroup-bin
