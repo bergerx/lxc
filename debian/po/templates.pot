@@ -57,7 +57,7 @@ msgid ""
 "Linux Containers can be shutdown in different ways. The stop method "
 "terminates all processes inside the container. The halt method initiates a "
 "shutdown, which takes longer and can have problems with containers that "
-"don't shutdown themselfs properly."
+"don't shutdown themselves properly."
 msgstr ""
 
 #. Type: select
