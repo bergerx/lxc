@@ -214,10 +214,10 @@ EOF
 
 	rm -f "${_ROOTFS}/preseed.cfg"
 
-	if ls /usr/share/lxc/linux-container*deb > /dev/null 2>&1
+	if ls /usr/share/lxc/packages/linux-container*deb > /dev/null 2>&1
 	then
 		# Install local linux-container package
-		cp -L /usr/share/lxc/linux-container_*.deb "${_ROOTFS}"
+		cp -L /usr/share/lxc/packages/linux-container_*.deb "${_ROOTFS}"
 
 		Chroot "${_ROOTFS}" "dpkg -i $(basename ${_ROOTFS}/linux-container_*.deb)"
 		rm -f "${_ROOTFS}"/linux-container_*.deb
@@ -416,22 +416,22 @@ Copy_system ()
 	_ARCHITECTURE="${2}"
 	_ROOTFS="${3}"
 
-	if [ -e "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
+	if [ -e "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
 	then
 		# system cache in the form of a directory
 		echo -n "Copying system cache to ${_ROOTFS}..."
-		cp -a "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
-	elif ls "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}".* > /dev/null 2>&1
+		cp -a "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}" "${_ROOTFS}" || return 1
+	elif ls "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}".* > /dev/null 2>&1
 	then
 		# system cache in the form of a tarball
 		for _FORMAT in tar.lz tar.xz tar.lzma tar.bz2 tar.gz tar
 		do
-			if [ -e "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}.${_FORMAT}" ]
+			if [ -e "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}.${_FORMAT}" ]
 			then
 				echo -n "Extracting system cache to ${_ROOTFS}..."
 
 				mkdir -p "${_ROOTFS}"
-				tar xf "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}.${_FORMAT}" -C "${_ROOTFS}" || return 1
+				tar xf "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}.${_FORMAT}" -C "${_ROOTFS}" || return 1
 				break
 			fi
 		done
@@ -486,7 +486,7 @@ Install_system ()
 
 		_ARCHITECTURE="${_ARCHITECTURE:-$(dpkg --print-architecture)}"
 
-		if ! ls "/usr/lib/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}"* > /dev/null 2>&1 && \
+		if ! ls "/usr/share/lxc/cache/${_MODE}/${_DISTRIBUTION}_${_ARCHITECTURE}"* > /dev/null 2>&1 && \
 		   [ ! -e "${_CACHE}/${_DISTRIBUTION}_${_ARCHITECTURE}" ]
 		then
 			Download_system "${_CACHE}" "${_ARCHITECTURE}"
@@ -868,7 +868,7 @@ DEBCONF_SYSTEMRC="${_TMPDIR}/debconf.systemrc"
 export DEBCONF_SYSTEMRC
 
 # Run debconf parts
-for _SCRIPT in /usr/lib/lxc/templates/lxc-debconf.d/*
+for _SCRIPT in /usr/share/lxc/templates/lxc-debconf.d/*
 do
 	if [ -x "${_SCRIPT}" ]
 	then

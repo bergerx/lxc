@@ -1,7 +1,8 @@
 Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description:
- Trimming directories to use /usr/lib/lxc/templates instead of
- /usr/lib/lxc/lxc/templates etc.
+ Trimming directories to use:
+   * /usr/lib/lxc instead of /usr/lib/lxc/lxc
+   * /usr/share/lxc/templates instead of /usr/lib/lxc/lxc/templates
 
 diff -Naurp lxc.orig/configure lxc/configure
 --- lxc.orig/configure	2012-03-09 12:51:26.713705881 +0100
@@ -14,7 +15,7 @@ diff -Naurp lxc.orig/configure lxc/configure
 +LXCINITDIR='${libexecdir}'
  
 -LXCTEMPLATEDIR='${libdir}/lxc/templates'
-+LXCTEMPLATEDIR='${libdir}/templates'
++LXCTEMPLATEDIR='/usr/share/lxc/templates'
  
  
  for ac_header in linux/netlink.h linux/genetlink.h
@@ -28,7 +29,7 @@ diff -Naurp lxc.orig/configure.ac lxc/configure.ac
 -AC_SUBST(LXCINITDIR, ['${libexecdir}/lxc'])
 -AC_SUBST(LXCTEMPLATEDIR, ['${libdir}/lxc/templates'])
 +AC_SUBST(LXCINITDIR, ['${libexecdir}'])
-+AC_SUBST(LXCTEMPLATEDIR, ['${libdir}/templates'])
++AC_SUBST(LXCTEMPLATEDIR, ['/usr/share/lxc/templates'])
  
  AC_CHECK_HEADERS([linux/netlink.h linux/genetlink.h],
  				  [],

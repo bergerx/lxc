@@ -26,23 +26,25 @@ override_dh_auto_install:
 	# creating lxc directories
 	mkdir -p debian/tmp/etc/lxc/auto
 	mkdir -p debian/tmp/etc/lxc/debconf
+	mkdir -p debian/tmp/usr/share/lxc/cache
+	mkdir -p debian/tmp/usr/share/lxc/packages
 	mkdir -p debian/tmp/var/log/lxc
 
 	# replacing upstreams debian template
-	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian
-	ln -s lxc-debconf debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian
-	ln -s lxc-debconf.d debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-debian.d
+	rm -f debian/tmp/usr/share/lxc/templates/lxc-debian
+	ln -s lxc-debconf debian/tmp/usr/share/lxc/templates/lxc-debian
+	ln -s lxc-debconf.d debian/tmp/usr/share/lxc/templates/lxc-debian.d
 
 	# adding progress template symlink
-	ln -s lxc-debconf debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-progress
-	ln -s lxc-debconf.d debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-progress.d
+	ln -s lxc-debconf debian/tmp/usr/share/lxc/templates/lxc-progress
+	ln -s lxc-debconf.d debian/tmp/usr/share/lxc/templates/lxc-progress.d
 
 	# removing currently unsupported lxc-ubuntu until lxc-debconf also supports ubuntu
-	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-ubuntu
+	rm -f debian/tmp/usr/share/lxc/templates/lxc-ubuntu
 
 	# removing useless files
-	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-busybox
-	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/lxc/templates/lxc-lenny
+	rm -f debian/tmp/usr/share/lxc/templates/lxc-busybox
+	rm -f debian/tmp/usr/share/lxc/templates/lxc-lenny
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip -z9

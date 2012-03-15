@@ -5,7 +5,7 @@ lxc:
   * extend README.Debian to include all information from http://wiki.progress-linux.org/software/lxc/
   * update package description
   * expose lxc-setcap run with debconf
-  * integrate example debian packages that contain /usr/lib/lxc/cache/*
+  * integrate example debian packages that contain /usr/share/lxc/cache/*
   * add debconf question to ask for level of mac conflict check
   * add debconf question to ask for putting linux-container local package in /u/s/l-c/
   * support 'all' in lxc convenience wrapper
