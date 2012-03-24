@@ -43,7 +43,8 @@ bin_PROGRAMS = lxc-attach$(EXEEXT) lxc-unshare$(EXEEXT) \
 	lxc-freeze$(EXEEXT) lxc-info$(EXEEXT) lxc-cgroup$(EXEEXT) \
 	lxc-unfreeze$(EXEEXT) lxc-checkpoint$(EXEEXT) \
 	lxc-restart$(EXEEXT) lxc-kill$(EXEEXT)
-pkglib_PROGRAMS = lxc-init$(EXEEXT)
+pkglibexec_PROGRAMS = lxc-init$(EXEEXT)
+@ENABLE_RPATH_TRUE@am__append_1 = -Wl,-rpath -Wl,$(libdir)
 subdir = src/lxc
 DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/lxc-checkconfig.in \
@@ -63,20 +64,21 @@ CONFIG_CLEAN_FILES = lxc-ps lxc-ls lxc-netstat lxc-checkconfig \
 	lxc-setcap lxc-setuid lxc-version lxc-create lxc-clone \
 	lxc-destroy
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibdir)" \
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)" \
 	"$(DESTDIR)$(sodir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(pkgincludedir)"
-PROGRAMS = $(bin_PROGRAMS) $(pkglib_PROGRAMS) $(so_PROGRAMS)
+PROGRAMS = $(bin_PROGRAMS) $(pkglibexec_PROGRAMS) $(so_PROGRAMS)
 am_liblxc_so_OBJECTS = liblxc_so-arguments.$(OBJEXT) \
 	liblxc_so-commands.$(OBJEXT) liblxc_so-start.$(OBJEXT) \
-	liblxc_so-stop.$(OBJEXT) liblxc_so-monitor.$(OBJEXT) \
-	liblxc_so-console.$(OBJEXT) liblxc_so-freezer.$(OBJEXT) \
-	liblxc_so-checkpoint.$(OBJEXT) liblxc_so-restart.$(OBJEXT) \
-	liblxc_so-error.$(OBJEXT) liblxc_so-parse.$(OBJEXT) \
-	liblxc_so-cgroup.$(OBJEXT) liblxc_so-utils.$(OBJEXT) \
-	liblxc_so-sync.$(OBJEXT) liblxc_so-namespace.$(OBJEXT) \
-	liblxc_so-conf.$(OBJEXT) liblxc_so-confile.$(OBJEXT) \
-	liblxc_so-state.$(OBJEXT) liblxc_so-log.$(OBJEXT) \
+	liblxc_so-stop.$(OBJEXT) liblxc_so-execute.$(OBJEXT) \
+	liblxc_so-monitor.$(OBJEXT) liblxc_so-console.$(OBJEXT) \
+	liblxc_so-freezer.$(OBJEXT) liblxc_so-checkpoint.$(OBJEXT) \
+	liblxc_so-restart.$(OBJEXT) liblxc_so-error.$(OBJEXT) \
+	liblxc_so-parse.$(OBJEXT) liblxc_so-cgroup.$(OBJEXT) \
+	liblxc_so-utils.$(OBJEXT) liblxc_so-sync.$(OBJEXT) \
+	liblxc_so-namespace.$(OBJEXT) liblxc_so-conf.$(OBJEXT) \
+	liblxc_so-confile.$(OBJEXT) liblxc_so-state.$(OBJEXT) \
+	liblxc_so-log.$(OBJEXT) liblxc_so-attach.$(OBJEXT) \
 	liblxc_so-network.$(OBJEXT) liblxc_so-nl.$(OBJEXT) \
 	liblxc_so-rtnl.$(OBJEXT) liblxc_so-genl.$(OBJEXT) \
 	liblxc_so-caps.$(OBJEXT) liblxc_so-mainloop.$(OBJEXT) \
@@ -313,6 +315,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = \
+		arguments.h \
 		start.h \
 		console.h \
 		error.h \
@@ -325,7 +328,8 @@ pkginclude_HEADERS = \
 		conf.h \
 		list.h \
 		log.h \
-		state.h
+		state.h \
+		attach.h
 
 sodir = $(libdir)
 liblxc_so_SOURCES = \
@@ -333,6 +337,7 @@ liblxc_so_SOURCES = \
 	commands.c commands.h \
 	start.c start.h \
 	stop.c \
+	execute.c \
 	monitor.c monitor.h \
 	console.c \
 	freezer.c \
@@ -350,6 +355,7 @@ liblxc_so_SOURCES = \
 	list.h \
 	state.c state.h \
 	log.c log.h \
+	attach.c attach.h \
 	\
 	network.c network.h \
         nl.c nl.h \
@@ -362,7 +368,11 @@ liblxc_so_SOURCES = \
 	\
 	utmp.c utmp.h
 
-AM_CFLAGS = -I$(top_srcdir)/src
+AM_CFLAGS = -I$(top_srcdir)/src \
+	-DLXCROOTFSMOUNT=\"$(LXCROOTFSMOUNT)\" \
+	-DLXCPATH=\"$(LXCPATH)\" \
+	-DLXCINITDIR=\"$(LXCINITDIR)\"
+
 liblxc_so_CFLAGS = -fPIC -DPIC $(AM_CFLAGS)
 liblxc_so_LDFLAGS = \
 	-shared \
@@ -381,7 +391,7 @@ bin_SCRIPTS = \
 	lxc-clone \
 	lxc-destroy
 
-AM_LDFLAGS = -Wl,-E -Wl,-rpath -Wl,$(libdir)
+AM_LDFLAGS = -Wl,-E $(am__append_1)
 LDADD = liblxc.so @CAP_LIBS@
 lxc_attach_SOURCES = lxc_attach.c
 lxc_cgroup_SOURCES = lxc_cgroup.c
@@ -490,10 +500,10 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-install-pkglibPROGRAMS: $(pkglib_PROGRAMS)
+install-pkglibexecPROGRAMS: $(pkglibexec_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(pkglibdir)" || $(MKDIR_P) "$(DESTDIR)$(pkglibdir)"
-	@list='$(pkglib_PROGRAMS)'; test -n "$(pkglibdir)" || list=; \
+	test -z "$(pkglibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(pkglibexecdir)"
+	@list='$(pkglibexec_PROGRAMS)'; test -n "$(pkglibexecdir)" || list=; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p; \
@@ -510,23 +520,23 @@ install-pkglibPROGRAMS: $(pkglib_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(pkglibdir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(pkglibdir)$$dir" || exit $$?; \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(pkglibexecdir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(pkglibexecdir)$$dir" || exit $$?; \
 	    } \
 	; done
 
-uninstall-pkglibPROGRAMS:
+uninstall-pkglibexecPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(pkglib_PROGRAMS)'; test -n "$(pkglibdir)" || list=; \
+	@list='$(pkglibexec_PROGRAMS)'; test -n "$(pkglibexecdir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
 	      -e 's/$$/$(EXEEXT)/' `; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(pkglibdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(pkglibdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(pkglibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(pkglibexecdir)" && rm -f $$files
 
-clean-pkglibPROGRAMS:
-	-test -z "$(pkglib_PROGRAMS)" || rm -f $(pkglib_PROGRAMS)
+clean-pkglibexecPROGRAMS:
+	-test -z "$(pkglibexec_PROGRAMS)" || rm -f $(pkglibexec_PROGRAMS)
 install-soPROGRAMS: $(so_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(sodir)" || $(MKDIR_P) "$(DESTDIR)$(sodir)"
@@ -658,6 +668,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-af_unix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-arguments.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-attach.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-caps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-cgroup.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-checkpoint.Po@am__quote@
@@ -666,6 +677,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-confile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-console.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-execute.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-freezer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-genl.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/liblxc_so-log.Po@am__quote@
@@ -769,6 +781,20 @@ liblxc_so-stop.obj: stop.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='stop.c' object='liblxc_so-stop.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-stop.obj `if test -f 'stop.c'; then $(CYGPATH_W) 'stop.c'; else $(CYGPATH_W) '$(srcdir)/stop.c'; fi`
+
+liblxc_so-execute.o: execute.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-execute.o -MD -MP -MF $(DEPDIR)/liblxc_so-execute.Tpo -c -o liblxc_so-execute.o `test -f 'execute.c' || echo '$(srcdir)/'`execute.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/liblxc_so-execute.Tpo $(DEPDIR)/liblxc_so-execute.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='execute.c' object='liblxc_so-execute.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-execute.o `test -f 'execute.c' || echo '$(srcdir)/'`execute.c
+
+liblxc_so-execute.obj: execute.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-execute.obj -MD -MP -MF $(DEPDIR)/liblxc_so-execute.Tpo -c -o liblxc_so-execute.obj `if test -f 'execute.c'; then $(CYGPATH_W) 'execute.c'; else $(CYGPATH_W) '$(srcdir)/execute.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/liblxc_so-execute.Tpo $(DEPDIR)/liblxc_so-execute.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='execute.c' object='liblxc_so-execute.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-execute.obj `if test -f 'execute.c'; then $(CYGPATH_W) 'execute.c'; else $(CYGPATH_W) '$(srcdir)/execute.c'; fi`
 
 liblxc_so-monitor.o: monitor.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-monitor.o -MD -MP -MF $(DEPDIR)/liblxc_so-monitor.Tpo -c -o liblxc_so-monitor.o `test -f 'monitor.c' || echo '$(srcdir)/'`monitor.c
@@ -979,6 +1005,20 @@ liblxc_so-log.obj: log.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='log.c' object='liblxc_so-log.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-log.obj `if test -f 'log.c'; then $(CYGPATH_W) 'log.c'; else $(CYGPATH_W) '$(srcdir)/log.c'; fi`
+
+liblxc_so-attach.o: attach.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-attach.o -MD -MP -MF $(DEPDIR)/liblxc_so-attach.Tpo -c -o liblxc_so-attach.o `test -f 'attach.c' || echo '$(srcdir)/'`attach.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/liblxc_so-attach.Tpo $(DEPDIR)/liblxc_so-attach.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='attach.c' object='liblxc_so-attach.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-attach.o `test -f 'attach.c' || echo '$(srcdir)/'`attach.c
+
+liblxc_so-attach.obj: attach.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-attach.obj -MD -MP -MF $(DEPDIR)/liblxc_so-attach.Tpo -c -o liblxc_so-attach.obj `if test -f 'attach.c'; then $(CYGPATH_W) 'attach.c'; else $(CYGPATH_W) '$(srcdir)/attach.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/liblxc_so-attach.Tpo $(DEPDIR)/liblxc_so-attach.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='attach.c' object='liblxc_so-attach.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -c -o liblxc_so-attach.obj `if test -f 'attach.c'; then $(CYGPATH_W) 'attach.c'; else $(CYGPATH_W) '$(srcdir)/attach.c'; fi`
 
 liblxc_so-network.o: network.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(liblxc_so_CFLAGS) $(CFLAGS) -MT liblxc_so-network.o -MD -MP -MF $(DEPDIR)/liblxc_so-network.Tpo -c -o liblxc_so-network.o `test -f 'network.c' || echo '$(srcdir)/'`network.c
@@ -1198,7 +1238,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibdir)" "$(DESTDIR)$(sodir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgincludedir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkglibexecdir)" "$(DESTDIR)$(sodir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1229,7 +1269,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-local \
-	clean-pkglibPROGRAMS clean-soPROGRAMS mostlyclean-am
+	clean-pkglibexecPROGRAMS clean-soPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -1256,7 +1296,7 @@ install-dvi: install-dvi-am
 install-dvi-am:
 
 install-exec-am: install-binPROGRAMS install-binSCRIPTS \
-	install-exec-local install-pkglibPROGRAMS
+	install-exec-local install-pkglibexecPROGRAMS
 
 install-html: install-html-am
 
@@ -1297,12 +1337,12 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	uninstall-local uninstall-pkgincludeHEADERS \
-	uninstall-pkglibPROGRAMS uninstall-soPROGRAMS
+	uninstall-pkglibexecPROGRAMS uninstall-soPROGRAMS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-local clean-pkglibPROGRAMS \
+	clean-generic clean-local clean-pkglibexecPROGRAMS \
 	clean-soPROGRAMS ctags distclean distclean-compile \
 	distclean-generic distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binPROGRAMS \
@@ -1310,14 +1350,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	install-dvi-am install-exec install-exec-am install-exec-local \
 	install-html install-html-am install-info install-info-am \
 	install-man install-pdf install-pdf-am \
-	install-pkgincludeHEADERS install-pkglibPROGRAMS install-ps \
-	install-ps-am install-soPROGRAMS install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	install-pkgincludeHEADERS install-pkglibexecPROGRAMS \
+	install-ps install-ps-am install-soPROGRAMS install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-binPROGRAMS uninstall-binSCRIPTS \
 	uninstall-local uninstall-pkgincludeHEADERS \
-	uninstall-pkglibPROGRAMS uninstall-soPROGRAMS
+	uninstall-pkglibexecPROGRAMS uninstall-soPROGRAMS
 
 
 install-exec-local: install-soPROGRAMS

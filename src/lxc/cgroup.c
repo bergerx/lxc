@@ -28,6 +28,7 @@
 #include <mntent.h>
 #include <unistd.h>
 #include <string.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -52,9 +53,94 @@ enum {
 	CGROUP_CLONE_CHILDREN,
 };
 
+static char *hasmntopt_multiple(struct mntent *mntent, const char *options)
+{
+	const char *ptr = options;
+	const char *ptr2 = strchr(options, ',');
+	char *result;
+
+	while (ptr2 != NULL) {
+		char *option = strndup(ptr, ptr2 - ptr);
+		if (!option) {
+			SYSERROR("Temporary memory allocation error");
+			return NULL;
+		}
+
+		result = hasmntopt(mntent, option);
+		free(option);
+
+		if (!result) {
+			return NULL;
+		}
+
+		ptr = ptr2 + 1;
+		ptr2 = strchr(ptr, ',');
+	}
+
+	/* for multiple mount options, the return value is basically NULL
+	 * or non-NULL, so this should suffice for our purposes */
+	return hasmntopt(mntent, ptr);
+}
+
+/*
+ * get_init_cgroup: get the cgroup init is in.
+ *  dsg: preallocated buffer to put the output in
+ *  subsystem: the exact cgroup subsystem to look up
+ *  mntent: a mntent (from getmntent) whose mntopts contains the
+ *          subsystem to look up.
+ *
+ * subsystem and mntent can both be NULL, in which case we return
+ * the first entry in /proc/1/cgroup.
+ *
+ * Returns a pointer to the answer, which may be "".
+ */
+static char *get_init_cgroup(const char *subsystem, struct mntent *mntent,
+			     char *dsg)
+{
+	FILE *f;
+	char *c, *c2;
+	char line[MAXPATHLEN];
+
+	*dsg = '\0';
+	f = fopen("/proc/1/cgroup", "r");
+	if (!f)
+		return dsg;
+
+	while (fgets(line, MAXPATHLEN, f)) {
+		c = index(line, ':');
+		if (!c)
+			continue;
+		c++;
+		c2 = index(c, ':');
+		if (!c2)
+			continue;
+		*c2 = '\0';
+		c2++;
+		if (!subsystem && !mntent)
+			goto good;
+		if (subsystem && strcmp(c, subsystem) != 0)
+			continue;
+		if (mntent && !hasmntopt(mntent, c))
+			continue;
+good:
+		DEBUG("get_init_cgroup: found init cgroup for subsys %s at %s\n",
+			subsystem, c2);
+		strncpy(dsg, c2, MAXPATHLEN);
+		c = &dsg[strlen(dsg)-1];
+		if (*c == '\n')
+			*c = '\0';
+		goto found;
+	}
+
+found:
+	fclose(f);
+	return dsg;
+}
+
 static int get_cgroup_mount(const char *subsystem, char *mnt)
 {
 	struct mntent *mntent;
+	char initcgroup[MAXPATHLEN];
 	FILE *file = NULL;
 
 	file = setmntent(MTAB, "r");
@@ -67,15 +153,23 @@ static int get_cgroup_mount(const char *subsystem, char *mnt)
 
 		if (strcmp(mntent->mnt_type, "cgroup"))
 			continue;
-		if (!subsystem || hasmntopt(mntent, subsystem)) {
-			strcpy(mnt, mntent->mnt_dir);
+		if (!subsystem || hasmntopt_multiple(mntent, subsystem)) {
+			int ret;
+			ret = snprintf(mnt, MAXPATHLEN, "%s%s/lxc",
+				       mntent->mnt_dir,
+				       get_init_cgroup(subsystem, NULL,
+						       initcgroup));
+			if (ret < 0 || ret >= MAXPATHLEN)
+				goto fail;
 			fclose(file);
 			DEBUG("using cgroup mounted at '%s'", mnt);
 			return 0;
 		}
 	};
 
-	DEBUG("Failed to find cgroup for %s\n", subsystem ? subsystem : "(NULL)");
+fail:
+	DEBUG("Failed to find cgroup for %s\n",
+	      subsystem ? subsystem : "(NULL)");
 
 	fclose(file);
 
@@ -141,7 +235,7 @@ static int cgroup_enable_clone_children(const char *path)
 	return ret;
 }
 
-static int cgroup_attach(const char *path, pid_t pid)
+int lxc_cgroup_attach(const char *path, pid_t pid)
 {
 	FILE *f;
 	char tasks[MAXPATHLEN];
@@ -166,38 +260,76 @@ static int cgroup_attach(const char *path, pid_t pid)
 }
 
 /*
+ * rename cgname, which is under cgparent, to a new name starting
+ * with 'cgparent/dead'.  That way cgname can be reused.  Return
+ * 0 on success, -1 on failure.
+ */
+int try_to_move_cgname(char *cgparent, char *cgname)
+{
+	char *newdir;
+
+	/* tempnam problems don't matter here - cgroupfs will prevent
+	 * duplicates if we race, and we'll just fail at that (unlikely)
+	 * point
+	 */
+
+	newdir = tempnam(cgparent, "dead");
+	if (!newdir)
+		return -1;
+	if (rename(cgname, newdir))
+		return -1;
+	WARN("non-empty cgroup %s renamed to %s, please manually inspect it\n",
+		cgname, newdir);
+
+	return 0;
+}
+
+/*
  * create a cgroup for the container in a particular subsystem.
- * XXX TODO we will of course want to use cgroup_path{subsystem}/lxc/name,
- * not just cgroup_path{subsystem}/name.
  */
 static int lxc_one_cgroup_create(const char *name,
 				 struct mntent *mntent, pid_t pid)
 {
-	char cgname[MAXPATHLEN];
+	char cginit[MAXPATHLEN], cgname[MAXPATHLEN], cgparent[MAXPATHLEN];
 	char clonechild[MAXPATHLEN];
-	int flags;
+	char initcgroup[MAXPATHLEN];
+	int flags, ret;
 
-	snprintf(cgname, MAXPATHLEN, "%s/%s", mntent->mnt_dir, name);
+	/* cgparent is the parent dir, /sys/fs/cgroup/<cgroup>/<init-cgroup>/lxc */
+	/* (remember get_init_cgroup() returns a path starting with '/') */
+	/* cgname is the full name,    /sys/fs/cgroup/</cgroup>/<init-cgroup>/lxc/name */
+	ret = snprintf(cginit, MAXPATHLEN, "%s%s", mntent->mnt_dir,
+		get_init_cgroup(NULL, mntent, initcgroup));
+	if (ret < 0 || ret >= MAXPATHLEN) {
+		SYSERROR("Failed creating pathname for init's cgroup (%d)\n", ret);
+		return -1;
+	}
 
-	/*
-	 * There is a previous cgroup, assume it is empty,
-	 * otherwise that fails
-	 */
-	if (!access(cgname, F_OK) && rmdir(cgname)) {
-		SYSERROR("failed to remove previous cgroup '%s'", cgname);
+	ret = snprintf(cgparent, MAXPATHLEN, "%s/lxc", cginit);
+	if (ret < 0 || ret >= MAXPATHLEN) {
+		SYSERROR("Failed creating pathname for cgroup parent (%d)\n", ret);
+		return -1;
+	}
+	ret = snprintf(cgname, MAXPATHLEN, "%s/%s", cgparent, name);
+	if (ret < 0 || ret >= MAXPATHLEN) {
+		SYSERROR("Failed creating pathname for cgroup (%d)\n", ret);
 		return -1;
 	}
 
 	flags = get_cgroup_flags(mntent);
 
-	/* We have the deprecated ns_cgroup subsystem */
+	/* Do we have the deprecated ns_cgroup subsystem? */
 	if (flags & CGROUP_NS_CGROUP) {
 		WARN("using deprecated ns_cgroup");
-		return cgroup_rename_nsgroup(mntent->mnt_dir, cgname, pid);
+		return cgroup_rename_nsgroup(cgparent, cgname, pid);
 	}
 
-	snprintf(clonechild, MAXPATHLEN, "%s/cgroup.clone_children",
-		 mntent->mnt_dir);
+	ret = snprintf(clonechild, MAXPATHLEN, "%s/cgroup.clone_children",
+		       cginit);
+	if (ret < 0 || ret >= MAXPATHLEN) {
+		SYSERROR("Failed creating pathname for clone_children (%d)\n", ret);
+		return -1;
+	}
 
 	/* we check if the kernel has clone_children, at this point if there
 	 * no clone_children neither ns_cgroup, that means the cgroup is mounted
@@ -208,20 +340,37 @@ static int lxc_one_cgroup_create(const char *name,
 		return -1;
 	}
 
-	/* we enable the clone_children flag of the cgroup */
+	/* enable the clone_children flag of the cgroup */
 	if (cgroup_enable_clone_children(clonechild)) {
 		SYSERROR("failed to enable 'clone_children flag");
 		return -1;
 	}
 
+	/* if /sys/fs/cgroup/<cgroup>/<init-cgroup>/lxc does not exist, create it */
+	if (access(cgparent, F_OK) && mkdir(cgparent, 0755)) {
+		SYSERROR("failed to create '%s' directory", cgparent);
+		return -1;
+	}
+
+	/*
+	 * There is a previous cgroup.  Try to delete it.  If that fails
+	 * (i.e. it is not empty) try to move it out of the way.
+	 */
+	if (!access(cgname, F_OK) && rmdir(cgname)) {
+		if (try_to_move_cgname(cgparent, cgname)) {
+			SYSERROR("failed to remove previous cgroup '%s'", cgname);
+			return -1;
+		}
+	}
+
 	/* Let's create the cgroup */
-	if (mkdir(cgname, 0700)) {
+	if (mkdir(cgname, 0755)) {
 		SYSERROR("failed to create '%s' directory", cgname);
 		return -1;
 	}
 
 	/* Let's add the pid to the 'tasks' file */
-	if (cgroup_attach(cgname, pid)) {
+	if (lxc_cgroup_attach(cgname, pid)) {
 		SYSERROR("failed to attach pid '%d' to '%s'", pid, cgname);
 		rmdir(cgname);
 		return -1;
@@ -240,6 +389,7 @@ int lxc_cgroup_create(const char *name, pid_t pid)
 	struct mntent *mntent;
 	FILE *file = NULL;
 	int err = -1;
+	int found = 0;
 
 	file = setmntent(MTAB, "r");
 	if (!file) {
@@ -253,25 +403,72 @@ int lxc_cgroup_create(const char *name, pid_t pid)
 
 		if (!strcmp(mntent->mnt_type, "cgroup")) {
 
-			INFO("found cgroup mounted at '%s'", mntent->mnt_dir);
+			INFO("[%d] found cgroup mounted at '%s',opts='%s'",
+			     ++found, mntent->mnt_dir, mntent->mnt_opts);
+
 			err = lxc_one_cgroup_create(name, mntent, pid);
 			if (err)
 				goto out;
 		}
 	};
 
+	if (!found)
+		ERROR("No cgroup mounted on the system");
+
 out:
 	endmntent(file);
 	return err;
 }
 
-
-int lxc_one_cgroup_destroy(const char *cgmnt, const char *name)
+int recursive_rmdir(char *dirname)
 {
-	char cgname[MAXPATHLEN];
+	struct dirent dirent, *direntp;
+	DIR *dir;
+	int ret;
+	char pathname[MAXPATHLEN];
 
-	snprintf(cgname, MAXPATHLEN, "%s/%s", cgmnt, name);
-	if (rmdir(cgname)) {
+	dir = opendir(dirname);
+	if (!dir) {
+		WARN("failed to open directory: %m");
+		return -1;
+	}
+
+	while (!readdir_r(dir, &dirent, &direntp)) {
+		struct stat mystat;
+
+		if (!direntp)
+			break;
+
+		if (!strcmp(direntp->d_name, ".") ||
+		    !strcmp(direntp->d_name, ".."))
+			continue;
+
+		snprintf(pathname, MAXPATHLEN, "%s/%s", dirname, direntp->d_name);
+		ret = stat(pathname, &mystat);
+		if (ret)
+			continue;
+		if (S_ISDIR(mystat.st_mode))
+			recursive_rmdir(pathname);
+	}
+
+	ret = rmdir(dirname);
+
+	if (closedir(dir))
+		ERROR("failed to close directory");
+	return ret;
+
+
+}
+
+int lxc_one_cgroup_destroy(struct mntent *mntent, const char *name)
+{
+	char cgname[MAXPATHLEN], initcgroup[MAXPATHLEN];
+	char *cgmnt = mntent->mnt_dir;
+
+	snprintf(cgname, MAXPATHLEN, "%s%s/lxc/%s", cgmnt,
+		get_init_cgroup(NULL, mntent, initcgroup), name);
+	DEBUG("destroying %s\n", cgname);
+	if (recursive_rmdir(cgname)) {
 		SYSERROR("failed to remove cgroup '%s'", cgname);
 		return -1;
 	}
@@ -298,8 +495,7 @@ int lxc_cgroup_destroy(const char *name)
 
 	while ((mntent = getmntent(file))) {
 		if (!strcmp(mntent->mnt_type, "cgroup")) {
-			DEBUG("destroying %s %s\n", mntent->mnt_dir, name);
-			ret = lxc_one_cgroup_destroy(mntent->mnt_dir, name);
+			ret = lxc_one_cgroup_destroy(mntent, name);
 			if (ret) {
 				fclose(file);
 				return ret;

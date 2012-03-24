@@ -23,7 +23,7 @@ _lxc_status()
 
 _lxc_templates()
 {
-	COMPREPLY=( $( compgen -W "$( /bin/ls /usr/lib/lxc/templates/ | sed -e 's|^lxc-||' )" "$cur" ) )
+	COMPREPLY=( $( compgen -W "$( /bin/ls /usr/share/lxc/templates/ | sed -e 's|^lxc-||' )" "$cur" ) )
 }
 
 _lxc-start()

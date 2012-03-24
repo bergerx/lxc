@@ -58,9 +58,15 @@ struct lxc_arguments {
 	/* for lxc-wait */
 	char *states;
 
+	/* close fds from parent? */
+	int close_all_fds;
+
 	/* remaining arguments */
 	char *const *argv;
 	int argc;
+
+	/* private arguments */
+	void *data;
 };
 
 #define LXC_COMMON_OPTIONS \
@@ -78,7 +84,6 @@ struct lxc_arguments {
 extern int lxc_arguments_parse(struct lxc_arguments *args,
 			       int argc, char *const argv[]);
 
-extern char **lxc_arguments_dup(const char *file, struct lxc_arguments *args);
 extern int lxc_arguments_str_to_int(struct lxc_arguments *args, const char *str);
 
 extern const char *lxc_strerror(int errnum);

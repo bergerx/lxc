@@ -21,7 +21,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#include "../config.h"
+#include "config.h"
+
 #include <stdio.h>
 #undef _GNU_SOURCE
 #include <string.h>
@@ -70,7 +71,7 @@ int lxc_restart(const char *name, int sfd, struct lxc_conf *conf, int flags)
 		.flags = flags
 	};
 
-	if (lxc_check_inherited(sfd))
+	if (lxc_check_inherited(conf, sfd))
 		return -1;
 
 	return __lxc_start(name, conf, &restart_ops, &restart_arg);

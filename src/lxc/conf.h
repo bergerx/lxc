@@ -25,6 +25,7 @@
 
 #include <netinet/in.h>
 #include <sys/param.h>
+#include <stdbool.h>
 
 #include <lxc/list.h>
 
@@ -114,6 +115,10 @@ struct lxc_netdev {
 	union netdev_p priv;
 	struct lxc_list ipv4;
 	struct lxc_list ipv6;
+	struct in_addr *ipv4_gateway;
+	bool ipv4_gateway_auto;
+	struct in6_addr *ipv6_gateway;
+	bool ipv6_gateway_auto;
 	char *upscript;
 };
 
@@ -192,12 +197,14 @@ struct lxc_rootfs {
  * @caps       : list of the capabilities
  * @tty_info   : tty data
  * @console    : console data
+ * @ttydir     : directory (under /dev) in which to create console and ttys
  */
 struct lxc_conf {
 	char *fstab;
 	int tty;
 	int pts;
 	int reboot;
+	int need_utmp_watch;
 	int personality;
 	struct utsname *utsname;
 	struct lxc_list cgroup;
@@ -207,6 +214,8 @@ struct lxc_conf {
 	struct lxc_tty_info tty_info;
 	struct lxc_console console;
 	struct lxc_rootfs rootfs;
+	char *ttydir;
+	int close_all_fds;
 };
 
 /*
@@ -217,6 +226,7 @@ extern struct lxc_conf *lxc_conf_init(void);
 extern int lxc_create_network(struct lxc_handler *handler);
 extern void lxc_delete_network(struct lxc_list *networks);
 extern int lxc_assign_network(struct lxc_list *networks, pid_t pid);
+extern int lxc_find_gateway_addresses(struct lxc_handler *handler);
 
 extern int lxc_create_tty(const char *name, struct lxc_conf *conf);
 extern void lxc_delete_tty(struct lxc_tty_info *tty_info);

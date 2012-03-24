@@ -2,15 +2,15 @@ Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description:
  Adding patch to correct signal names in lxc-create trap (Closes: #655173).
 
-diff -Naurp lxc.orig//src/lxc/lxc-create.in lxc/src/lxc/lxc-create.in
---- lxc.orig//src/lxc/lxc-create.in	2012-01-09 01:32:47.850745685 +0100
-+++ lxc/src/lxc/lxc-create.in	2012-01-09 16:07:52.859101158 +0100
-@@ -123,7 +123,7 @@ if [ -d "$lxc_path/$lxc_name" ]; then
+diff -Naurp lxc.orig/src/lxc/lxc-create.in lxc/src/lxc/lxc-create.in
+--- lxc.orig/src/lxc/lxc-create.in	2012-03-09 12:56:37.247241547 +0100
++++ lxc/src/lxc/lxc-create.in	2012-03-09 12:58:41.571862228 +0100
+@@ -234,7 +234,7 @@ cleanup() {
      exit 1
- fi
+ }
  
--trap "${bindir}/lxc-destroy -n $lxc_name; echo aborted; exit 1" SIGHUP SIGINT SIGTERM
-+trap "${bindir}/lxc-destroy -n $lxc_name; echo aborted; exit 1" HUP INT TERM
+-trap cleanup SIGHUP SIGINT SIGTERM
++trap cleanup HUP INT TERM
  
  mkdir -p $lxc_path/$lxc_name
  

@@ -1,6 +1,6 @@
 # French translation of lxc debconf templates.
 # Copyright (C) 2011 Julien Patriarca <patriarcaj@gmail.com>
-# Copyright (C) 2011 Christian Perrier <bubulle@debian.org>
+# Copyright (C) 2011-2012 Christian Perrier <bubulle@debian.org>
 # This file is distributed under the same license as the lxc package.
 #
 msgid ""
@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: lxc\n"
 "Report-Msgid-Bugs-To: lxc@packages.debian.org\n"
 "POT-Creation-Date: 2012-02-09 13:08+0100\n"
-"PO-Revision-Date: 2011-12-27 08:44+0100\n"
+"PO-Revision-Date: 2012-03-12 07:52+0100\n"
 "Last-Translator: Christian Perrier <bubulle@debian.org>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
 "Language: \n"
@@ -51,30 +51,22 @@ msgstr "Dans le doute, vous pouvez choisir cette option."
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-#, fuzzy
-#| msgid "Linux Container: Stop method"
 msgid "Linux Container: Shutdown method"
 msgstr "Conteneurs Linux : méthode d'arrêt"
 
 #. Type: select
 #. Description
 #: ../lxc.templates:3001
-#, fuzzy
-#| msgid ""
-#| "Linux Containers can be stopped in different ways. The stop method kills "
-#| "all processes inside the container. The halt method initiates a shutdown, "
-#| "which takes longer and can have problems with containers that don't "
-#| "shutdown themselfs properly."
 msgid ""
 "Linux Containers can be shutdown in different ways. The stop method "
 "terminates all processes inside the container. The halt method initiates a "
 "shutdown, which takes longer and can have problems with containers that "
-"don't shutdown themselfs properly."
+"don't shutdown themselves properly."
 msgstr ""
 "Les conteneurs Linux peuvent être arrêtés de différents manières. La méthode "
-"« stop »  envoie un signal à tous les processus au sein du conteneur. La "
-"méthode « halt » initie une extinction, ce qui prend plus de temps et peut "
-"causer des problèmes si les conteneurs ne s'arrêtent pas correctement."
+"« stop » interrompt tous les processus au sein du conteneur. La méthode "
+"« halt » initie une extinction, ce qui prend plus de temps et peut causer "
+"des problèmes si les conteneurs ne s'arrêtent pas correctement."
 
 #. Type: select
 #. Description
@@ -83,6 +75,8 @@ msgid ""
 "Unless you know that your containers don't shutdown properly, choose halt "
 "(default)."
 msgstr ""
+"Il est conseillé de choisir la méthode « halt » sauf si les conteneurs ne "
+"s'arrêtent pas correctement."
 
 #. Type: string
 #. Description

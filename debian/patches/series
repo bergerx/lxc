@@ -1,4 +1,4 @@
-01-lxc-libdir.patch
+01-lxc-directories.patch
 02-lxc-distclean.patch
 03-lxc-configuration-path.patch
 04-lxc-create-template-name.patch

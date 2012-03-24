@@ -1,11 +1,11 @@
 Author: Daniel Baumann <daniel.baumann@progress-technologies.net>
 Description: Don't list vendor specific example template.
 
-diff -Naurp lxc.orig/src/lxc/lxc-create.in lxc/src/lxc/lxc-create.in
---- lxc.orig/src/lxc/lxc-create.in	2011-12-15 12:24:00.077632887 +0100
-+++ lxc/src/lxc/lxc-create.in	2011-12-15 12:25:09.057975370 +0100
-@@ -35,7 +35,7 @@ help() {
-     echo "template     : lxc-template is an accessible template script"
+diff -Naurp lxc/src/lxc/lxc-create.in lxc.orig/src/lxc/lxc-create.in
+--- lxc/src/lxc/lxc-create.in	2012-03-09 13:21:01.354510931 +0100
++++ lxc.orig/src/lxc/lxc-create.in	2012-03-09 13:20:39.210396083 +0100
+@@ -52,7 +52,7 @@ help() {
+     echo
      if [ -z $lxc_template ]; then
          echo "for template-specific help, specify a template, for instance:"
 -        echo "lxc-create -t ubuntu -h"

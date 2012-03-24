@@ -1,9 +1,14 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: lxc
+Upstream-Contact: lxc-devel@lists.sourceforge.net
+Source: http://lxc.sourceforge.net/download/lxc/
+
 Files: *
-Copyright: (C) 2007-2011 IBM Corporation
+Copyright: 2007-2012 IBM Corporation
 License: GPL-2+
 
-Files: debian/*
-Copyright: (C) 2011-2012 Daniel Baumann <daniel.baumann@progress-technologies.net>
+Files: *
+Copyright: 2011-2012 Daniel Baumann <daniel@debian.org>
 License: GPL-2+
 
 License: GPL-2+
